@@ -1,0 +1,18 @@
+# runtime data (never commit secrets/output)
+.env
+output/
+data/tmp/
+data/clips/
+__pycache__/
+*.pyc
+*.mp4
+*.wav
+
+# keep the ML learning store + journal + history (they ARE the memory)
+!data/learning_store.json
+!data/run_journal.json
+!data/video_history.json
+!data/monetization_progress.json
+
+# keep music assets
+!assets/music/

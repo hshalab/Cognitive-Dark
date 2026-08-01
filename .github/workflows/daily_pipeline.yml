@@ -1,0 +1,115 @@
+name: "Cognitive Dark V2 — Multi-Platform Daily Pipeline"
+
+on:
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "youtube,facebook,instagram"
+        required: false
+        type: string
+      dry_run:
+        description: "build only, no uploads"
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    # USA peak hours (America/New_York) → UTC (DST-safe via zoneinfo at runtime;
+    # these crons use the current winter schedule — 3 windows/day)
+    - cron: "0 12 * * *"   # 7-8am ET (winter) / 8am EDT
+    - cron: "0 17 * * *"   # noon ET-ish
+    - cron: "0 0 * * *"    # 7pm ET-ish
+
+permissions:
+  contents: write   # needed to commit back the ML learning store
+
+concurrency:
+  group: cognitive-dark-pipeline
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache Kokoro model
+        uses: actions/cache@v4
+        with:
+          path: data/models/kokoro
+          key: kokoro-onnx-${{ runner.os }}-v1
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu espeak-ng
+
+      - name: Install Python deps
+        run: |
+          python -m pip install -q --upgrade pip
+          pip install -q -r requirements.txt kokoro-onnx onnxruntime
+
+      - name: Ensure music assets
+        run: |
+          ls assets/music/*.wav 2>/dev/null || python scripts/generate_music.py
+
+      - name: Run pipeline
+        env:
+          PLATFORMS: ${{ inputs.platforms || 'youtube,facebook,instagram' }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          TTS_PRIMARY: "onnx"
+          KOKORO_VOICE: "am_fenrir"
+          KOKORO_MODEL_DIR: "data/models/kokoro"
+        run: |
+          python src/main.py --platforms "$PLATFORMS" \
+            $([ "$DRY_RUN" = "1" ] && echo --dry-run)
+
+      - name: Commit learning memory back
+        run: |
+          git config user.name "Cognitive Dark Bot"
+          git config user.email "bot@cognitivedark.local"
+          git add -f data/learning_store.json data/run_journal.json data/monetization_progress.json 2>/dev/null || true
+          git diff --cached --quiet || (git commit -m "🤖 Update ML learning store + journal [skip ci]" && git push)
+        continue-on-error: true
+
+  metrics-sync:
+    runs-on: ubuntu-latest
+    needs: build-and-publish
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          pip install -q -r requirements.txt google-api-python-client google-auth-oauthlib
+      - name: Fetch metrics & update ML
+        env:
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/fetch_metrics.py
+      - name: Commit metrics
+        run: |
+          git config user.name "Cognitive Dark Bot"
+          git config user.email "bot@cognitivedark.local"
+          git add -f data/*.json data/metrics_report.md 2>/dev/null || true
+          git diff --cached --quiet || (git commit -m "📊 Sync metrics [skip ci]" && git push)
+        continue-on-error: true

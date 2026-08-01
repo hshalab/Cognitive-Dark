@@ -1,0 +1,38 @@
+# ── Core ──
+requests>=2.32,<3
+python-dotenv>=1.0,<2
+
+# ── Script (LLM) ──
+# (no extra dep — Groq/Gemini called via urllib)
+
+# ── Voice: Kokoro TTS (primary) ──
+# LIGHTEST PATH (recommended, works on CPU runners / CI):
+#   pip install kokoro-onnx onnxruntime
+#   (model files auto-download on first use)
+#
+# FULL PATH (torch-based, heavier — needs CUDA to be fast):
+#   pip install kokoro==0.9.4 soundfile
+#   (pulls torch + spacy; see note in README)
+kokoro-onnx>=0.5.0
+soundfile>=0.12,<1
+
+# ── Voice fallback ──
+edge-tts>=6.1,<8
+
+# ── Clips (Pexels/Pixabay) via requests — handled above
+
+# ── Video ──
+# PINNED: MoviePy 1.x — 2.x removed `moviepy.editor` (verified crash on 2.x)
+moviepy==1.0.3
+Pillow>=10.0,<12
+numpy>=1.26,<3
+
+# ── YouTube API ──
+google-api-python-client>=2.100,<3
+google-auth-oauthlib>=1.2,<2
+google-auth-httplib2>=0.1,<1
+
+# ── Audio utils (system-level, NOT pip) ──
+#   sudo apt-get install -y ffmpeg fonts-dejavu espeak-ng
+# ── Kokoro TTS (primary voice) — optional in CI, use kokoro-onnx instead:
+#   pip install kokoro-onnx onnxruntime
