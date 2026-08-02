@@ -1,3 +1,8 @@
+# 📊 Cognitive Dark — Metrics Report
+
+*Updated: 2026-08-02T18:05:19.692526+00:00*
+
+```json
 {
   "youtube": {
     "subs": 7,
@@ -39,3 +44,4 @@
   },
   "last_updated": "2026-08-02T18:05:19.690525+00:00"
 }
+```
