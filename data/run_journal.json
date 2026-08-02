@@ -1,11 +1,11 @@
 {
   "current": {
-    "run_id": "20260802T041058",
+    "run_id": "20260802T130530",
     "kind": "short_pipeline",
-    "started": "2026-08-02T04:10:58.077914+00:00",
+    "started": "2026-08-02T13:05:30.864542+00:00",
     "status": "success",
-    "finished": "2026-08-02T04:12:39.508844+00:00",
-    "note": "youtube:OK; facebook:FAIL; instagram:FAIL"
+    "finished": "2026-08-02T13:09:34.587305+00:00",
+    "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
   },
   "history": [
     {
@@ -15,6 +15,14 @@
       "status": "success",
       "finished": "2026-08-02T04:12:39.508844+00:00",
       "note": "youtube:OK; facebook:FAIL; instagram:FAIL"
+    },
+    {
+      "run_id": "20260802T130530",
+      "kind": "short_pipeline",
+      "started": "2026-08-02T13:05:30.864542+00:00",
+      "status": "success",
+      "finished": "2026-08-02T13:09:34.587305+00:00",
+      "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
     }
   ]
 }
