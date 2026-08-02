@@ -279,10 +279,11 @@ def selftest() -> bool:
         scenes = [{"caption": "Test one two three.",
                    "caption_roman": "Test one two three.",
                    "emotion": "dark"} for _ in range(2)]
-        clip_paths = [generate_procedural_scene(i, "dark",
-                       out_dir="output/tmp/selftest") for i in range(2)]
+        scene_visuals = [[generate_procedural_scene(i * 10 + k, "dark",
+                           out_dir="output/tmp/selftest") for k in range(3)]
+                         for i in range(2)]
         segs = [{"path": None, "duration": 2.5, "text": s["caption"]} for s in scenes]
-        out = build_short(clip_paths, segs, scenes,
+        out = build_short(scene_visuals, segs, scenes,
                           out_path="output/tmp/selftest_video.mp4")
         assert Path(out).exists() and Path(out).stat().st_size > 10000
 

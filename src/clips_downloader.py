@@ -153,18 +153,37 @@ def get_clip_for_scene(scene_idx: int, scene: dict, max_retries: int = 2) -> dic
     raise RuntimeError(f"could not download any clip for: {query}")
 
 
-def prepare_clips(scenes: list) -> list:
-    """Fetch clips for all scenes. Falls back to procedural visuals per scene."""
+def prepare_clips(scenes: list, per_scene: int = 3) -> list:
+    """Fetch `per_scene` distinct clips for every scene (for fast cuts).
+
+    Returns a list (one entry per scene) of lists of clip dicts.
+    Falls back to distinct procedural visuals per scene when providers fail.
+    """
     results = []
     for i, scene in enumerate(scenes):
-        try:
-            results.append(get_clip_for_scene(i, scene))
-        except Exception as exc:
-            logger.warning("Clips unavailable for scene %d → procedural visual (%s)", i, exc)
-            results.append({
-                "path": generate_procedural_scene(i, scene.get("emotion", "dark")),
-                "source": "procedural", "query": scene.get("visual", ""),
+        scene_clips = []
+        seen_ids = set()
+        for _ in range(per_scene):
+            try:
+                r = get_clip_for_scene(i, scene)
+                key = (r.get("source"), r.get("width"), r.get("height"))
+                if key not in seen_ids:
+                    scene_clips.append(r)
+                    seen_ids.add(key)
+                else:
+                    break
+            except Exception as exc:
+                logger.warning("clip fetch %d failed → procedural (%s)", i, exc)
+                break
+        # top up with procedural visuals so every scene has per_scene cuts
+        while len(scene_clips) < per_scene:
+            scene_clips.append({
+                "path": generate_procedural_scene(
+                    i * 10 + len(scene_clips), scene.get("emotion", "dark")),
+                "source": "procedural",
+                "query": scene.get("visual", ""),
             })
+        results.append(scene_clips)
     return results
 
 

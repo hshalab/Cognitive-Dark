@@ -96,10 +96,12 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         journal.finish_run(run_id, "blocked", guard["reason"])
         return {"success": False, "reason": guard["reason"]}
 
-    # ── 2. Clips (Pexels → Pixabay → procedural) ──
-    clips = prepare_clips(script["scenes"])
-    clip_paths = [c["path"] for c in clips]
-    logger.info("🎞️  Clips: %s", ", ".join(sorted({c["source"] for c in clips})))
+    # ── 2. Clips (Pexels → Pixabay → procedural) — 3 cuts per scene ──
+    clip_sets = prepare_clips(script["scenes"], per_scene=3)
+    scene_visuals = [[c["path"] for c in s] for s in clip_sets]
+    logger.info("🎞️  Clips: %s (%d scenes × %d cuts)",
+                ", ".join(sorted({c["source"] for s in clip_sets for c in s})),
+                len(scene_visuals), len(scene_visuals[0]) if scene_visuals else 0)
 
     # ── 3. Voice (Kokoro → edge → elevenlabs → silence) ──
     segments = generate_voice_segments(script["scenes"])
@@ -107,9 +109,9 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     logger.info("🎙️  Narration: %.1fs", narration_s)
     release_tts()  # free the ~300MB Kokoro model before video render
 
-    # ── 4. Video ──
-    final_video = build_short(clip_paths, segments, script["scenes"])
-    thumb = generate_thumbnail(clip_paths[0], script.get("hook", ""))
+    # ── 4. Video (USA style: fast cuts + word captions) ──
+    final_video = build_short(scene_visuals, segments, script["scenes"])
+    thumb = generate_thumbnail(scene_visuals[0][0], script.get("hook", ""))
     logger.info("🎬 Built %s + thumbnail", final_video)
 
     # ── 5. Upload per platform (algorithm-adapted, ML-scheduled) ──

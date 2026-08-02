@@ -64,6 +64,9 @@ _kokoro_pipe = None
 
 def _kokoro_onnx_tts(text: str, out_path: str) -> float:
     global _kokoro_pipe
+    # bound onnxruntime memory on small runners (OMP threads)
+    os.environ.setdefault("OMP_NUM_THREADS", "2")
+    os.environ.setdefault("OMP_WAIT_POLICY", "PASSIVE")
     from kokoro_onnx import Kokoro
     import soundfile as sf
 

@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Platform-Specific SEO Packaging.
+Cognitive Dark V2 — USA-STYLE Platform SEO Packaging.
 
-Each platform gets NATIVE, distinct copy (different titles, captions, hashtag
-sets, line breaks). Identical spammy text across platforms is a spam signal —
-this module guarantees platform adaptation → supports the "0% spam detection" goal.
-
-Platform algorithms (applied here):
-  • YouTube : keyword in title first 60 chars, description keyword-dense in
-              first 2 lines, ≤500 total tag chars, 2-3 hashtags in description.
-  • Facebook: first line = hook, 3-8 relevant hashtags, CTA + engagement
-              question to drive comments (FB's top signal).
-  • Instagram: save-value caption, 15-20 hashtags, line breaks, "save this"
-              CTA (IG rewards saves/shares).
+USA viral-channel conventions applied:
+  • TITLES — hook first, KEYWORD in the first 40 chars, power words, Title
+    Case, numbers when possible, ≤70 chars for Shorts (best CTR).
+  • DESCRIPTIONS — first 2 lines keyword-dense, "What you'll learn" bullets,
+    a "chapter" timestamp block, hashtags, CTA, educational disclaimer.
+  • TAGS (YouTube) — broad + specific + branded mix, ≤500 chars total.
+  • Platform-native copy — every platform gets distinct text (spam signal if
+    identical), tuned to each algorithm (FB = comments, IG = saves/shares).
 """
 
 import random
+
+POWER_WORDS = ["Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
+               "Deadly", "Silently", "Brutal", "Finally", "Nobody Tells You",
+               "They Don't Want You to Know", "Revealed", "Stop", "Master"]
 
 PLATFORM_HASHTAGS = {
     "youtube": ["#psychology", "#darkpsychology", "#psychologyfacts"],
@@ -39,68 +40,109 @@ EDUCATIONAL_DISCLAIMER = (
     "⚠️ For educational purposes only — learn to recognize and protect yourself. "
     "Not a substitute for professional advice.")
 
+CHAPTER_TEMPLATE = """⏱ CHAPTERS:
+00:00 The Hook
+00:05 What's Really Happening
+00:12 The Pattern Nobody Sees
+00:20 Why It Works On You
+00:28 How To Protect Yourself"""
+
+
+def _power_title(hook: str, max_len: int = 70) -> str:
+    """USA-style title: hook-first, Title Case, keyword density, ≤ max_len."""
+    t = hook.strip()
+    # strip trailing punctuation for cleaner titles
+    t = t.rstrip("?!.")
+    words = t.split()
+    if len(words) <= 4 and random.random() < 0.5:
+        t = f"{t}: {random.choice(POWER_WORDS)}"
+    # Title Case (keep short connectors lowercase)
+    stop = {"a", "an", "the", "and", "or", "but", "of", "to", "in", "on", "for",
+            "with", "at", "by", "is", "are", "you", "your", "it", "its"}
+    tt = " ".join(
+        w.capitalize() if (i == 0 or w.lower() not in stop) else w.lower()
+        for i, w in enumerate(words))
+    return tt[:max_len]
+
 
 def _title(script: dict, platform: str) -> str:
-    title = script.get("title", "")[:70]
+    hook = script.get("hook", "") or script.get("title", "")
     if platform == "youtube":
-        return title[:100]
+        t = _power_title(hook, 70)
+        # ensure a keyword appears in the first 40 chars
+        keyword = script.get("pillar_name", "")[:18] or "Psychology"
+        if keyword.lower() not in t.lower() and len(t) < 55:
+            t = f"{t} | {keyword}"
+        return t[:100]
     if platform == "facebook":
-        # FB: punchy, curiosity, ≤60 chars shows fully in feed
-        return (script.get("hook", title)[:58])
+        return hook[:58]  # FB feed shows ~58 chars fully
     if platform == "instagram":
-        return (script.get("hook", title)[:55])
-    return title[:100]
+        return hook[:55]
+    return _power_title(hook, 70)[:100]
 
 
 def _description(script: dict, platform: str) -> str:
     hook = script.get("hook", "")
     key_points = script.get("key_points", "")
     if platform == "youtube":
-        desc = (f"{script.get('title','')} — {hook}\n\n"
-                f"Learn the psychology behind influence & manipulation and how to "
-                f"protect yourself. {EDUCATIONAL_DISCLAIMER}\n\n"
-                f"🔍 What you'll learn:\n{key_points}\n\n"
-                f"📌 Subscribe for daily psychology content\n\n"
+        keyword = script.get("pillar_name", "psychology")
+        desc = (f"{script.get('title','')} — {hook}\n"
+                f"{keyword}: how manipulation works, why it works on you, and "
+                f"exactly how to protect yourself.\n\n"
+                f"{CHAPTER_TEMPLATE}\n\n"
+                f"🔍 WHAT YOU'LL LEARN:\n{key_points}\n\n"
+                f"📌 SUBSCRIBE for daily psychology shorts — new uploads daily.\n"
+                f"{EDUCATIONAL_DISCLAIMER}\n\n"
                 f"{' '.join(PLATFORM_HASHTAGS['youtube'])}")
         return desc[:4500]
     if platform == "facebook":
-        first_line = random.choice([
+        first = random.choice([
             f"🚨 {hook}",
             f"🧠 {hook}",
             f"Most people never notice this pattern. {hook}",
         ])
         cta = random.choice(CTA_FB)
-        desc = (f"{first_line}\n\n{script.get('key_points','')}\n\n"
+        desc = (f"{first}\n\n{key_points}\n\n"
                 f"{cta}\n\n{EDUCATIONAL_DISCLAIMER}\n\n"
                 f"{' '.join(PLATFORM_HASHTAGS['facebook'])}")
-        return desc[:6300]  # FB 63,206 char limit — plenty
+        return desc[:6300]
     if platform == "instagram":
         cta = random.choice(CTA_IG)
-        tags = PLATFORM_HASHTAGS["instagram"]
+        tags = PLATFORM_HASHTAGS["instagram"][:]
         random.shuffle(tags)
-        desc = (f"{hook}\n\n{script.get('key_points','')}\n\n"
-                f"📌 {cta}\n\n"
-                f"{EDUCATIONAL_DISCLAIMER}\n\n"
+        desc = (f"{hook}\n\n{key_points}\n\n"
+                f"📌 {cta}\n\n{EDUCATIONAL_DISCLAIMER}\n\n"
                 f"{' '.join(tags[:20])}")
         return desc[:2200]
     return script.get("description", "")[:4500]
 
 
 def _tags(script: dict, platform: str) -> list:
-    base = [t.strip() for t in (script.get("tags") or []) if t.strip()][:15]
-    if platform == "youtube":
-        # ≤500 chars total for tags
-        out, total = [], 0
-        for t in base:
-            if total + len(t) + 1 > 500:
-                break
-            out.append(t); total += len(t) + 1
-        return out
-    return base  # FB/IG use hashtags in caption instead
+    if platform != "youtube":
+        return []  # FB/IG use hashtags in caption
+    base = [t.strip() for t in (script.get("tags") or []) if t.strip()]
+    pillar = script.get("pillar_name", "")
+    if pillar:
+        base += [pillar, f"{pillar} psychology", f"{pillar} examples"]
+    base += ["psychology facts", "dark psychology", "manipulation",
+             "self improvement", "mindset"]
+    # dedupe, keep order
+    seen, out = set(), []
+    for t in base:
+        k = t.lower()
+        if k not in seen:
+            seen.add(k); out.append(t)
+    # ≤500 chars total
+    final, total = [], 0
+    for t in out:
+        if total + len(t) + 1 > 500:
+            break
+        final.append(t); total += len(t) + 1
+    return final
 
 
 def build_platform_package(script: dict, platform: str) -> dict:
-    """Return {title, description, tags, hashtags, publish_at_hint}."""
+    """Return {title, description, tags, hashtags, hook} for a platform."""
     return {
         "platform": platform,
         "title": _title(script, platform),
@@ -120,5 +162,5 @@ if __name__ == "__main__":
         pkg = build_platform_package(s, p)
         print(f"\n=== {p.upper()} ===")
         print("TITLE :", pkg["title"])
-        print("DESC  :", pkg["description"][:140].replace("\n", " | "))
-        print("TAGS  :", pkg["tags"][:5])
+        print("DESC  :", pkg["description"][:150].replace("\n", " | "))
+        print("TAGS  :", pkg["tags"][:6])

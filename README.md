@@ -9,6 +9,22 @@ Script (Groq/Gemini) → Clips (Pexels/Pixabay) → Voice (Kokoro TTS)
 → Video (MoviePy) → Upload (YouTube + Facebook + Instagram) → ML feedback loop
 ```
 
+## 🎬 USA Viral Style (built-in)
+
+The video package is engineered for the top USA faceless-channel look:
+
+| Element | Style |
+|---|---|
+| **Fast cuts** | Every scene micro-cut into ~2.4s sub-clips with a zoom-punch on each cut |
+| **Captions** | Word-by-word karaoke captions — spoken words white, **current word pops yellow**, upcoming dimmed (Hormozi/Beast style) |
+| **Hook overlay** | Big red hook badge in the first 2.2s + loop-trick re-hook at the end |
+| **Voice** | Kokoro deep male (`am_fenrir`) at **1.08x** — energetic, punchy, USA cadence |
+| **Titles** | Hook-first, keyword in first 40 chars, Title Case, power words, ≤70 chars |
+| **Tags** | Broad + specific + branded mix, ≤500 chars |
+| **Description** | Keyword-dense first lines, "What you'll learn" bullets, chapter timestamps, hashtags, CTA |
+
+Tuning via env: `USA_CUT_SECS`, `CAPTION_GROUP_WORDS`, `KOKORO_SPEED`, `VIDEO_THREADS`.
+
 ---
 
 ## ✅ What changed vs V1 (all audit fixes applied)

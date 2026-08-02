@@ -231,6 +231,7 @@ HOOK_STYLES = [
 # Video specs
 # ─────────────────────────────────────────────────────────────
 FPS = 30
+VIDEO_THREADS = int(os.environ.get("VIDEO_THREADS", "0")) or max(1, (os.cpu_count() or 2) - 1)
 SHORTS = {"width": 1080, "height": 1920, "min_s": 40, "max_s": 58}
 LONG_FORM = {"width": 1280, "height": 720, "min_s": 480, "max_s": 900}
 SQUARE = {"width": 1080, "height": 1080}  # optional IG feed variant
@@ -310,10 +311,29 @@ MUSIC_DIR = ROOT / "assets" / "music"
 # ─────────────────────────────────────────────────────────────
 # TTS
 # ─────────────────────────────────────────────────────────────
-TTS_PRIMARY = os.environ.get("TTS_PRIMARY", "kokoro")   # kokoro | edge | elevenlabs
+TTS_PRIMARY = os.environ.get("TTS_PRIMARY", "kokoro")   # kokoro | onnx | edge | elevenlabs
 KOKORO_VOICE = os.environ.get("KOKORO_VOICE", "am_fenrir")  # deep authoritative male
-KOKORO_SPEED = float(os.environ.get("KOKORO_SPEED", "0.98"))
+KOKORO_SPEED = float(os.environ.get("KOKORO_SPEED", "1.08"))  # USA style: energetic, fast
 KOKORO_LANG = "a"  # American English
+VOICE_STYLE = os.environ.get("VOICE_STYLE", "usa")  # usa = faster, punchy, authoritative
+
+# ─────────────────────────────────────────────────────────────
+# USA VIRAL STYLE (fast cuts + word captions)
+# ─────────────────────────────────────────────────────────────
+USA_STYLE = {
+    "cut_seconds": float(os.environ.get("USA_CUT_SECS", "2.4")),   # fast cut length
+    "min_cut_seconds": 1.4,                                        # don't go shorter
+    "caption_words_per_group": int(os.environ.get("CAPTION_GROUP_WORDS", "2")),
+    "caption_y": 1520,          # lower-third placement (1080x1920 canvas)
+    "caption_h": 260,
+    "highlight_color": (255, 210, 60),   # yellow pop on current word (USA style)
+    "dim_future_alpha": 120,             # upcoming words dimmed
+    "past_color": (255, 255, 255),       # spoken words white
+    "punch_zoom": 0.10,                  # zoom-punch strength per cut
+    "punch_duration": 0.35,              # punch settles in .35s
+    "hook_seconds": 2.2,
+    "loop_seconds": 1.4,
+}
 
 # ─────────────────────────────────────────────────────────────
 # Clip providers

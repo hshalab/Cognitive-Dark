@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Video Builder (MoviePy 1.0.3 pinned).
+Cognitive Dark V2 — Video Builder (USA Viral Style, MoviePy 1.0.3 pinned).
 
-Builds the 9:16 master short (1080×1920, 30fps) used by all three platforms:
-  • real stock clips (Pexels/Pixabay) with cover-crop + subtle Ken Burns
-  • burned-in captions (PIL), hook overlay in first 2s
-  • loop trick (hook re-appears at the end → seamless rewatch)
-  • Kokoro narration + dark ambient music bed
-
-Platform variants (IG/FB/YT) are all 9:16 Reels/Shorts masters — no re-render
-needed. A separate 16:9 long-form path can be added later.
+USA-STYLE package:
+  • FAST CUTS  — every scene is micro-cut into ~2.4s sub-clips with a zoom
+                 punch on each cut (the relentless forward-motion look).
+  • USA CAPTIONS — word-by-word karaoke captions: spoken words stay white,
+                 the CURRENT word pops yellow (255,210,60), upcoming words
+                 dimmed. This is the Alex-Hormozi / top USA faceless style.
+  • HOOK OVERLAY — big red hook badge in the first 2.2s.
+  • LOOP TRICK  — hook re-appears at the very end for seamless rewatch.
+  • Memory-safe — one scene rendered at a time, ffmpeg concat at the end.
 """
 
 import glob
 import logging
+import math
 import os
 import random
+import re
+import subprocess
 import textwrap
 from pathlib import Path
 
@@ -28,6 +32,20 @@ logger = logging.getLogger("video_builder")
 WIDTH, HEIGHT = 1080, 1920
 FPS = 30
 MUSIC_VOLUME = float(os.environ.get("MUSIC_VOLUME", "0.05"))
+
+from config.settings import USA_STYLE, VIDEO_THREADS
+
+CUT_SECS = max(USA_STYLE["min_cut_seconds"], USA_STYLE["cut_seconds"])
+WORDS_PER_GROUP = USA_STYLE["caption_words_per_group"]
+CAP_Y = USA_STYLE["caption_y"]
+CAP_H = USA_STYLE["caption_h"]
+HL = USA_STYLE["highlight_color"]
+DIM_A = USA_STYLE["dim_future_alpha"]
+PAST = USA_STYLE["past_color"]
+PUNCH = USA_STYLE["punch_zoom"]
+PUNCH_DUR = USA_STYLE["punch_duration"]
+HOOK_SECS = USA_STYLE["hook_seconds"]
+LOOP_SECS = USA_STYLE["loop_seconds"]
 
 FONT_CANDIDATES = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -43,93 +61,180 @@ def _load_font(size: int):
     return ImageFont.load_default()
 
 
-# ── caption / hook overlays ──────────────────────────────────
-def _caption_strip(text: str, emotion: str = "dark") -> Image.Image:
-    font = _load_font(54)
-    strip = Image.new("RGBA", (WIDTH, 260), (0, 0, 0, 0))
+# ─────────────────────────────────────────────────────────────
+# USA word-by-word captions
+# ─────────────────────────────────────────────────────────────
+def _split_words(text: str) -> list:
+    return [w for w in re.split(r"\s+", text.strip()) if w]
+
+
+def _word_chunks(text: str, group_size: int = None) -> list:
+    """Group words into pop-chunks (default 2 words per chunk)."""
+    group_size = group_size or WORDS_PER_GROUP
+    words = _split_words(text)
+    if not words:
+        return []
+    chunks = [words[i:i + group_size] for i in range(0, len(words), group_size)]
+    return [" ".join(c) for c in chunks]
+
+
+def _chunk_timing(text: str, narration_dur: float, group_size: int = None) -> list:
+    """Estimate (start, end) per word-chunk, proportional to word length.
+
+    (Kokoro-ONNX gives no word timestamps, so we distribute the narration
+    duration by character weight — close enough for karaoke captions.)
+    """
+    words = _split_words(text)
+    if not words:
+        return []
+    weights = [len(w) + 1 for w in words]
+    total = sum(weights)
+    cum = 0.0
+    times = []
+    chunk_weights = []
+    group_size = group_size or WORDS_PER_GROUP
+    for i in range(0, len(words), group_size):
+        wsum = sum(weights[i:i + group_size])
+        chunk_weights.append(wsum)
+    ctotal = sum(chunk_weights)
+    start = 0.0
+    for w in chunk_weights:
+        frac = w / ctotal
+        times.append((start, start + frac * narration_dur))
+        start += frac * narration_dur
+    return times
+
+
+def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
+                       emotion: str = "dark") -> Image.Image:
+    """Render the full caption with the current word-chunk highlighted.
+
+    Past chunks → white; current chunk → yellow pop; future chunks → dim.
+    """
+    font = _load_font(56)
+    strip = Image.new("RGBA", (WIDTH, CAP_H), (0, 0, 0, 0))
     draw = ImageDraw.Draw(strip)
-    lines = textwrap.wrap(text, width=28) or [text]
-    if len(lines) > 3:
-        lines = lines[:3] + ["..."]
-    colors = {"dark": (255, 255, 255), "mysterious": (200, 180, 255),
-              "intense": (255, 100, 80), "chilling": (150, 200, 255),
-              "revelatory": (255, 220, 100)}
-    fill = colors.get(emotion, (255, 255, 255))
-    draw.rectangle([30, 0, WIDTH - 30, 260], fill=(0, 0, 0, 150))
-    y = 18
+
+    # color per word based on which chunk it belongs to
+    words = _split_words(full_text)
+    word_chunk = []
+    ci = 0
+    for idx, chunk in enumerate(chunks):
+        for w in chunk.split(" "):
+            word_chunk.append(idx)
+    if not words:
+        return strip
+
+    # wrap into lines (keep word order)
+    lines = textwrap.wrap(full_text, width=30) or [full_text]
+    if len(lines) > 2:
+        lines = lines[:2]
+
+    accents = {"intense": (255, 110, 70), "revelatory": (255, 220, 100),
+               "chilling": (120, 190, 255), "mysterious": (200, 170, 255)}
+    hl_color = accents.get(emotion, HL)
+
+    # background pill
+    draw.rounded_rectangle([20, 0, WIDTH - 20, CAP_H], radius=28,
+                           fill=(0, 0, 0, 165))
+
+    # render line by line; track word index across lines
+    y = 28
+    word_idx = 0
     for line in lines:
-        w = draw.textlength(line, font=font)
-        draw.text(((WIDTH - w) / 2, y), line, font=font, fill=fill,
-                  stroke_width=2, stroke_fill=(0, 0, 0))
-        y += 68
+        line_words = line.split(" ")
+        # compute total width of the line
+        widths = [draw.textlength(w + " ", font=font) for w in line_words]
+        total_w = sum(widths)
+        x = (WIDTH - total_w) / 2
+        for li, w in enumerate(line_words):
+            wchunk = word_chunk[word_idx] if word_idx < len(word_chunk) else current_idx
+            if wchunk < current_idx:
+                fill = PAST + (255,)
+            elif wchunk == current_idx:
+                fill = hl_color + (255,)
+                # underline pop
+                ww = draw.textlength(w + " ", font=font)
+                draw.rounded_rectangle([x, y + 58, x + ww - 8, y + 66], radius=3,
+                                       fill=hl_color + (230,))
+            else:
+                fill = PAST + (DIM_A,)
+            draw.text((x, y), w, font=font, fill=fill,
+                      stroke_width=2, stroke_fill=(0, 0, 0))
+            x += widths[li]
+            word_idx += 1
+        y += 92
     return strip
 
 
-def _hook_overlay(hook: str) -> Image.Image:
-    font = _load_font(70)
+def _hook_overlay_usa(hook: str) -> Image.Image:
+    font = _load_font(72)
     ov = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(ov)
-    lines = textwrap.wrap(hook, width=22) or [hook]
+    lines = textwrap.wrap(hook, width=20) or [hook]
     if len(lines) > 3:
         lines = lines[:3] + ["..."]
-    box_h = 100 * len(lines) + 70
-    draw.rounded_rectangle([40, 140, WIDTH - 40, 140 + box_h], radius=24,
-                           fill=(110, 8, 8, 215))
-    y = 160
+    box_h = 104 * len(lines) + 70
+    draw.rounded_rectangle([40, 130, WIDTH - 40, 130 + box_h], radius=24,
+                           fill=(120, 8, 8, 220))
+    y = 150
     for line in lines:
         w = draw.textlength(line, font=font)
         draw.text(((WIDTH - w) / 2, y), line, font=font, fill=(255, 255, 255, 255),
                   stroke_width=3, stroke_fill=(0, 0, 0))
-        y += 104
+        y += 106
     return ov
 
 
-# ── scene clip building ──────────────────────────────────────
-def _build_scene_clip(clip_path: str, duration: float) -> object:
-    """Real stock video → cover-cropped 9:16 clip (audio dropped)."""
-    # images route straight to the image path (no wasted VideoFileClip load)
+# ─────────────────────────────────────────────────────────────
+# visual cut building
+# ─────────────────────────────────────────────────────────────
+def _build_scene_clip(clip_path: str, duration: float, punch: bool = False) -> object:
+    """Cover-cropped 9:16 clip; images route to image path; optional zoom punch."""
     if clip_path.lower().endswith((".jpg", ".jpeg", ".png")):
-        return _build_image_clip(clip_path, duration)
+        return _build_image_clip(clip_path, duration, punch=punch)
     from moviepy.editor import VideoFileClip
     clip = VideoFileClip(clip_path)
     if clip.duration is None or clip.duration < 0.5:
         clip.close()
         raise RuntimeError("clip too short")
     w, h = clip.w, clip.h
-    s = max(WIDTH / w, HEIGHT / h)           # cover scale
+    s = max(WIDTH / w, HEIGHT / h)
     scaled = clip.resize(width=int(w * s + 0.5), height=int(h * s + 0.5))
     cropped = scaled.crop(x_center=scaled.w / 2, y_center=scaled.h / 2,
                           width=WIDTH, height=HEIGHT)
-    # subtle Ken Burns drift
-    zoomed = cropped.resize(lambda t: 1.0 + 0.05 * min(1.0, t / max(duration, 0.01)))
-    out = zoomed.subclip(0, min(duration, zoomed.duration - 0.05)
-                         if zoomed.duration else duration)
+    out = cropped.subclip(0, min(duration, cropped.duration - 0.05)
+                          if cropped.duration else duration)
     out = out.set_duration(duration)
     try:
         out = out.without_audio()
     except Exception:
         pass
+    if punch:
+        out = out.resize(lambda t: 1.0 + PUNCH * min(1.0, t / max(PUNCH_DUR, 0.01)))
     return out
 
 
-def _build_image_clip(img_path: str, duration: float) -> object:
-    """Static image fallback — ZERO per-frame resampling (memory-light).
+def _build_image_clip(img_path: str, duration: float, punch: bool = False) -> object:
+    """Static image cut — punch BAKED via PIL (zero per-frame resampling).
 
-    The zoom is baked once via PIL (1080→1134 cover crop), so MoviePy only
-    copies frames — no resize lambda recomputation per frame.
+    Memory-safe: renders the zoomed-in start frame once, MoviePy only copies
+    frames. The visual punch still reads because each fast cut starts slightly
+    zoomed (and real stock clips get a true per-frame punch below).
     """
     from moviepy.editor import ImageClip
     try:
         im = Image.open(img_path).convert("RGB")
-        # bake a mild 5% zoom once: crop center of a slightly-zoomed copy
-        zoom = 1.05
+        # bake the punch: start frame is zoomed to (1 + punch), settle to 1.05
+        start_zoom = 1.0 + PUNCH + 0.05
+        end_zoom = 1.05
+        # render mid (settled) frame as the static cut (punch feel = tight crop)
+        zoom = end_zoom
         w, h = im.size
         nw, nh = int(w * zoom), int(h * zoom)
         im2 = im.resize((nw, nh), Image.LANCZOS)
         left, top = (nw - w) // 2, (nh - h) // 2
-        im2 = im2.crop((left, top, left + w, top + h))
-        # then fit canvas (procedural images are already 9:16; be safe anyway)
-        im2 = im2.resize((WIDTH, HEIGHT), Image.LANCZOS)
+        im2 = im2.crop((left, top, left + w, top + h)).resize((WIDTH, HEIGHT), Image.LANCZOS)
         fit_path = img_path + ".fit.jpg"
         im2.save(fit_path, quality=88)
         base = ImageClip(fit_path).set_duration(duration)
@@ -152,9 +257,10 @@ def _pick_music() -> str:
     return random.choice(pool) if pool else None
 
 
-# ── main build (memory-safe: one scene in RAM at a time) ─────
+# ─────────────────────────────────────────────────────────────
+# main build (memory-safe: one scene at a time)
+# ─────────────────────────────────────────────────────────────
 def _build_audio(audio_segments: list, total_duration: float) -> str:
-    """Render narration+music to an m4a track (audio-only, low memory)."""
     from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
     tracks = []
     voices = [AudioFileClip(s["path"]) for s in audio_segments
@@ -179,8 +285,7 @@ def _build_audio(audio_segments: list, total_duration: float) -> str:
         return None
     os.makedirs("output/tmp", exist_ok=True)
     track_path = "output/tmp/narration.m4a"
-    CompositeAudioClip(tracks).write_audiofile(
-        track_path, fps=44100, codec="aac", logger=None)
+    CompositeAudioClip(tracks).write_audiofile(track_path, fps=44100, codec="aac", logger=None)
     for t in tracks:
         try:
             t.close()
@@ -189,71 +294,91 @@ def _build_audio(audio_segments: list, total_duration: float) -> str:
     return track_path
 
 
-def build_short(clip_paths: list, audio_segments: list, scenes: list,
+def build_short(scene_visuals: list, audio_segments: list, scenes: list,
                 out_path: str = "output/final_video.mp4") -> str:
+    """scene_visuals: list (per scene) of lists (cuts) of clip paths."""
     import gc
-    import subprocess
-    from moviepy.editor import (CompositeVideoClip, ImageClip)
+    from moviepy.editor import CompositeVideoClip, ImageClip
 
-    if len(clip_paths) != len(audio_segments) or len(clip_paths) != len(scenes):
+    if len(scene_visuals) != len(audio_segments) or len(scene_visuals) != len(scenes):
         raise RuntimeError(
-            f"length mismatch: clips={len(clip_paths)} audio={len(audio_segments)} "
+            f"length mismatch: scenes={len(scene_visuals)} audio={len(audio_segments)} "
             f"scenes={len(scenes)}")
 
     os.makedirs("output/tmp", exist_ok=True)
     hook = scenes[0].get("hook") or ""
 
-    # 1) render each scene to its own temp MP4 (bounded memory)
+    # 1) render each scene → temp mp4 (fast cuts + word captions baked in)
     scene_files = []
-    for i, (clip_path, seg, scene) in enumerate(zip(clip_paths, audio_segments, scenes)):
+    for i, (visuals, seg, scene) in enumerate(zip(scene_visuals, audio_segments, scenes)):
         duration = float(seg.get("duration", 4.0)) + 0.4
-        base = _build_scene_clip(clip_path, duration)
+        narration_dur = float(seg.get("duration", 4.0))
+        visuals = visuals or ["output/tmp/none.jpg"]
+        caption_text = scene.get("caption_roman") or scene.get("caption", "")
+        emotion = scene.get("emotion", "dark")
 
-        cap_img = _caption_strip(scene.get("caption_roman") or scene.get("caption", ""),
-                                 scene.get("emotion", "dark"))
-        cap_tmp = f"output/tmp/caption_{i}.png"
-        cap_img.save(cap_tmp)
-        cap_clip = (ImageClip(cap_tmp).set_duration(duration)
-                    .set_position(("center", HEIGHT - 430)))
-        layers = [base, cap_clip]
+        layers = []
 
-        # hook overlay on scene 0 (first 2.2s)
+        # ── FAST CUTS: micro sub-clips with zoom punch ──
+        n_cuts = max(1, math.ceil(duration / CUT_SECS))
+        for c in range(n_cuts):
+            start = c * CUT_SECS
+            cdur = min(CUT_SECS, duration - start)
+            if cdur < 0.35:
+                break
+            vpath = visuals[c % len(visuals)]
+            cut = _build_scene_clip(vpath, cdur, punch=True).set_start(start)
+            layers.append(cut)
+
+        # ── USA WORD CAPTIONS ──
+        chunks = _word_chunks(caption_text)
+        times = _chunk_timing(caption_text, narration_dur)
+        for idx, (grp, (t0, t1)) in enumerate(zip(chunks, times)):
+            if t1 - t0 < 0.15:
+                continue
+            img = _caption_strip_usa(caption_text, chunks, idx, emotion)
+            cap_path = f"output/tmp/cap_{i:02d}_{idx:02d}.png"
+            img.save(cap_path)
+            layers.append(ImageClip(cap_path)
+                          .set_start(t0)
+                          .set_duration(t1 - t0)
+                          .set_position(("center", CAP_Y)))
+
+        # ── HOOK overlay (scene 0, first seconds) ──
         if i == 0 and hook:
-            hook_img = _hook_overlay(hook)
-            hook_tmp = "output/tmp/hook_overlay.png"
-            hook_img.save(hook_tmp)
-            layers.append(ImageClip(hook_tmp).set_duration(min(2.2, duration))
+            h_img = _hook_overlay_usa(hook)
+            h_path = "output/tmp/hook_overlay.png"
+            h_img.save(h_path)
+            layers.append(ImageClip(h_path).set_duration(min(HOOK_SECS, duration))
                           .set_position(("center", 0)))
 
-        # loop trick: hook re-appears at the END of the last scene
-        is_last = i == len(scenes) - 1
-        if is_last and hook and duration >= 2.0:
-            loop_dur = min(1.4, duration * 0.3)
+        # ── LOOP trick (hook re-appears at the very end) ──
+        if i == len(scenes) - 1 and hook and duration >= 2.0:
+            loop_dur = min(LOOP_SECS, duration * 0.3)
             if loop_dur >= 0.5:
-                loop_img = _hook_overlay(hook)
-                loop_tmp = "output/tmp/loop_trick.png"
-                loop_img.save(loop_tmp)
-                layers.append(ImageClip(loop_tmp).set_duration(loop_dur)
+                l_img = _hook_overlay_usa(hook)
+                l_path = "output/tmp/loop_trick.png"
+                l_img.save(l_path)
+                layers.append(ImageClip(l_path).set_duration(loop_dur)
                               .set_position(("center", 0))
                               .set_start(duration - loop_dur))
-                logger.info("Loop trick baked into scene %d (%.1fs)", i, loop_dur)
 
         scene_clip = CompositeVideoClip(layers, size=(WIDTH, HEIGHT)).set_duration(duration)
         scene_file = f"output/tmp/scene_{i:02d}.mp4"
         scene_clip.write_videofile(
             scene_file, fps=FPS, codec="libx264", audio_codec="aac", bitrate="4000k",
             ffmpeg_params=["-pix_fmt", "yuv420p"], logger=None,
-            threads=max(1, (os.cpu_count() or 2) - 1))
+            threads=VIDEO_THREADS)
         scene_files.append(scene_file)
         scene_clip.close()
-        base.close()
-        try:
-            cap_clip.close()
-        except Exception:
-            pass
+        for lyr in layers:
+            try:
+                lyr.close()
+            except Exception:
+                pass
         gc.collect()
 
-    # 2) concat scene files with ffmpeg demuxer (no MoviePy memory)
+    # 2) concat with ffmpeg demuxer
     list_file = "output/tmp/concat.txt"
     with open(list_file, "w") as fh:
         for f in scene_files:
@@ -263,7 +388,7 @@ def build_short(clip_paths: list, audio_segments: list, scenes: list,
         ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", list_file,
          "-c", "copy", silent_video], check=True, capture_output=True)
 
-    # 3) audio track (length = silent video duration)
+    # 3) audio
     dur = float(subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=nw=1:nk=1", silent_video],
@@ -283,7 +408,8 @@ def build_short(clip_paths: list, audio_segments: list, scenes: list,
             ["ffmpeg", "-y", "-i", silent_video, "-c:v", "copy",
              "-movflags", "+faststart", out_path], check=True, capture_output=True)
 
-    logger.info("🎬 Video: %s (%.1fs)", out_path, dur)
+    logger.info("🎬 Video: %s (%.1fs, %d scenes, fast cuts %.1fs + word captions)",
+                out_path, dur, len(scene_files), CUT_SECS)
     return out_path
 
 
@@ -297,17 +423,17 @@ def generate_thumbnail(first_visual: str, hook: str = "") -> str:
     if hook:
         ov = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
         d = ImageDraw.Draw(ov)
-        font = _load_font(56)
-        lines = textwrap.wrap(hook, 22)
-        box_h = 70 * len(lines) + 40
-        d.rounded_rectangle([50, 160, WIDTH - 50, 160 + box_h], radius=22,
-                            fill=(140, 10, 10, 210))
-        y = 175
+        font = _load_font(60)
+        lines = textwrap.wrap(hook, 20)
+        box_h = 76 * len(lines) + 40
+        d.rounded_rectangle([50, 150, WIDTH - 50, 150 + box_h], radius=22,
+                            fill=(150, 10, 10, 215))
+        y = 168
         for line in lines:
             w = d.textlength(line, font=font)
             d.text(((WIDTH - w) / 2, y), line, font=font, fill=(255, 255, 255, 255),
                    stroke_width=2, stroke_fill=(0, 0, 0))
-            y += 72
+            y += 78
         img = img.convert("RGBA"); img.alpha_composite(ov); img = img.convert("RGB")
 
     os.makedirs("output", exist_ok=True)
@@ -318,11 +444,11 @@ def generate_thumbnail(first_visual: str, hook: str = "") -> str:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    # offline demo: procedural visuals + silent segments
     from visuals import generate_procedural_scene
-    scenes = [{"caption": f"Scene {i} — test narration for the build.", 
-               "caption_roman": f"Scene {i} — test narration for the build.",
-               "emotion": "dark"} for i in range(4)]
-    clips = [{"path": generate_procedural_scene(i, "dark"), "source": "proc"} for i in range(4)]
-    segs = [{"path": None, "duration": 3.0, "text": s["caption"]} for s in scenes]
-    build_short([c["path"] for c in clips], segs, scenes)
+    scenes = [{"caption": f"Scene {i} — fast cut test narration for the build.",
+               "caption_roman": f"Scene {i} — fast cut test narration for the build.",
+               "emotion": "dark"} for i in range(3)]
+    visuals = [[generate_procedural_scene(i * 10 + k, "dark") for k in range(3)]
+               for i in range(3)]
+    segs = [{"path": None, "duration": 4.0, "text": s["caption"]} for s in scenes]
+    build_short(visuals, segs, scenes)
