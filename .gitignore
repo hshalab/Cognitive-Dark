@@ -2,6 +2,7 @@
 .env
 output/
 data/tmp/
+data/models/
 data/clips/
 __pycache__/
 *.pyc
