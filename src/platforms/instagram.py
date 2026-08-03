@@ -95,8 +95,8 @@ class InstagramUploader(BasePlatform):
         return container
 
     def upload(self, video_path, thumb_path, pkg, publish_at=None):
-        self.token = os.environ.get("IG_ACCESS_TOKEN", "")
-        self.ig_id = os.environ.get("IG_BUSINESS_ACCOUNT_ID", "")
+        self.token = os.environ.get("IG_ACCESS_TOKEN", "") or os.environ.get("FB_ACCESS_TOKEN", "")
+        self.ig_id = os.environ.get("IG_BUSINESS_ACCOUNT_ID", "") or os.environ.get("INSTAGRAM_USER_ID", "")
         if not self.token or not self.ig_id:
             return self._log_skipped("IG_ACCESS_TOKEN / IG_BUSINESS_ACCOUNT_ID not configured")
         if not os.path.exists(video_path):

@@ -36,8 +36,8 @@ class FacebookUploader(BasePlatform):
             logger.info("📦 DRY-RUN facebook: %s", pkg["title"])
             return self.result(True, dry_run=True, video_id="dry-run")
 
-        use_reels = os.environ.get("FB_REELS_ENDPOINT", "on").lower() != "off"
-        endpoint = "video_reels" if use_reels else "videos"
+        # Use /videos instead of /video_reels (more reliable with Page Access Token)
+        endpoint = "videos"
         url = f"{GRAPH}/{API_VERSION}/{page_id}/{endpoint}"
 
         data = {
