@@ -799,11 +799,11 @@
       "updated": "2026-08-02T13:05:30.884421+00:00"
     },
     "stoic_mind::fear_based::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884424+00:00"
+      "updated": "2026-08-03T16:13:24.244132+00:00"
     },
     "stoic_mind::curiosity_trigger::afternoon": {
       "plays": 0,
@@ -909,6 +909,13 @@
       "sum_sq": 0.0,
       "n": 2,
       "updated": "2026-08-03T16:10:40.592499+00:00"
+    },
+    "stoic_mind::fear_based::monday": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 2,
+      "updated": "2026-08-03T16:17:02.296061+00:00"
     }
   },
   "videos": [
@@ -966,6 +973,17 @@
       "source": "template",
       "run_id": "20260803T160734",
       "ts": "2026-08-03T16:10:39.174296+00:00"
+    },
+    {
+      "title": "The 5-Second Stoic Pause That Changes Everything | Dark Psychology Facts",
+      "hook": "The 5-Second Stoic Pause That Changes Everything",
+      "pillar": "stoic_mind",
+      "hook_style": "fear_based",
+      "text_sha": "744687a5c583eac6ae4937435b32eaaca8bd58d87b4a4a2fa9b9e57c56f74c61",
+      "text": "The 5-Second Stoic Pause That Changes Everything This is happening to you more often than you realize. Psychologists have studied this pattern for decades. Here's what they found. A landmark study on this pattern found it works in under ten seconds. That's faster than you can catch yourself. The moment you name it, it loses its power over you. That's why awareness is the single strongest defense. Follow Cognitive Dark to see through the patterns before they see you.",
+      "source": "template",
+      "run_id": "20260803T161324",
+      "ts": "2026-08-03T16:16:58.656991+00:00"
     }
   ],
   "penalty_log": [
@@ -986,27 +1004,39 @@
       "arm": "mind_control::curiosity_trigger::monday",
       "reason": "facebook_upload_failed",
       "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-03T16:16:59.028152+00:00",
+      "arm": "stoic_mind::fear_based::monday",
+      "reason": "youtube_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-03T16:17:02.296064+00:00",
+      "arm": "stoic_mind::fear_based::monday",
+      "reason": "facebook_upload_failed",
+      "penalty": -2.0
     }
   ],
   "reward_log": [],
   "health": {
     "youtube": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_check": "2026-08-03T16:10:39.496615+00:00",
+      "last_check": "2026-08-03T16:16:59.026655+00:00",
       "last_reason": "can't subtract offset-naive and offset-aware datetimes"
     },
     "facebook": {
-      "failures": 2,
-      "healthy": true,
+      "failures": 3,
+      "healthy": false,
       "last_reason": "400 Client Error: Bad Request for url: https://graph.facebook.com/v25.0/1047235841816723/videos",
-      "last_check": "2026-08-03T16:10:40.591048+00:00"
+      "last_check": "2026-08-03T16:17:02.294526+00:00"
     },
     "instagram": {
-      "failures": 2,
-      "healthy": true,
+      "failures": 3,
+      "healthy": false,
       "last_reason": "401 Client Error: Unauthorized for url: https://graph.instagram.com/v22.0/17841427429006050/media?access_token=EAAT9jXiZCqpsBSNggeBy9ojftsa3o4bWxAZA6ZARLoscGZCA5DxonZCxHqGZAay8eidN8tRmP6ZChmXEWHZAkTO2IY1oueGpeRc1Na9jVTNeHeNnxWEAiXcIAL70GkevZArJ6XmZCFGYx6YzVV2QhO0gQxqKJPe5dWiZBfz3W73T1PPyPpdNoopZAQGT6ZAtOWJXbqZAGPPuVBIzPoHvuJk0PSfZAZAnXw0T",
-      "last_check": "2026-08-03T16:10:40.692315+00:00"
+      "last_check": "2026-08-03T16:17:02.749877+00:00"
     }
   },
   "model_version": 2,
