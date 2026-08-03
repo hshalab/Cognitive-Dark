@@ -71,6 +71,18 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     # ── ML engine ──
     ml = LearningSystem()
 
+    # ── BRAIN ADAPTATION (War Mode) ──
+    if os.environ.get("WAR_MODE", "false").lower() == "true" and not pillar and not topic:
+        try:
+            from autonomous_brain import get_brain
+            brain = get_brain()
+            decision = brain.decide_next_video()
+            pillar = decision["pillar"]
+            topic = decision["topic"]
+            logger.info("🧠 Autonomous Brain decided: %s (%s)", topic, pillar)
+        except Exception as e:
+            logger.warning("Brain decision failed: %s", e)
+
     # ── 1. Script (ML-chosen strategy) ──
     runner = StageRunner(max_retries=2)
     script = runner.run(generate_script, "script", [], pillar_key=pillar,
