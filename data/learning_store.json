@@ -862,11 +862,11 @@
       "updated": "2026-08-02T13:05:30.884443+00:00"
     },
     "mind_control::curiosity_trigger::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884445+00:00"
+      "updated": "2026-08-03T16:07:34.686380+00:00"
     },
     "mind_control::counterintuitive::afternoon": {
       "plays": 0,
@@ -902,6 +902,13 @@
       "sum_sq": 0.0,
       "n": 1,
       "updated": "2026-08-03T15:59:39.754849+00:00"
+    },
+    "mind_control::curiosity_trigger::monday": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 2,
+      "updated": "2026-08-03T16:10:40.592499+00:00"
     }
   },
   "videos": [
@@ -948,6 +955,17 @@
       "source": "template",
       "run_id": "20260803T155704",
       "ts": "2026-08-03T15:59:38.387652+00:00"
+    },
+    {
+      "title": "How Cults Rewire Your Brain | Dark Psychology Facts",
+      "hook": "How Cults Rewire Your Brain",
+      "pillar": "mind_control",
+      "hook_style": "curiosity_trigger",
+      "text_sha": "ef1495b64efd1b1c8fbe2212229680684599284be92e6d9698abc69faffc55b8",
+      "text": "How Cults Rewire Your Brain There's a word manipulators are terrified you'll learn. Here's how it actually works. Your brain takes a mental shortcut every single time — and that shortcut is exactly what gets exploited. Research into human behavior confirms it: familiarity breeds acceptance. The more you hear something, the more true it feels. Once you recognize the pattern, you take your power back. Awareness is the only defense that actually works. Follow Cognitive Dark to see through the patterns before they see you.",
+      "source": "template",
+      "run_id": "20260803T160734",
+      "ts": "2026-08-03T16:10:39.174296+00:00"
     }
   ],
   "penalty_log": [
@@ -956,26 +974,39 @@
       "arm": "cognitive_biases::counterintuitive::monday",
       "reason": "facebook_upload_failed",
       "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-03T16:10:39.497998+00:00",
+      "arm": "mind_control::curiosity_trigger::monday",
+      "reason": "youtube_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-03T16:10:40.592503+00:00",
+      "arm": "mind_control::curiosity_trigger::monday",
+      "reason": "facebook_upload_failed",
+      "penalty": -2.0
     }
   ],
   "reward_log": [],
   "health": {
     "youtube": {
-      "failures": 0,
+      "failures": 1,
       "healthy": true,
-      "last_check": "2026-08-02T04:12:39.507371+00:00"
+      "last_check": "2026-08-03T16:10:39.496615+00:00",
+      "last_reason": "can't subtract offset-naive and offset-aware datetimes"
     },
     "facebook": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
       "last_reason": "400 Client Error: Bad Request for url: https://graph.facebook.com/v25.0/1047235841816723/videos",
-      "last_check": "2026-08-03T15:59:39.753481+00:00"
+      "last_check": "2026-08-03T16:10:40.591048+00:00"
     },
     "instagram": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
       "last_reason": "401 Client Error: Unauthorized for url: https://graph.instagram.com/v22.0/17841427429006050/media?access_token=EAAT9jXiZCqpsBSNggeBy9ojftsa3o4bWxAZA6ZARLoscGZCA5DxonZCxHqGZAay8eidN8tRmP6ZChmXEWHZAkTO2IY1oueGpeRc1Na9jVTNeHeNnxWEAiXcIAL70GkevZArJ6XmZCFGYx6YzVV2QhO0gQxqKJPe5dWiZBfz3W73T1PPyPpdNoopZAQGT6ZAtOWJXbqZAGPPuVBIzPoHvuJk0PSfZAZAnXw0T",
-      "last_check": "2026-08-03T15:59:39.927228+00:00"
+      "last_check": "2026-08-03T16:10:40.692315+00:00"
     }
   },
   "model_version": 2,
