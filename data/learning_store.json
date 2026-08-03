@@ -883,11 +883,11 @@
       "updated": "2026-08-02T13:05:30.884452+00:00"
     },
     "mind_control::stoic_echo::afternoon": {
-      "plays": 1,
+      "plays": 2,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-03T13:02:40.684251+00:00"
+      "updated": "2026-08-03T16:26:24.400736+00:00"
     },
     "mind_control::red_flag_checklist::afternoon": {
       "plays": 0,
@@ -984,6 +984,17 @@
       "source": "template",
       "run_id": "20260803T161324",
       "ts": "2026-08-03T16:16:58.656991+00:00"
+    },
+    {
+      "title": "The Stanford Prison Experiment Explained | Dark Psychology Facts",
+      "hook": "The Stanford Prison Experiment Explained",
+      "pillar": "mind_control",
+      "hook_style": "stoic_echo",
+      "text_sha": "61ee6abfb55e83be36bb42e2e9e29588c4e103a2a5301f9a8fde397b9377e0cf",
+      "text": "The Stanford Prison Experiment Explained Even Marcus Aurelius warned against what you accept daily. Here's how it actually works. Your brain takes a mental shortcut every single time — and that shortcut is exactly what gets exploited. A landmark study on this pattern found it works in under ten seconds. That's faster than you can catch yourself. Once you recognize the pattern, you take your power back. Awareness is the only defense that actually works. Follow Cognitive Dark for the psychology they don't teach you in school.",
+      "source": "template",
+      "run_id": "20260803T162624",
+      "ts": "2026-08-03T16:27:32.460206+00:00"
     }
   ],
   "penalty_log": [
