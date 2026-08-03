@@ -414,7 +414,15 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
 
 
 def generate_thumbnail(first_visual: str, hook: str = "") -> str:
-    img = Image.open(first_visual).convert("RGB").resize((WIDTH, HEIGHT))
+    if first_visual.lower().endswith((".mp4", ".mov", ".avi")):
+        # Extract first frame from video
+        from moviepy.editor import VideoFileClip
+        clip = VideoFileClip(first_visual)
+        frame = clip.get_frame(0)
+        img = Image.fromarray(frame).convert("RGB").resize((WIDTH, HEIGHT))
+        clip.close()
+    else:
+        img = Image.open(first_visual).convert("RGB").resize((WIDTH, HEIGHT))
     arr = np.asarray(img).astype(np.float32)
     arr *= 0.7
     arr = (arr - 128.0) * 1.2 + 118.0
