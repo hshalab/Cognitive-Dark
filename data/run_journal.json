@@ -1,11 +1,10 @@
 {
   "current": {
-    "run_id": "20260803T130240",
+    "run_id": "20260803T151749",
     "kind": "short_pipeline",
-    "started": "2026-08-03T13:02:40.664100+00:00",
-    "status": "success",
-    "finished": "2026-08-03T13:03:44.092687+00:00",
-    "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
+    "started": "2026-08-03T15:17:49.601764+00:00",
+    "status": "crashed",
+    "error": "cannot identify image file '/home/runner/work/Cognitive-Dark/Cognitive-Dark/data/clips/pixabay_328740_3840x2160.mp4'"
   },
   "history": [
     {
@@ -37,6 +36,12 @@
       "status": "success",
       "finished": "2026-08-03T13:03:44.092687+00:00",
       "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
+    },
+    {
+      "run_id": "20260803T151749",
+      "kind": "short_pipeline",
+      "started": "2026-08-03T15:17:49.601764+00:00",
+      "status": "repaired"
     }
   ]
 }
