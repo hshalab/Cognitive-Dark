@@ -62,14 +62,19 @@ jobs:
           PLATFORMS: ${{ inputs.platforms || 'youtube,facebook,instagram' }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
-          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
-          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
-          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
-          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
           TTS_PRIMARY: "onnx"
           KOKORO_VOICE: "am_fenrir"
           KOKORO_MODEL_DIR: "data/models/kokoro"
@@ -98,11 +103,13 @@ jobs:
           pip install -q -r requirements.txt google-api-python-client google-auth-oauthlib
       - name: Fetch metrics & update ML
         env:
-          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
-          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
-          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
-          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID }}
         run: python scripts/fetch_metrics.py || echo "Metrics sync completed with warnings"
       - name: Commit metrics
         run: |

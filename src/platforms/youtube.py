@@ -22,21 +22,42 @@ logger = logging.getLogger("youtube")
 
 
 def _resolve_credentials() -> tuple:
-    """Return (creds, is_path). Raises if unusable."""
+    """Return (creds, is_path). Supports both old JSON and new OAuth env vars."""
     raw = os.environ.get("YOUTUBE_CREDENTIALS", "")
+
+    # New way: separate OAuth secrets (tumhare secrets ke hisaab se)
+    client_id = os.environ.get("GOOGLE_CLIENT_ID")
+    client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+    refresh_token = os.environ.get("REFRESH_TOKEN")
+
+    if client_id and client_secret and refresh_token:
+        creds_dict = {
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "refresh_token": refresh_token,
+            "token": os.environ.get("YOUTUBE_API_KEY", "")
+        }
+        tmp = os.path.join(tempfile.gettempdir(), "yt_oauth_creds.json")
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(creds_dict, fh)
+        logger.info("Using OAuth credentials from separate secrets")
+        return tmp, False
+
+    # Old way
     if not raw:
         return None, False
-    if os.path.exists(raw):                      # path to JSON file
+    if os.path.exists(raw):
         return raw, True
-    # assume raw JSON string → write to temp file
-    data = json.loads(raw)
-    if not isinstance(data, dict):
-        raise ValueError("YOUTUBE_CREDENTIALS must be a JSON object or file path")
-    tmp = os.path.join(tempfile.gettempdir(), "yt_credentials.json")
-    with open(tmp, "w", encoding="utf-8") as fh:
-        json.dump(data, fh)
-    logger.info("YOUTUBE_CREDENTIALS was JSON text → written to %s", tmp)
-    return tmp, False
+    try:
+        data = json.loads(raw)
+        if not isinstance(data, dict):
+            raise ValueError("YOUTUBE_CREDENTIALS must be a JSON object")
+        tmp = os.path.join(tempfile.gettempdir(), "yt_credentials.json")
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(data, fh)
+        return tmp, False
+    except Exception:
+        return None, False
 
 
 class YouTubeUploader(BasePlatform):
