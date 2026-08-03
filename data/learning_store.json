@@ -638,11 +638,11 @@
       "updated": "2026-08-02T13:05:30.884357+00:00"
     },
     "body_language::curiosity_trigger::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884360+00:00"
+      "updated": "2026-08-03T16:31:37.872258+00:00"
     },
     "body_language::counterintuitive::afternoon": {
       "plays": 0,
@@ -995,6 +995,17 @@
       "source": "template",
       "run_id": "20260803T162624",
       "ts": "2026-08-03T16:27:32.460206+00:00"
+    },
+    {
+      "title": "The Micro-Expression That Exposes a Liar | Dark Psychology Facts",
+      "hook": "The Micro-Expression That Exposes a Liar",
+      "pillar": "body_language",
+      "hook_style": "curiosity_trigger",
+      "text_sha": "38ed24b6bb6cb6b66d8be32ce4828f8f8a8e3cf233b44150dcc021af1e07fcc4",
+      "text": "The Micro-Expression That Exposes a Liar There's a word manipulators are terrified you'll learn. Before you dismiss this, consider how often it's already happened to you. A landmark study on this pattern found it works in under ten seconds. That's faster than you can catch yourself. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow Cognitive Dark for the psychology they don't teach you in school.",
+      "source": "template",
+      "run_id": "20260803T163137",
+      "ts": "2026-08-03T16:34:51.188349+00:00"
     }
   ],
   "penalty_log": [
@@ -1032,9 +1043,9 @@
   "reward_log": [],
   "health": {
     "youtube": {
-      "failures": 2,
-      "healthy": true,
-      "last_check": "2026-08-03T16:16:59.026655+00:00",
+      "failures": 3,
+      "healthy": false,
+      "last_check": "2026-08-03T16:34:51.532152+00:00",
       "last_reason": "can't subtract offset-naive and offset-aware datetimes"
     },
     "facebook": {
