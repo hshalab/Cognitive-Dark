@@ -916,6 +916,454 @@
       "sum_sq": 0.0,
       "n": 2,
       "updated": "2026-08-03T16:17:02.296061+00:00"
+    },
+    "self_defense::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949793+00:00"
+    },
+    "self_defense::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949803+00:00"
+    },
+    "self_defense::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949807+00:00"
+    },
+    "self_defense::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949810+00:00"
+    },
+    "self_defense::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949816+00:00"
+    },
+    "self_defense::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949819+00:00"
+    },
+    "self_defense::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949822+00:00"
+    },
+    "self_defense::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949829+00:00"
+    },
+    "influence::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949835+00:00"
+    },
+    "influence::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949838+00:00"
+    },
+    "influence::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949841+00:00"
+    },
+    "influence::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949844+00:00"
+    },
+    "influence::counterintuitive::evening": {
+      "plays": 1,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950034+00:00"
+    },
+    "influence::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949852+00:00"
+    },
+    "influence::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949855+00:00"
+    },
+    "influence::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949857+00:00"
+    },
+    "dark_triad::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949860+00:00"
+    },
+    "dark_triad::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949887+00:00"
+    },
+    "dark_triad::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949892+00:00"
+    },
+    "dark_triad::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949897+00:00"
+    },
+    "dark_triad::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949902+00:00"
+    },
+    "dark_triad::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949906+00:00"
+    },
+    "dark_triad::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949910+00:00"
+    },
+    "dark_triad::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949913+00:00"
+    },
+    "body_language::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949916+00:00"
+    },
+    "body_language::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949918+00:00"
+    },
+    "body_language::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949921+00:00"
+    },
+    "body_language::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949923+00:00"
+    },
+    "body_language::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949926+00:00"
+    },
+    "body_language::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949931+00:00"
+    },
+    "body_language::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949933+00:00"
+    },
+    "body_language::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949935+00:00"
+    },
+    "cognitive_biases::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949938+00:00"
+    },
+    "cognitive_biases::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949941+00:00"
+    },
+    "cognitive_biases::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949943+00:00"
+    },
+    "cognitive_biases::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949946+00:00"
+    },
+    "cognitive_biases::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949951+00:00"
+    },
+    "cognitive_biases::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949953+00:00"
+    },
+    "cognitive_biases::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949955+00:00"
+    },
+    "cognitive_biases::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949958+00:00"
+    },
+    "red_flags::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949962+00:00"
+    },
+    "red_flags::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949965+00:00"
+    },
+    "red_flags::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949967+00:00"
+    },
+    "red_flags::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949970+00:00"
+    },
+    "red_flags::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949974+00:00"
+    },
+    "red_flags::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949977+00:00"
+    },
+    "red_flags::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949979+00:00"
+    },
+    "red_flags::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949981+00:00"
+    },
+    "stoic_mind::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949984+00:00"
+    },
+    "stoic_mind::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949989+00:00"
+    },
+    "stoic_mind::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949991+00:00"
+    },
+    "stoic_mind::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949993+00:00"
+    },
+    "stoic_mind::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949996+00:00"
+    },
+    "stoic_mind::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.949999+00:00"
+    },
+    "stoic_mind::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950001+00:00"
+    },
+    "stoic_mind::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950003+00:00"
+    },
+    "mind_control::pattern_interrupt::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950006+00:00"
+    },
+    "mind_control::knowledge_gap::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950008+00:00"
+    },
+    "mind_control::fear_based::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950011+00:00"
+    },
+    "mind_control::curiosity_trigger::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950016+00:00"
+    },
+    "mind_control::counterintuitive::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950018+00:00"
+    },
+    "mind_control::dark_revelation::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950020+00:00"
+    },
+    "mind_control::stoic_echo::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950023+00:00"
+    },
+    "mind_control::red_flag_checklist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-03T18:51:21.950025+00:00"
     }
   },
   "videos": [
@@ -1006,6 +1454,17 @@
       "source": "template",
       "run_id": "20260803T163137",
       "ts": "2026-08-03T16:34:51.188349+00:00"
+    },
+    {
+      "title": "The Anchoring Trick Used on You Every Day | Dark Psychology Facts",
+      "hook": "The Anchoring Trick Used on You Every Day",
+      "pillar": "influence",
+      "hook_style": "counterintuitive",
+      "text_sha": "5cf2018a70225bbd13e19e7b710e5b82e13a1e3d1dc91a47c727a44d59593611",
+      "text": "The Anchoring Trick Used on You Every Day The trait you think is kindness is actually your weakness. You've felt it before — that quiet discomfort you couldn't explain. Here's what it was. Psychologists call this a cognitive bias. Once you see it, you can't unsee it. Studies show it shapes decisions you make every hour. Here's the twist — the people who use it often don't know they're doing it. It's learned behavior, passed down and repeated. Follow Cognitive Dark for the psychology they don't teach you in school.",
+      "source": "template",
+      "run_id": "20260803T185121",
+      "ts": "2026-08-03T18:54:53.431748+00:00"
     }
   ],
   "penalty_log": [
