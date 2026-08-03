@@ -883,11 +883,11 @@
       "updated": "2026-08-02T13:05:30.884452+00:00"
     },
     "mind_control::stoic_echo::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884454+00:00"
+      "updated": "2026-08-03T13:02:40.684251+00:00"
     },
     "mind_control::red_flag_checklist::afternoon": {
       "plays": 0,
@@ -919,6 +919,17 @@
       "source": "template",
       "run_id": "20260802T130530",
       "ts": "2026-08-02T13:09:34.585151+00:00"
+    },
+    {
+      "title": "The Milgram Experiment: Would You Obey? | Dark Psychology Facts",
+      "hook": "The Milgram Experiment: Would You Obey?",
+      "pillar": "mind_control",
+      "hook_style": "stoic_echo",
+      "text_sha": "eb27da2ae6bcf9bee97e7189307e79a395f59247f1ab1c01697d914a8acc3298",
+      "text": "The Milgram Experiment: Would You Obey? Even Marcus Aurelius warned against what you accept daily. There's a reason this works on nearly everyone. It's wired into how we think. Psychologists call this a cognitive bias. Once you see it, you can't unsee it. Studies show it shapes decisions you make every hour. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow for more psychology that protects you.",
+      "source": "template",
+      "run_id": "20260803T130240",
+      "ts": "2026-08-03T13:03:44.090471+00:00"
     }
   ],
   "penalty_log": [],
