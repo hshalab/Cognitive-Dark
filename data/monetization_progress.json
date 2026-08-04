@@ -11,20 +11,24 @@
     "daily_targets": {
       "subs": 33,
       "shorts_views": 333333
-    }
+    },
+    "views": 81,
+    "videos": 31,
+    "last_growth": 0
   },
   "facebook": {
-    "followers": 523,
+    "followers": 513,
     "minutes_60d": 0,
     "uploads_30d": 0,
     "pct": {
-      "followers": 10.5,
+      "followers": 10.3,
       "minutes": 0.0
     },
     "daily_targets": {
       "followers": 149,
       "minutes": 2000
-    }
+    },
+    "last_growth": -10
   },
   "instagram": {
     "followers": 1,
@@ -37,5 +41,9 @@
       "followers": 16
     }
   },
+<<<<<<< Updated upstream
   "last_updated": "2026-08-04T20:13:37.787440+00:00"
+=======
+  "last_updated": "2026-08-04T20:14:09.574393+00:00"
+>>>>>>> Stashed changes
 }
