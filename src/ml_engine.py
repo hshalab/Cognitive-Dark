@@ -371,14 +371,45 @@ class LearningSystem:
         self.save()
 
     # ── platform health (auto-repair integration) ──
+    @staticmethod
+    def _sanitize_reason(reason: str) -> str:
+        """V2.1 SECURITY: never persist tokens/secrets inside error reasons.
+
+        V2 stored raw exception URLs (including ?access_token=...) into the
+        committed learning store — a live-token leak in a public repo.
+        """
+        import re as _re
+        reason = _re.sub(r"access_token=[^&\s\"']+", "access_token=***", reason or "")
+        reason = _re.sub(r"(EA[A-Za-z0-9]{20,})", "***", reason)
+        reason = _re.sub(r"(ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]+)", "***", reason)
+        return reason[:400]
+
     def platform_healthy(self, platform: str) -> bool:
         h = self.data["health"].get(platform, {})
-        return h.get("healthy", True) and h.get("failures", 0) < 3
+        # V2.1: quarantines AUTO-EXPIRE after 24h. V2 had a deadlock: old
+        # failures quarantined a platform forever — uploads were skipped, so
+        # no success could ever heal it. Now stale quarantines release and the
+        # platform gets retried (failures re-quarantine it if still broken).
+        if not h.get("healthy", True) or h.get("failures", 0) >= 3:
+            try:
+                last = datetime.fromisoformat(h.get("last_check", ""))
+                age_h = (datetime.now(timezone.utc) - last).total_seconds() / 3600
+            except (ValueError, TypeError):
+                age_h = 999
+            if age_h > 24:
+                logger.info("🩹 %s quarantine expired (%.0fh old) — retrying", platform, age_h)
+                h["healthy"] = True
+                h["failures"] = 0
+                self.data["health"][platform] = h
+                self.save()
+            else:
+                return False
+        return True
 
     def report_failure(self, platform: str, reason: str) -> None:
         h = self.data["health"].setdefault(platform, {"failures": 0, "healthy": True})
         h["failures"] = h.get("failures", 0) + 1
-        h["last_reason"] = reason
+        h["last_reason"] = self._sanitize_reason(reason)
         h["last_check"] = _now_iso()
         if h["failures"] >= 3:
             h["healthy"] = False

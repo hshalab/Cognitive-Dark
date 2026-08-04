@@ -1618,26 +1618,7 @@
     }
   ],
   "reward_log": [],
-  "health": {
-    "youtube": {
-      "failures": 3,
-      "healthy": false,
-      "last_check": "2026-08-03T16:34:51.532152+00:00",
-      "last_reason": "can't subtract offset-naive and offset-aware datetimes"
-    },
-    "facebook": {
-      "failures": 3,
-      "healthy": false,
-      "last_reason": "400 Client Error: Bad Request for url: https://graph.facebook.com/v25.0/1047235841816723/videos",
-      "last_check": "2026-08-03T16:17:02.294526+00:00"
-    },
-    "instagram": {
-      "failures": 3,
-      "healthy": false,
-      "last_reason": "401 Client Error: Unauthorized for url: https://graph.instagram.com/v22.0/17841427429006050/media?access_token=EAAT9jXiZCqpsBSNggeBy9ojftsa3o4bWxAZA6ZARLoscGZCA5DxonZCxHqGZAay8eidN8tRmP6ZChmXEWHZAkTO2IY1oueGpeRc1Na9jVTNeHeNnxWEAiXcIAL70GkevZArJ6XmZCFGYx6YzVV2QhO0gQxqKJPe5dWiZBfz3W73T1PPyPpdNoopZAQGT6ZAtOWJXbqZAGPPuVBIzPoHvuJk0PSfZAZAnXw0T",
-      "last_check": "2026-08-03T16:17:02.749877+00:00"
-    }
-  },
+  "health": {},
   "model_version": 2,
   "created_at": "2026-08-02T04:10:58.084531+00:00",
   "attribution": {},

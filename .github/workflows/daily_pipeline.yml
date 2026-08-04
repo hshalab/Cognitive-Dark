@@ -90,7 +90,7 @@ jobs:
         run: |
           git config user.name "Cognitive Dark Bot"
           git config user.email "bot@cognitivedark.local"
-          git pull --rebase origin "$GITHUB_REF_NAME" || true
+          git pull --rebase --autostash origin "$GITHUB_REF_NAME" || true
           git add -f data/learning_store.json data/run_journal.json data/monetization_progress.json 2>/dev/null || true
           git diff --cached --quiet || (git commit -m "🤖 Update ML learning store + journal [skip ci]" && git push)
         continue-on-error: true
@@ -124,7 +124,7 @@ jobs:
         run: |
           git config user.name "Cognitive Dark Bot"
           git config user.email "bot@cognitivedark.local"
-          git pull --rebase origin "$GITHUB_REF_NAME" || true
+          git pull --rebase --autostash origin "$GITHUB_REF_NAME" || true
           git add -f data/*.json data/metrics_report.md 2>/dev/null || true
           git diff --cached --quiet || (git commit -m "📊 Sync metrics [skip ci]" && git push)
         continue-on-error: true
