@@ -519,11 +519,11 @@
       "updated": "2026-08-02T13:05:30.884310+00:00"
     },
     "influence::fear_based::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884313+00:00"
+      "updated": "2026-08-04T16:13:09.723758+00:00"
     },
     "influence::curiosity_trigger::afternoon": {
       "plays": 0,
@@ -1520,6 +1520,17 @@
       "source": "template",
       "run_id": "20260804T143157",
       "ts": "2026-08-04T14:34:10.714118+00:00"
+    },
+    {
+      "title": "Why Your Brain Decides Before You Do | Dark Psychology Facts",
+      "hook": "Why Your Brain Decides Before You Do",
+      "pillar": "influence",
+      "hook_style": "fear_based",
+      "text_sha": "c0e5de8041d8be851c7fe5805a9b11a69bc55f2c316ce273e1b70a3bac768899",
+      "text": "Why Your Brain Decides Before You Do This is happening to you more often than you realize. Here's how it actually works. Your brain takes a mental shortcut every single time — and that shortcut is exactly what gets exploited. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. The moment you name it, it loses its power over you. That's why awareness is the single strongest defense. Follow Cognitive Dark — the dark side of the human mind, decoded daily.",
+      "source": "template",
+      "run_id": "20260804T161309",
+      "ts": "2026-08-04T16:14:20.850767+00:00"
     }
   ],
   "penalty_log": [
