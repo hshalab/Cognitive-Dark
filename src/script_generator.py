@@ -19,7 +19,6 @@ import os
 import random
 import re
 import sys
-import time
 import urllib.request
 import urllib.parse
 from pathlib import Path
@@ -219,15 +218,21 @@ def generate_script(pillar_key: str = None, hook_style: str = None,
                     ml: LearningSystem = None, topic: str = None) -> dict:
     """Generate one short-form script (45-58s)."""
     # ── strategy selection (ML-informed) ──
+    arm_key = None
     if ml is not None and not pillar_key:
         chosen = ml.choose_strategy()
         pillar = next(p for p in PILLARS if p["key"] == chosen["pillar"])
         hook_style = hook_style or chosen["hook_style"]
+        arm_key = chosen["arm_key"]   # V2.1: exact arm travels with the script
     else:
         pillar = next((p for p in PILLARS if p["key"] == pillar_key), None)
         if pillar is None:
             pillar = random.choice(PILLARS)
         hook_style = hook_style or random.choice(HOOK_STYLES)
+        if ml is not None:
+            # forced pillar — still attribute to a consistent arm key
+            from ml_engine import current_day_part
+            arm_key = ml.arm_key(pillar["key"], hook_style, current_day_part())
 
     # ── ML insights fed back into the prompt (closing the learning loop) ──
     learned_hint = ""
@@ -268,6 +273,8 @@ Write it now — valid JSON only."""
     script["pillar"] = pillar["key"]
     script["pillar_name"] = pillar["name"]
     script["hook_style"] = hook_style
+    script["arm_key"] = arm_key or LearningSystem.arm_key(
+        pillar["key"], hook_style, "any")
     script.setdefault("tags", pillar["tags"][:10])
     return script
 

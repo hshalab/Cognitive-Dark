@@ -48,20 +48,28 @@ CHAPTER_TEMPLATE = """⏱ CHAPTERS:
 00:28 How To Protect Yourself"""
 
 
+def _title_case_word(w: str, first: bool, stop: set) -> str:
+    # Preserve acronyms (FBI, CIA, MKUltra) — all-caps tokens stay as-is
+    if w.isupper() and len(w) >= 2:
+        return w
+    if first or w.lower() not in stop:
+        return w.capitalize()
+    return w.lower()
+
+
 def _power_title(hook: str, max_len: int = 70) -> str:
     """USA-style title: hook-first, Title Case, keyword density, ≤ max_len."""
     t = hook.strip()
     # strip trailing punctuation for cleaner titles
-    t = t.rstrip("?!.")
-    words = t.split()
-    if len(words) <= 4 and random.random() < 0.5:
+    t = t.rstrip("?!.").strip()
+    if len(t.split()) <= 4 and random.random() < 0.5:
         t = f"{t}: {random.choice(POWER_WORDS)}"
-    # Title Case (keep short connectors lowercase)
+    # V2.1 FIX: rebuild words AFTER the power-word append (V2 used the stale
+    # pre-append list, so the power word silently never appeared).
+    words = t.split()
     stop = {"a", "an", "the", "and", "or", "but", "of", "to", "in", "on", "for",
             "with", "at", "by", "is", "are", "you", "your", "it", "its"}
-    tt = " ".join(
-        w.capitalize() if (i == 0 or w.lower() not in stop) else w.lower()
-        for i, w in enumerate(words))
+    tt = " ".join(_title_case_word(w, i == 0, stop) for i, w in enumerate(words))
     return tt[:max_len]
 
 
@@ -154,7 +162,7 @@ def build_platform_package(script: dict, platform: str) -> dict:
 
 
 if __name__ == "__main__":
-    import json, sys
+    import sys
     sys.path.insert(0, "src")
     from script_generator import generate_script
     s = generate_script()

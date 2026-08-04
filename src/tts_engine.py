@@ -18,8 +18,6 @@ import logging
 import os
 import shutil
 import subprocess
-import sys
-import time
 import urllib.request
 from pathlib import Path
 
@@ -31,7 +29,9 @@ VOICES_URL = ("https://github.com/thewh1teagle/kokoro-onnx/releases/download/"
               "model-files-v1.0/voices-v1.0.bin")
 
 KOKORO_VOICE = os.environ.get("KOKORO_VOICE", "am_fenrir")
-KOKORO_SPEED = float(os.environ.get("KOKORO_SPEED", "0.98"))
+# V2.1: default matches config.settings / README USA-style 1.08x (V2 drifted
+# to 0.98x here → narration sounded slow & low-energy unless env was set).
+KOKORO_SPEED = float(os.environ.get("KOKORO_SPEED", "1.08"))
 KOKORO_MODEL_DIR = Path(os.environ.get("KOKORO_MODEL_DIR", "data/models/kokoro"))
 
 
@@ -83,13 +83,21 @@ def _kokoro_onnx_tts(text: str, out_path: str) -> float:
 
 
 # ── Kokoro (full torch pipeline, optional) ───────────────────
+_kokoro_torch_pipe = None
+
+
 def _kokoro_torch_tts(text: str, out_path: str) -> float:
+    global _kokoro_torch_pipe
     import soundfile as sf
     from kokoro import KPipeline  # full package (heavier: torch+spacy)
 
-    pipe = KPipeline(lang_code="a")
+    # V2.1: cache the pipeline. V2 rebuilt KPipeline on EVERY scene (reloading
+    # the model + spacy each time) → minutes of wasted time per video.
+    if _kokoro_torch_pipe is None:
+        _kokoro_torch_pipe = KPipeline(lang_code="a")
     parts = []
-    for gs, ps, audio in pipe(text, voice=KOKORO_VOICE, speed=KOKORO_SPEED):
+    for gs, ps, audio in _kokoro_torch_pipe(text, voice=KOKORO_VOICE,
+                                            speed=KOKORO_SPEED):
         parts.append(audio)
     import numpy as np
     full = np.concatenate(parts)
@@ -150,8 +158,9 @@ def _duration(wav: str) -> float:
 # ── Public API ───────────────────────────────────────────────
 def release_tts() -> None:
     """Free the Kokoro model from RAM before heavy stages (video render)."""
-    global _kokoro_pipe
+    global _kokoro_pipe, _kokoro_torch_pipe
     _kokoro_pipe = None
+    _kokoro_torch_pipe = None
     import gc
     gc.collect()
     logger.info("🧹 TTS resources released")

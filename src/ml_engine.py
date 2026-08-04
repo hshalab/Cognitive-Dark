@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — ML Learning Engine.
+Cognitive Dark V2.1 — ML Learning Engine (advanced).
 
 A lightweight online-learning system that makes the pipeline smarter over time:
 
   • Strategy selection  — UCB1 multi-armed bandit over
-    (pillar × hook_style × day-part) arms. Explores when uncertain,
-    exploits the best-performing content formulas once evidence exists.
-  • Reward / penalty    — strong output (high retention, engagement, views)
-    ADDS reward to the arm that produced it; mistakes (upload failures,
-    spam flags, very low retention) PENALIZE the responsible arm. The system
-    literally learns from its mistakes.
-  • Dedup & variation   — 0% spam-detection goal: never re-post the same
-    script/hook, and enforce a minimum textual variation against recent
-    posts so the feed looks human & native.
-  • Platform health     — consecutive failures quarantine a platform until
-    it recovers; ML consults health before scheduling.
+    (pillar × hook_style × day-part) arms, with recency decay so stale
+    formulas get re-tested. Explores when uncertain, exploits winners.
+  • Reward / penalty    — strong output ADDS reward to the EXACT arm that
+    produced it; mistakes PENALIZE that same arm. V2.1 fixes the V2 bug
+    where rewards/penalties landed on different arm keys than the one
+    chosen — the bandit actually learns in production now.
+  • Per-video attribution — every uploaded video_id is mapped to its arm,
+    so real analytics (views/likes/comments) credit the exact formula.
+  • Post-volume guards    — daily caps + minimum gap per platform
+    (2026 algorithm: consistency beats bursts; bursts trigger spam signals).
+  • Dedup & variation     — never re-post the same script/hook, and enforce
+    minimum textual variation vs recent posts (native, human-like feed).
+  • Platform health       — consecutive failures quarantine a platform;
+    success heals it automatically.
 
 Persistence: `data/learning_store.json` is committed back to the repo by the
-CI workflow so learning survives across GitHub Actions runs.
+CI workflow so learning survives across GitHub Actions runs. Every mutating
+operation auto-saves (V2 lost end-of-run rewards because save() was skipped).
 """
 
 import hashlib
@@ -28,11 +32,10 @@ import math
 import os
 import random
 import re
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from config.settings import LEARNING, ML_STORE_PATH, DATA_DIR, PILLARS, HOOK_STYLES
+from config.settings import LEARNING, ML_STORE_PATH, PILLARS, HOOK_STYLES
 
 logger = logging.getLogger("ml_engine")
 
@@ -63,11 +66,17 @@ def token_overlap(a: str, b: str) -> float:
     return len(ta & tb) / max(1.0, len(ta | tb))
 
 
+def current_day_part() -> str:
+    """morning / afternoon / evening (UTC) — shared by selection & fallback keys."""
+    hour = datetime.now(timezone.utc).hour
+    return "morning" if hour < 12 else ("afternoon" if hour < 17 else "evening")
+
+
 # ─────────────────────────────────────────────────────────────
 # LearningSystem
 # ─────────────────────────────────────────────────────────────
 class LearningSystem:
-    """Online learning core: UCB1 bandit + reward/penalty + dedup + health."""
+    """Online learning core: UCB1 bandit + attribution + guards + health."""
 
     def __init__(self, store_path: Path = None, cfg: dict = None):
         self.store_path = Path(store_path or ML_STORE_PATH)
@@ -94,10 +103,12 @@ class LearningSystem:
         d = self.data
         d.setdefault("arms", {})            # arm_key -> stats
         d.setdefault("videos", [])          # history of generated posts
+        d.setdefault("attribution", {})     # video_id -> {arm_key, platform, ts, credited}
+        d.setdefault("post_log", {})        # date -> {platform: {count, last_ts}}
         d.setdefault("penalty_log", [])
         d.setdefault("reward_log", [])
         d.setdefault("health", {})          # platform -> {failures, healthy, last_check}
-        d.setdefault("model_version", 2)
+        d.setdefault("model_version", 3)
         d.setdefault("created_at", _now_iso())
 
     # ── arm management ──
@@ -111,6 +122,15 @@ class LearningSystem:
         })
         return arm
 
+    def recent_arm_keys(self, n: int = 6) -> list:
+        """Arm keys of the last n registered videos (recency weighting input)."""
+        keys = []
+        for v in reversed(self.data["videos"][-n:]):
+            k = v.get("arm_key")
+            if k:
+                keys.append(k)
+        return keys
+
     # ── UCB1 selection ──
     def choose_strategy(self, recent_keys: list = None) -> dict:
         """Pick (pillar, hook_style, day_part) via UCB1 with epsilon exploration.
@@ -118,10 +138,10 @@ class LearningSystem:
         Arms with no evidence are explored first; ties broken randomly;
         recently-used arms are down-weighted to keep the feed varied.
         """
-        recent_keys = set(recent_keys or [])
-        now = datetime.now(timezone.utc)
-        hour = now.hour
-        day_part = "morning" if hour < 12 else ("afternoon" if hour < 17 else "evening")
+        if recent_keys is None:
+            recent_keys = self.recent_arm_keys()
+        recent_keys = set(recent_keys)
+        day_part = current_day_part()
 
         total_plays = sum(a["plays"] for a in self.data["arms"].values()) or 1
         epsilon = self.cfg["epsilon"]
@@ -145,6 +165,7 @@ class LearningSystem:
         score, key, arm, pillar, style, dp = chosen
         arm["plays"] += 1
         arm["updated"] = _now_iso()
+        self.save()
 
         return {
             "arm_key": key, "pillar": pillar, "hook_style": style,
@@ -160,9 +181,16 @@ class LearningSystem:
         mean = arm["rewards"] / n
         # Upper Confidence Bound (UCB1)
         explore = math.sqrt(2.0 * math.log(max(2, total_plays)) / n)
-        return mean + explore
+        # V2.1 recency decay: formulas silent for weeks get re-tested
+        try:
+            age_days = (datetime.now(timezone.utc) -
+                        datetime.fromisoformat(arm["updated"])).total_seconds() / 86400
+            decay = 0.97 ** max(0.0, age_days - 14)
+        except (ValueError, KeyError):
+            decay = 1.0
+        return (mean + explore) * decay
 
-    # ── reward / penalty ──
+    # ── reward / penalty (auto-persisted since V2.1) ──
     def record_outcome(self, arm_key: str, reward: float) -> None:
         """Push a real outcome into the arm's distribution (UCB update)."""
         arm = self._arm(arm_key)
@@ -174,6 +202,7 @@ class LearningSystem:
             "ts": _now_iso(), "arm": arm_key, "reward": round(reward, 4),
         })
         self._trim("reward_log")
+        self.save()
 
     def apply_penalty(self, arm_key: str, reason: str, weight: float = None) -> float:
         """Penalize the arm behind a mistake (failure / low retention / spam flag)."""
@@ -186,6 +215,7 @@ class LearningSystem:
             "ts": _now_iso(), "arm": arm_key, "reason": reason, "penalty": w,
         })
         self._trim("penalty_log")
+        self.save()
         logger.info("PENALTY applied %s → %s (%.1f)", reason, arm_key, w)
         return w
 
@@ -200,6 +230,7 @@ class LearningSystem:
             "ts": _now_iso(), "arm": arm_key, "reason": reason, "reward": w,
         })
         self._trim("reward_log")
+        self.save()
         logger.info("REWARD applied %s → %s (%.1f)", reason, arm_key, w)
         return w
 
@@ -232,7 +263,84 @@ class LearningSystem:
             r += cfg["bonus_viral"] / 3.0
         return round(min(5.0, r * 3.0), 3)
 
-    # ── dedup & variation (0% spam-detection goal) ──
+    # ── per-video attribution (closes the learning loop) ──
+    def record_video_id(self, platform: str, video_id: str, arm_key: str,
+                        title: str = "") -> None:
+        """Map a published video to its arm so analytics credit the formula."""
+        if not video_id:
+            return
+        self.data["attribution"][str(video_id)] = {
+            "arm_key": arm_key, "platform": platform, "title": title,
+            "ts": _now_iso(), "credited": False,
+        }
+        # keep attribution bounded
+        if len(self.data["attribution"]) > 500:
+            oldest = sorted(self.data["attribution"].items(),
+                            key=lambda kv: kv[1].get("ts", ""))[:-500]
+            for k, _ in oldest:
+                del self.data["attribution"][k]
+        self.save()
+        logger.info("🔗 Attributed %s:%s → %s", platform, video_id, arm_key)
+
+    def pending_video_ids(self, platform: str = None) -> list:
+        """Uncredited video ids (optionally filtered by platform)."""
+        return [vid for vid, a in self.data["attribution"].items()
+                if not a.get("credited") and (platform is None or a["platform"] == platform)]
+
+    def credit_video(self, video_id: str, metrics: dict) -> float:
+        """Convert real analytics for one video into a reward on its arm."""
+        vid = str(video_id)
+        a = self.data["attribution"].get(vid)
+        if not a or a.get("credited"):
+            return 0.0
+        reward = self.reward_from_metrics(metrics)
+        a["credited"] = True
+        a["metrics"] = metrics
+        a["credited_at"] = _now_iso()
+        if reward > 0:
+            self.apply_reward(a["arm_key"], f"metrics:{vid[:12]}", reward)
+        else:
+            self.apply_penalty(a["arm_key"], f"low_metrics:{vid[:12]}",
+                               self.cfg["penalty_low_retention"])
+        return reward
+
+    # ── post-volume guards (2026: consistency > bursts) ──
+    def can_post(self, platform: str, max_daily: int = 3,
+                 min_gap_hours: float = 4.0) -> tuple:
+        """Return (allowed, reason). Enforces daily cap + min gap between posts."""
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        day = self.data["post_log"].get(today, {})
+        info = day.get(platform, {})
+        count = info.get("count", 0)
+        if count >= max_daily:
+            return False, f"daily cap reached ({count}/{max_daily})"
+        last = info.get("last_ts")
+        if last and min_gap_hours > 0:
+            try:
+                elapsed = (datetime.now(timezone.utc) -
+                           datetime.fromisoformat(last)).total_seconds() / 3600
+                if elapsed < min_gap_hours:
+                    return False, f"min gap not met ({elapsed:.1f}h < {min_gap_hours}h)"
+            except ValueError:
+                pass
+        return True, "ok"
+
+    def record_post(self, platform: str) -> None:
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        day = self.data["post_log"].setdefault(today, {})
+        info = day.setdefault(platform, {"count": 0, "last_ts": None})
+        info["count"] += 1
+        info["last_ts"] = _now_iso()
+        # keep 30 days of post log
+        for d in list(self.data["post_log"].keys()):
+            if d < (datetime.now(timezone.utc).strftime("%Y-%m-%d"))[:8] + "01":
+                pass
+        if len(self.data["post_log"]) > 30:
+            for d in sorted(self.data["post_log"].keys())[:-30]:
+                del self.data["post_log"][d]
+        self.save()
+
+    # ── dedup & variation ──
     def dedup_guard(self, script_text: str, hook: str = "") -> dict:
         """Return verdict: {'allowed': bool, 'reason': str}.
 
@@ -303,6 +411,7 @@ class LearningSystem:
         return {
             "arms_tested": len(self.data["arms"]),
             "videos_tracked": len(self.data["videos"]),
+            "attributed_videos": len(self.data["attribution"]),
             "rewards": len(self.data["reward_log"]),
             "penalties": len(self.data["penalty_log"]),
             "best_formulas": self.best_formulas(5),

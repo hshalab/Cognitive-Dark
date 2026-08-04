@@ -60,14 +60,19 @@ class PlatformScheduler:
                                 minute=0, second=0, microsecond=0)
 
     def cron_utc_times(self) -> list:
-        """All peak hours as UTC cron strings (for GitHub Actions)."""
+        """All peak hours as UTC cron strings (for GitHub Actions).
+
+        V2.1: convert using the CURRENT date so the offset reflects the active
+        DST state (V2 pinned a January date → every summer cron drifted 1h).
+        """
+        anchor = datetime.now(self.tz).date()
         crons = []
         for day, hours in self.peaks.items():
-            # Convert each local (naive, treated as tz) hour to UTC
             for h in hours:
-                local = datetime(2026, 1, 15, h, tzinfo=self.tz)  # fixed date, tz-aware
-                utc_h = local.astimezone(ZoneInfo("UTC")).hour
-                crons.append(f"0 {utc_h} * * {day[:3].capitalize()}")
+                local = datetime(anchor.year, anchor.month, anchor.day, h,
+                                 tzinfo=self.tz)
+                utc = local.astimezone(ZoneInfo("UTC"))
+                crons.append(f"{utc.minute} {utc.hour} * * {day[:3].capitalize()}")
         return crons
 
     def validate_gap(self, last_dt, min_hours: float = 6.0) -> bool:

@@ -303,6 +303,11 @@ MONETIZATION = {
 }
 
 # ─────────────────────────────────────────────────────────────
+# Posting discipline (2026 algorithm: consistency beats bursts)
+# ─────────────────────────────────────────────────────────────
+MIN_POST_GAP_HOURS = float(os.environ.get("MIN_POST_GAP_HOURS", "4.0"))
+
+# ─────────────────────────────────────────────────────────────
 # Music
 # ─────────────────────────────────────────────────────────────
 MUSIC_VOLUME = float(os.environ.get("MUSIC_VOLUME", "0.05"))

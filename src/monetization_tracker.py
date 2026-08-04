@@ -16,9 +16,7 @@ Output: data/monetization_progress.json + prints a daily plan.
 
 import json
 import logging
-import os
 from datetime import datetime, timezone
-from pathlib import Path
 
 from config.settings import MONETIZATION, DATA_DIR
 
@@ -44,9 +42,13 @@ def _load_progress() -> dict:
 def update_progress(overrides: dict = None) -> dict:
     """Merge latest known metrics (from fetch_metrics.py) and compute plan."""
     prog = _load_progress()
-    prog.setdefault("youtube", {}).update(DEFAULTS["youtube"])
-    prog.setdefault("facebook", {}).update(DEFAULTS["facebook"])
-    prog.setdefault("instagram", {}).update(DEFAULTS["instagram"])
+    # V2.1 FIX: fill only MISSING keys with defaults. V2 did
+    #   prog[plat].update(DEFAULTS)  which OVERWROTE real fetched values
+    #   (e.g. 150 subs → back to 7) on every pipeline run.
+    for plat, defs in DEFAULTS.items():
+        bucket = prog.setdefault(plat, {})
+        for k, v in defs.items():
+            bucket.setdefault(k, v)
     for plat, vals in (overrides or {}).items():
         if plat in prog:
             prog[plat].update(vals)
@@ -97,7 +99,7 @@ def print_plan(prog: dict) -> str:
 
     yt = prog["youtube"]
     lines.append("\n▶ YOUTUBE  (YPP: 1,000 subs + 4,000 hrs OR 10M Shorts views/90d)")
-    lines.append("   subs {yt['subs']}/1,000 ({yt['pct']['subs']}%) → need "
+    lines.append(f"   subs {yt['subs']}/1,000 ({yt['pct']['subs']}%) → need "
                  f"{yt['daily_targets']['subs']}/day")
     lines.append(f"   Shorts views {yt['shorts_views_90d']:,}/10M ({yt['pct']['shorts_views']}%) "
                  f"→ {yt['daily_targets']['shorts_views']:,}/day")

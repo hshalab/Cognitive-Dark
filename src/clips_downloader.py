@@ -14,7 +14,6 @@ is configured, the pipeline falls back to procedural visuals (visuals.py).
 
 import logging
 import os
-import random
 import time
 from pathlib import Path
 
@@ -109,16 +108,35 @@ def _download(url: str, dest: Path) -> Path:
         with open(tmp, "wb") as fh:
             for chunk in r.iter_content(chunk_size=1 << 16):
                 fh.write(chunk)
-    if tmp.stat().st_size < MIN_CLIP_BYTES:
+    size = tmp.stat().st_size          # V2.1: read size BEFORE unlink
+    if size < MIN_CLIP_BYTES:           # (V2 stat()'d after unlink → FileNotFoundError)
         tmp.unlink(missing_ok=True)
-        raise RuntimeError(f"clip too small: {tmp.stat().st_size} bytes")
+        raise RuntimeError(f"clip too small: {size} bytes")
     os.replace(tmp, dest)
     return dest
 
 
-def get_clip_for_scene(scene_idx: int, scene: dict, max_retries: int = 2) -> dict:
-    """Fetch the best clip for a scene. Returns {'path': str, 'source': str}
-    or raises if all providers fail."""
+def _evict_old_cache() -> None:
+    """Drop cached clips older than CLIP_CACHE_TTL_DAYS (V2 never evicted)."""
+    if not CLIP_CACHE.exists():
+        return
+    cutoff = time.time() - CLIP_CACHE_TTL_DAYS * 86400
+    try:
+        for f in CLIP_CACHE.iterdir():
+            if f.is_file() and f.stat().st_mtime < cutoff:
+                f.unlink(missing_ok=True)
+    except OSError:
+        pass
+
+
+def get_clip_for_scene(scene_idx: int, scene: dict, rank: int = 0) -> dict:
+    """Fetch the `rank`-th best clip for a scene (rank 0 = best).
+
+    V2.1: the `rank` offset is what gives every scene DISTINCT cuts. V2 always
+    returned the single top clip, so per-scene variety was impossible and
+    prepare_clips silently degraded to 1 clip + procedural stills.
+    Returns {'path': str, 'source': str, ...} or raises if all providers fail.
+    """
     query = (scene.get("visual") or "dark city night").strip()[:80]
     candidates = []
     for provider in CLIP_PROVIDER_ORDER:
@@ -133,7 +151,8 @@ def get_clip_for_scene(scene_idx: int, scene: dict, max_retries: int = 2) -> dic
         raise RuntimeError("no clips found for query: " + query)
 
     candidates.sort(key=_score, reverse=True)
-    seen = set()
+    # Deduplicate by file identity, keep ranked order
+    seen, ordered = set(), []
     for clip in candidates:
         url = clip["url"]
         ext = Path(url.split("?")[0]).suffix or ".mp4"
@@ -141,14 +160,22 @@ def get_clip_for_scene(scene_idx: int, scene: dict, max_retries: int = 2) -> dic
         if key in seen:
             continue
         seen.add(key)
-        dest = CLIP_CACHE / key
+        clip["_cache_key"] = key
+        ordered.append(clip)
+    if not ordered:
+        raise RuntimeError("no unique clips for query: " + query)
+
+    # Walk from the requested rank downward until one downloads cleanly
+    for idx in range(rank, rank + len(ordered)):
+        clip = ordered[idx % len(ordered)]
+        dest = CLIP_CACHE / clip["_cache_key"]
         try:
-            path = _download(url, dest)
+            path = _download(clip["url"], dest)
             return {"path": str(path), "source": clip["provider"],
                     "width": clip["width"], "height": clip["height"],
                     "query": query}
         except Exception as exc:
-            logger.warning("clip download failed (%s): %s", url[:70], exc)
+            logger.warning("clip download failed (%s): %s", clip["url"][:70], exc)
             time.sleep(0.5)
     raise RuntimeError(f"could not download any clip for: {query}")
 
@@ -159,21 +186,22 @@ def prepare_clips(scenes: list, per_scene: int = 3) -> list:
     Returns a list (one entry per scene) of lists of clip dicts.
     Falls back to distinct procedural visuals per scene when providers fail.
     """
+    _evict_old_cache()
     results = []
     for i, scene in enumerate(scenes):
         scene_clips = []
         seen_ids = set()
-        for _ in range(per_scene):
+        # V2.1: request DISTINCT cuts via rank offset (rank k → k-th best clip)
+        for rank in range(per_scene):
             try:
-                r = get_clip_for_scene(i, scene)
-                key = (r.get("source"), r.get("width"), r.get("height"))
+                r = get_clip_for_scene(i, scene, rank=rank)
+                key = (r.get("source"), r.get("width"), r.get("height"), r.get("path"))
                 if key not in seen_ids:
                     scene_clips.append(r)
                     seen_ids.add(key)
-                else:
-                    break
             except Exception as exc:
-                logger.warning("clip fetch %d failed → procedural (%s)", i, exc)
+                logger.warning("clip fetch %d (rank %d) failed → procedural (%s)",
+                               i, rank, exc)
                 break
         # top up with procedural visuals so every scene has per_scene cuts
         while len(scene_clips) < per_scene:

@@ -16,10 +16,10 @@ Requires an Instagram Business/Creator account LINKED to the Facebook Page and
 an access token with instagram_content_publish + instagram_basic.
 """
 
-import json
 import logging
 import mimetypes
 import os
+import subprocess
 import time
 
 import requests
@@ -31,6 +31,18 @@ logger = logging.getLogger("instagram")
 GRAPH = "https://graph.instagram.com"
 API_VERSION = "v22.0"
 RUP_URL = "https://rupload.instagram.com/ig-api-upload"
+
+
+def _duration_ms(video_path: str) -> int:
+    """Video duration in MILLISECONDS (IG resumable container requirement)."""
+    try:
+        r = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=nw=1:nk=1", video_path],
+            capture_output=True, text=True, timeout=30, check=True)
+        return int(float(r.stdout.strip()) * 1000)
+    except Exception:
+        return 60_000  # safe default: 60s
 
 
 class InstagramUploader(BasePlatform):
@@ -71,14 +83,21 @@ class InstagramUploader(BasePlatform):
         r.raise_for_status()
         return r.json().get("id")
 
-    def _upload_resumable(self, video_path: str) -> str:
+    def _upload_resumable(self, video_path: str, caption: str = "") -> str:
         """Chunked direct upload (no public hosting needed)."""
         size = os.path.getsize(video_path)
-        container = self._container({
+        # V2.1 FIX: video_length must be duration in MILLISECONDS (V2 sent the
+        # file size in bytes → container rejected / wrong metadata), and the
+        # caption was dropped entirely on this path (Reels published silent of text).
+        payload = {
             "media_type": "REELS",
             "upload_type": "resumable",
-            "video_length": str(size),
-        })
+            "video_length": str(_duration_ms(video_path)),
+            "share_to_feed": "true",
+        }
+        if caption:
+            payload["caption"] = caption[:2200]
+        container = self._container(payload)
         url = f"{RUP_URL}/{API_VERSION}/{container}"
         fname = os.path.basename(video_path)
         mime = mimetypes.guess_type(video_path)[0] or "video/mp4"
@@ -117,7 +136,8 @@ class InstagramUploader(BasePlatform):
                     "share_to_feed": "true",
                 })
             else:
-                container = self._upload_resumable(video_path)
+                container = self._upload_resumable(video_path,
+                                                   caption=pkg.get("description", ""))
             self._wait_ready(container)
             media_id = self._publish(container)
             logger.info("✅ Instagram Reel: %s", media_id)

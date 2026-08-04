@@ -2,7 +2,7 @@ name: "⚔️ Cognitive Dark - 30 Day Monetization War Plan"
 
 on:
   schedule:
-    # 4 videos per day for maximum growth - US Peak Times
+    # 4 videos per day for maximum growth - US Peak Times (UTC)
     - cron: "0 10 * * *"   # 6am ET
     - cron: "0 14 * * *"   # 10am ET
     - cron: "0 18 * * *"   # 2pm ET
@@ -12,6 +12,12 @@ on:
 permissions:
   contents: write
 
+# V2.1: serialize with the daily pipeline so both never upload at once
+# (V2 had no concurrency group → possible double-posting / push races).
+concurrency:
+  group: cognitive-dark-pipeline
+  cancel-in-progress: false
+
 jobs:
   war-mode:
     runs-on: ubuntu-latest
@@ -20,27 +26,57 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      # V2.1: cache the ~360MB Kokoro model (V2 re-downloaded it on every run,
+      # ~1.4GB/day of wasted bandwidth).
+      - name: Cache Kokoro model
+        uses: actions/cache@v4
+        with:
+          path: data/models/kokoro
+          key: kokoro-onnx-${{ runner.os }}-v1
+
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg espeak-ng
+          # V2.1: add fonts-dejavu (V2 omitted it → captions/thumbnail fell
+          # back to PIL's tiny default bitmap font).
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu espeak-ng
           python -m pip install -q --upgrade pip
           pip install -q -r requirements.txt kokoro-onnx onnxruntime
+
+      - name: Ensure music assets
+        run: |
+          mkdir -p assets/music
+          ls assets/music/*.wav 2>/dev/null || python scripts/generate_music.py || true
+
       - name: Run ML Autonomous Pipeline
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
-          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
-          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.IG_BUSINESS_ACCOUNT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          TTS_PRIMARY: "onnx"
+          KOKORO_VOICE: "am_fenrir"
+          KOKORO_MODEL_DIR: "data/models/kokoro"
           WAR_MODE: "true"
         run: python src/main.py
+
       - name: Sync Learning Data
         if: always()
         run: |
           git config user.name "Cognitive Dark Brain"
           git config user.email "brain@cognitivedark.ai"
+          git pull --rebase origin "$GITHUB_REF_NAME" || true
           git add data/
           git commit -m "🧠 ML: Daily autonomous update [skip ci]" || echo "No changes"
-          git push
+          git push || echo "Nothing to push"
+        continue-on-error: true

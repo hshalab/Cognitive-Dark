@@ -17,3 +17,8 @@ __pycache__/
 
 # keep music assets
 !assets/music/
+# V2.1: re-include generated tracks. V2's `*.wav` rule above silently blocked
+# these from ever being committed (a directory re-include alone doesn't
+# un-ignore files matched by an extension rule).
+!assets/music/*.wav
+!assets/music/*.mp3

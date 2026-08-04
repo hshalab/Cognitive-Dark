@@ -25,7 +25,6 @@ import shutil
 import subprocess
 import sys
 import time
-import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 

@@ -1,8 +1,42 @@
-# 🧠 Cognitive Dark V2 — ML Multi-Platform Growth Engine
+# 🧠 Cognitive Dark V2.1 — ML Multi-Platform Growth Engine
 
 **YouTube + Facebook + Instagram** automation system for the Cognitive Dark channel.
-V2 is a complete rebuild: **machine-learning-driven, multi-platform, self-repairing** —
-built on the audit findings of V1 (every V1 blocker fixed).
+**Machine-learning-driven, multi-platform, self-repairing** — V2 was a complete rebuild
+of V1, and V2.1 is a full audit-driven hardening pass: every critical bug fixed and the
+ML loop upgraded so the system *genuinely* learns from real analytics.
+
+## 🆕 V2.1 — Audit Fix Pass (2026-08-04)
+
+Every finding of the full-codebase audit is fixed (critical → minor):
+
+**Uploads unblocked**
+- YouTube `publishAt` no longer crashes (aware-vs-naive datetime fix; RFC3339 `Z` format; <24h clamp)
+- YouTube OAuth-from-secrets now includes `token_uri` + scopes → headless token refresh works
+- Facebook scheduling sends Unix epoch (was ISO string → API rejected); `FB_REELS_ENDPOINT` honored with auto-fallback to `/videos`
+- Instagram Reels now carry their caption on the resumable path; `video_length` sent in milliseconds (was file-size in bytes)
+
+**ML upgraded (V2's loop was disconnected — now closed)**
+- Rewards/penalties land on the **exact arm** that produced the video (V2 wrote them to different keys, so the bandit never learned)
+- **Per-video attribution**: every published `video_id` is mapped to its formula; `scripts/fetch_metrics.py` pulls real views/likes/comments and credits the responsible arm (`reward_from_metrics` is now wired in, was dead code)
+- Channel/page growth applies consistency bonuses to recently active arms
+- Every mutation auto-saves (V2 lost end-of-run rewards); recency decay re-tests stale formulas
+- **Volume discipline**: daily caps (`max_daily`) + `MIN_POST_GAP_HOURS` enforced per platform — consistency over bursts, the 2026 algorithm signal
+
+**Content quality**
+- Karaoke captions use a **sliding window** — the current word-chunk stays visible for the whole caption (V2 froze after the first 2 lines)
+- Fast cuts now get **3 genuinely distinct clips** per scene (rank-offset selection; V2 returned the same top clip → stills)
+- SEO power-word titles actually append the power word; acronyms (FBI, CIA) preserved
+- Kokoro speed default consistent (1.08x USA style everywhere); torch pipeline cached; onnx-first chain
+- Procedural visuals vectorized (numpy) + off-by-one palette fix
+
+**Infrastructure**
+- War Mode fixed: missing `niche_strategy` module created (brain works again, topics banked per pillar)
+- `deep_repair.py` runs (import-order crash fixed) + real repair logic (schema heal, stale-quarantine release)
+- Crash-journal order corrected (repair runs **before** marking the new run, real crash detection restored)
+- Monetization metrics no longer clobbered by defaults every run; `print_plan` f-string fixed
+- Workflows: secrets accept both naming schemes (`||` fallback), Kokoro model cached in War Mode, `fonts-dejavu` installed, concurrency serialized, failures no longer hidden by `|| echo`, music `.wav` files now committable
+
+---
 
 ```
 Script (Groq/Gemini) → Clips (Pexels/Pixabay) → Voice (Kokoro TTS)
@@ -178,7 +212,9 @@ hashtag sets, and CTAs per algorithm (identical cross-post text is a spam signal
 ```
 config/settings.py          — niche strategy, pillars, platforms, ML hyperparams
 src/main.py                 — orchestrator (auto-repair + ML + multi-platform)
-src/ml_engine.py            — UCB1 bandit, rewards/penalties, dedup, platform health
+src/ml_engine.py            — UCB1 bandit, attribution, volume guards, dedup, health
+src/niche_strategy.py       — per-pillar viral topic bank (feeds the Autonomous Brain)
+src/autonomous_brain.py     — War Mode decision engine (ML strategy → topic)
 src/script_generator.py     — Groq → Gemini → template (ML-informed prompts)
 src/seo.py                  — platform-native titles/captions/hashtags
 src/clips_downloader.py     — Pexels → Pixabay → procedural fallback

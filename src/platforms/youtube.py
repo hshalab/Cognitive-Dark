@@ -14,7 +14,7 @@ import json
 import logging
 import os
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from .base import BasePlatform
 
@@ -31,11 +31,16 @@ def _resolve_credentials() -> tuple:
     refresh_token = os.environ.get("REFRESH_TOKEN")
 
     if client_id and client_secret and refresh_token:
+        # V2.1: include token_uri + scopes so google-auth can refresh headless.
+        # (V2 omitted token_uri → RefreshError on every scheduled run.)
         creds_dict = {
             "client_id": client_id,
             "client_secret": client_secret,
             "refresh_token": refresh_token,
-            "token": os.environ.get("YOUTUBE_API_KEY", "")
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "scopes": ["https://www.googleapis.com/auth/youtube.upload",
+                       "https://www.googleapis.com/auth/youtube.readonly"],
+            "type": "authorized_user",
         }
         tmp = os.path.join(tempfile.gettempdir(), "yt_oauth_creds.json")
         with open(tmp, "w", encoding="utf-8") as fh:
@@ -83,17 +88,18 @@ class YouTubeUploader(BasePlatform):
             with open(cred_path, encoding="utf-8") as fh:
                 info = json.load(fh)
             creds = Credentials.from_authorized_user_info(info)
-            if creds.expired and creds.refresh_token:
+            if (creds.expired or not creds.valid) and creds.refresh_token:
                 creds.refresh(Request())      # keep token alive in headless runs
                 with open(cred_path, "w", encoding="utf-8") as fh:
-                    json.dump(json.loads(creds.to_json()), fh)
+                    fh.write(creds.to_json())
 
             youtube = build("youtube", "v3", credentials=creds)
             body = {
                 "snippet": {
                     "title": pkg["title"][:100],
                     "description": pkg["description"],
-                    "tags": pkg.get("tags", [])[:500] and pkg.get("tags", []),
+                    # V2.1: clean cap (V2's `x[:500] and x` was a no-op)
+                    "tags": [t for t in (pkg.get("tags") or [])][:50],
                     "categoryId": os.environ.get("YT_CATEGORY_ID", "27"),
                 },
                 "status": {
@@ -102,10 +108,19 @@ class YouTubeUploader(BasePlatform):
                 },
             }
             if publish_at:
-                # must be within 24h; else publish immediately
-                if datetime.fromisoformat(publish_at) - datetime.now() > timedelta(hours=23):
-                    publish_at = (datetime.now() + timedelta(hours=23)).isoformat()
-                body["status"]["publishAt"] = publish_at
+                # V2.1 FIX: publish_at is tz-AWARE (scheduler) → compare against
+                # tz-aware now. V2 compared aware-vs-naive → TypeError on EVERY run.
+                pa = publish_at
+                if isinstance(pa, str):
+                    pa = datetime.fromisoformat(pa)
+                if pa.tzinfo is None:
+                    pa = pa.replace(tzinfo=timezone.utc)
+                now = datetime.now(timezone.utc)
+                if pa - now > timedelta(hours=23):
+                    pa = now + timedelta(hours=23)   # publishAt must be < 24h out
+                # YouTube wants RFC3339 UTC with Z suffix
+                body["status"]["publishAt"] = pa.astimezone(timezone.utc).strftime(
+                    "%Y-%m-%dT%H:%M:%S.000Z")
 
             media = MediaFileUpload(video_path, mimetype="video/mp4", resumable=True)
             req = youtube.videos().insert(part="snippet,status", body=body,

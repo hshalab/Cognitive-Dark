@@ -7,11 +7,8 @@ Dark cinematic stills (1080×1920) generated with numpy/PIL — the same
 approach as V1 but tuned for the converted niche.
 """
 
-import hashlib
 import logging
 import os
-from pathlib import Path
-
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -39,14 +36,13 @@ def generate_procedural_scene(scene_idx: int, emotion: str = "dark",
                               out_dir: str = "output/visuals") -> str:
     rng = np.random.RandomState(1000 + scene_idx * 37)
     top, bottom = PALETTES.get(emotion, PALETTES["dark"])
-    img = Image.new("RGB", (WIDTH, HEIGHT))
-    px = img.load()
-    for y in range(HEIGHT):
-        f = y / HEIGHT
-        c = tuple(int(top[k] + (bottom[k] - top[k]) * f) for k in range(3))
-        for x in range(0, WIDTH, 4):
-            for xx in range(x, min(x + 4, WIDTH)):
-                px[xx, y] = c
+    # V2.1: vectorized gradient (V2 filled 2M pixels in a Python loop → slow).
+    t = np.linspace(0.0, 1.0, HEIGHT, dtype=np.float32)[:, None]
+    top_a = np.asarray(top, dtype=np.float32)[None, :]
+    bot_a = np.asarray(bottom, dtype=np.float32)[None, :]
+    col = (top_a + (bot_a - top_a) * t)                      # (H,3)
+    grad = np.repeat(col[:, None, :], WIDTH, axis=1)         # (H,W,3)
+    img = Image.fromarray(grad.astype(np.uint8))
 
     # noise texture
     arr = np.asarray(img).astype(np.float32)
@@ -60,7 +56,7 @@ def generate_procedural_scene(scene_idx: int, emotion: str = "dark",
     for _ in range(15):
         r = rng.randint(20, 100)
         x, y = rng.randint(0, WIDTH), rng.randint(0, HEIGHT)
-        col = colors[rng.randint(0, len(colors) - 1)]
+        col = colors[rng.randint(0, len(colors))]   # V2.1: randint high is exclusive
         dr.ellipse([x - r, y - r, x + r, y + r],
                    fill=tuple(int(v * 0.2) for v in col))
     overlay = overlay.filter(ImageFilter.GaussianBlur(50))

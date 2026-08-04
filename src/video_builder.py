@@ -24,8 +24,9 @@ import textwrap
 from pathlib import Path
 
 import compat  # patch PIL before moviepy import (Image.ANTIALIAS)
+assert compat  # keep module loaded for its side-effect patch
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 
 logger = logging.getLogger("video_builder")
 
@@ -33,7 +34,13 @@ WIDTH, HEIGHT = 1080, 1920
 FPS = 30
 MUSIC_VOLUME = float(os.environ.get("MUSIC_VOLUME", "0.05"))
 
-from config.settings import USA_STYLE, VIDEO_THREADS
+from config.settings import (USA_STYLE, VIDEO_THREADS, OUTPUT_DIR, TMP_DIR,
+                             MUSIC_DIR)
+
+# V2.1: anchor all working paths to config (V2 hardcoded "output/..." and
+# "assets/music" relative to the CWD → broke when run from another folder).
+OUT = str(OUTPUT_DIR)
+TMP = str(TMP_DIR)
 
 CUT_SECS = max(USA_STYLE["min_cut_seconds"], USA_STYLE["cut_seconds"])
 WORDS_PER_GROUP = USA_STYLE["caption_words_per_group"]
@@ -88,15 +95,12 @@ def _chunk_timing(text: str, narration_dur: float, group_size: int = None) -> li
     if not words:
         return []
     weights = [len(w) + 1 for w in words]
-    total = sum(weights)
-    cum = 0.0
     times = []
     chunk_weights = []
     group_size = group_size or WORDS_PER_GROUP
     for i in range(0, len(words), group_size):
-        wsum = sum(weights[i:i + group_size])
-        chunk_weights.append(wsum)
-    ctotal = sum(chunk_weights)
+        chunk_weights.append(sum(weights[i:i + group_size]))
+    ctotal = sum(chunk_weights) or 1
     start = 0.0
     for w in chunk_weights:
         frac = w / ctotal
@@ -105,30 +109,70 @@ def _chunk_timing(text: str, narration_dur: float, group_size: int = None) -> li
     return times
 
 
+def _chunk_word_bounds(chunks: list) -> list:
+    """Global word-index (start, end) for each caption chunk."""
+    bounds, acc = [], 0
+    for ch in chunks:
+        n = len(_split_words(ch))
+        bounds.append((acc, acc + n))
+        acc += n
+    return bounds
+
+
+def _caption_window(full_text: str, chunks: list, current_idx: int) -> tuple:
+    """Sliding 2-line window around the current chunk.
+
+    V2 rendered the WHOLE caption but hard-truncated after 2 lines, so every
+    word past ~line 2 never appeared on screen. V2.1 scrolls the window so the
+    current word-chunk is ALWAYS visible (karaoke never disappears mid-scene).
+
+    Returns (lines_to_render, first_global_word_index).
+    """
+    lines = textwrap.wrap(full_text, width=30) or [full_text]
+    line_words = [ln.split(" ") for ln in lines]
+    starts, acc = [], 0
+    for lw in line_words:
+        starts.append(acc)
+        acc += len(lw)
+
+    bounds = _chunk_word_bounds(chunks)
+    if current_idx >= len(bounds):
+        current_idx = len(bounds) - 1
+    cw = bounds[current_idx][0] if bounds else 0
+
+    line_of = 0
+    for li, st in enumerate(starts):
+        if st <= cw < st + len(line_words[li]):
+            line_of = li
+            break
+    a = line_of if line_of + 1 < len(lines) else max(0, line_of - 1)
+    b = min(len(lines), a + 2)
+    return lines[a:b], starts[a]
+
+
 def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
                        emotion: str = "dark") -> Image.Image:
-    """Render the full caption with the current word-chunk highlighted.
+    """Render the caption WINDOW containing the current word-chunk.
 
     Past chunks → white; current chunk → yellow pop; future chunks → dim.
+    The window slides with the narration (V2.1) so long captions stay fully
+    legible instead of freezing after the first two lines.
     """
     font = _load_font(56)
     strip = Image.new("RGBA", (WIDTH, CAP_H), (0, 0, 0, 0))
     draw = ImageDraw.Draw(strip)
 
-    # color per word based on which chunk it belongs to
-    words = _split_words(full_text)
-    word_chunk = []
-    ci = 0
-    for idx, chunk in enumerate(chunks):
-        for w in chunk.split(" "):
-            word_chunk.append(idx)
-    if not words:
+    if not _split_words(full_text):
         return strip
 
-    # wrap into lines (keep word order)
-    lines = textwrap.wrap(full_text, width=30) or [full_text]
-    if len(lines) > 2:
-        lines = lines[:2]
+    lines, first_word = _caption_window(full_text, chunks, current_idx)
+    bounds = _chunk_word_bounds(chunks)
+
+    def chunk_of_word(wi: int) -> int:
+        for ci, (s, e) in enumerate(bounds):
+            if s <= wi < e:
+                return ci
+        return max(0, len(bounds) - 1)
 
     accents = {"intense": (255, 110, 70), "revelatory": (255, 220, 100),
                "chilling": (120, 190, 255), "mysterious": (200, 170, 255)}
@@ -138,24 +182,24 @@ def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
     draw.rounded_rectangle([20, 0, WIDTH - 20, CAP_H], radius=28,
                            fill=(0, 0, 0, 165))
 
-    # render line by line; track word index across lines
-    y = 28
-    word_idx = 0
+    # vertically center 1-2 lines
+    line_h = 92
+    y = (CAP_H - line_h * len(lines)) // 2 + 8
+    word_idx = first_word
     for line in lines:
         line_words = line.split(" ")
-        # compute total width of the line
         widths = [draw.textlength(w + " ", font=font) for w in line_words]
         total_w = sum(widths)
         x = (WIDTH - total_w) / 2
         for li, w in enumerate(line_words):
-            wchunk = word_chunk[word_idx] if word_idx < len(word_chunk) else current_idx
+            wchunk = chunk_of_word(word_idx)
             if wchunk < current_idx:
                 fill = PAST + (255,)
             elif wchunk == current_idx:
                 fill = hl_color + (255,)
-                # underline pop
-                ww = draw.textlength(w + " ", font=font)
-                draw.rounded_rectangle([x, y + 58, x + ww - 8, y + 66], radius=3,
+                # underline pop on the current word
+                ww = draw.textlength(w, font=font)
+                draw.rounded_rectangle([x - 2, y + 60, x + ww + 2, y + 68], radius=3,
                                        fill=hl_color + (230,))
             else:
                 fill = PAST + (DIM_A,)
@@ -163,7 +207,7 @@ def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
                       stroke_width=2, stroke_fill=(0, 0, 0))
             x += widths[li]
             word_idx += 1
-        y += 92
+        y += line_h
     return strip
 
 
@@ -225,11 +269,9 @@ def _build_image_clip(img_path: str, duration: float, punch: bool = False) -> ob
     from moviepy.editor import ImageClip
     try:
         im = Image.open(img_path).convert("RGB")
-        # bake the punch: start frame is zoomed to (1 + punch), settle to 1.05
-        start_zoom = 1.0 + PUNCH + 0.05
-        end_zoom = 1.05
-        # render mid (settled) frame as the static cut (punch feel = tight crop)
-        zoom = end_zoom
+        # bake the punch: render the settled (slightly zoomed) frame as the
+        # static cut — each fast cut starting tight still reads as a punch.
+        zoom = 1.05
         w, h = im.size
         nw, nh = int(w * zoom), int(h * zoom)
         im2 = im.resize((nw, nh), Image.LANCZOS)
@@ -246,7 +288,7 @@ def _build_image_clip(img_path: str, duration: float, punch: bool = False) -> ob
 # ── music ────────────────────────────────────────────────────
 def _pick_music() -> str:
     exact = os.environ.get("MUSIC_TRACK", "").strip()
-    tracks = glob.glob("assets/music/*.mp3") + glob.glob("assets/music/*.wav")
+    tracks = glob.glob(str(MUSIC_DIR / "*.mp3")) + glob.glob(str(MUSIC_DIR / "*.wav"))
     tracks = [t for t in tracks if "ATTRIBUTION" not in t.upper()]
     if exact:
         m = [t for t in tracks if t.endswith(exact)]
@@ -283,8 +325,8 @@ def _build_audio(audio_segments: list, total_duration: float) -> str:
             logger.warning("music failed: %s", exc)
     if not tracks:
         return None
-    os.makedirs("output/tmp", exist_ok=True)
-    track_path = "output/tmp/narration.m4a"
+    os.makedirs(TMP, exist_ok=True)
+    track_path = os.path.join(TMP, "narration.m4a")
     CompositeAudioClip(tracks).write_audiofile(track_path, fps=44100, codec="aac", logger=None)
     for t in tracks:
         try:
@@ -295,17 +337,20 @@ def _build_audio(audio_segments: list, total_duration: float) -> str:
 
 
 def build_short(scene_visuals: list, audio_segments: list, scenes: list,
-                out_path: str = "output/final_video.mp4") -> str:
+                out_path: str = None) -> str:
     """scene_visuals: list (per scene) of lists (cuts) of clip paths."""
     import gc
     from moviepy.editor import CompositeVideoClip, ImageClip
+
+    if out_path is None:
+        out_path = os.path.join(OUT, "final_video.mp4")
 
     if len(scene_visuals) != len(audio_segments) or len(scene_visuals) != len(scenes):
         raise RuntimeError(
             f"length mismatch: scenes={len(scene_visuals)} audio={len(audio_segments)} "
             f"scenes={len(scenes)}")
 
-    os.makedirs("output/tmp", exist_ok=True)
+    os.makedirs(TMP, exist_ok=True)
     hook = scenes[0].get("hook") or ""
 
     # 1) render each scene → temp mp4 (fast cuts + word captions baked in)
@@ -313,7 +358,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
     for i, (visuals, seg, scene) in enumerate(zip(scene_visuals, audio_segments, scenes)):
         duration = float(seg.get("duration", 4.0)) + 0.4
         narration_dur = float(seg.get("duration", 4.0))
-        visuals = visuals or ["output/tmp/none.jpg"]
+        visuals = visuals or [os.path.join(TMP, "none.jpg")]
         caption_text = scene.get("caption_roman") or scene.get("caption", "")
         emotion = scene.get("emotion", "dark")
 
@@ -337,7 +382,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
             if t1 - t0 < 0.15:
                 continue
             img = _caption_strip_usa(caption_text, chunks, idx, emotion)
-            cap_path = f"output/tmp/cap_{i:02d}_{idx:02d}.png"
+            cap_path = os.path.join(TMP, f"cap_{i:02d}_{idx:02d}.png")
             img.save(cap_path)
             layers.append(ImageClip(cap_path)
                           .set_start(t0)
@@ -347,7 +392,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
         # ── HOOK overlay (scene 0, first seconds) ──
         if i == 0 and hook:
             h_img = _hook_overlay_usa(hook)
-            h_path = "output/tmp/hook_overlay.png"
+            h_path = os.path.join(TMP, "hook_overlay.png")
             h_img.save(h_path)
             layers.append(ImageClip(h_path).set_duration(min(HOOK_SECS, duration))
                           .set_position(("center", 0)))
@@ -357,14 +402,14 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
             loop_dur = min(LOOP_SECS, duration * 0.3)
             if loop_dur >= 0.5:
                 l_img = _hook_overlay_usa(hook)
-                l_path = "output/tmp/loop_trick.png"
+                l_path = os.path.join(TMP, "loop_trick.png")
                 l_img.save(l_path)
                 layers.append(ImageClip(l_path).set_duration(loop_dur)
                               .set_position(("center", 0))
                               .set_start(duration - loop_dur))
 
         scene_clip = CompositeVideoClip(layers, size=(WIDTH, HEIGHT)).set_duration(duration)
-        scene_file = f"output/tmp/scene_{i:02d}.mp4"
+        scene_file = os.path.join(TMP, f"scene_{i:02d}.mp4")
         scene_clip.write_videofile(
             scene_file, fps=FPS, codec="libx264", audio_codec="aac", bitrate="4000k",
             ffmpeg_params=["-pix_fmt", "yuv420p"], logger=None,
@@ -379,11 +424,11 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
         gc.collect()
 
     # 2) concat with ffmpeg demuxer
-    list_file = "output/tmp/concat.txt"
+    list_file = os.path.join(TMP, "concat.txt")
     with open(list_file, "w") as fh:
         for f in scene_files:
             fh.write(f"file '{Path(f).resolve()}'\n")
-    silent_video = "output/tmp/silent.mp4"
+    silent_video = os.path.join(TMP, "silent.mp4")
     subprocess.run(
         ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", list_file,
          "-c", "copy", silent_video], check=True, capture_output=True)
@@ -396,7 +441,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
     track = _build_audio(audio_segments, total_duration=dur)
 
     # 4) mux
-    os.makedirs("output", exist_ok=True)
+    os.makedirs(OUT, exist_ok=True)
     if track and os.path.exists(track):
         subprocess.run(
             ["ffmpeg", "-y", "-i", silent_video, "-i", track,
@@ -444,8 +489,8 @@ def generate_thumbnail(first_visual: str, hook: str = "") -> str:
             y += 78
         img = img.convert("RGBA"); img.alpha_composite(ov); img = img.convert("RGB")
 
-    os.makedirs("output", exist_ok=True)
-    p = "output/thumbnail.jpg"
+    os.makedirs(OUT, exist_ok=True)
+    p = os.path.join(OUT, "thumbnail.jpg")
     img.save(p, quality=90)
     return p
 

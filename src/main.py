@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Multi-Platform Pipeline Orchestrator.
+Cognitive Dark V2.1 — Multi-Platform Pipeline Orchestrator.
 
   Script(Groq) → Clips(Pexels/Pixabay) → Voice(Kokoro) → Video(MoviePy)
   → Upload(YouTube + Facebook + Instagram) → ML feedback → Monetization tracker
 
 Every stage runs inside the auto-repair StageRunner (retries + fallbacks).
-The ML engine picks the content strategy and is updated with outcomes
-(rewards for strong output, penalties for mistakes) — learning from errors.
+The ML engine picks the content strategy and is updated with outcomes —
+V2.1: rewards/penalties land on the EXACT arm that produced the video,
+daily caps + min-gap guards protect platform health, and every published
+video_id is attributed back to its formula so real analytics train the bandit.
 """
 
 import argparse
-import json
 import logging
 import os
 import sys
@@ -29,9 +30,9 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("main")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config.settings import PLATFORMS
+from config.settings import PLATFORMS, MIN_POST_GAP_HOURS
 from auto_repair import (Preflight, RepairJournal, StageRunner, cleanup, selftest)
-from ml_engine import LearningSystem
+from ml_engine import LearningSystem, text_sha
 from scheduler import PlatformScheduler
 from script_generator import generate_script
 from clips_downloader import prepare_clips
@@ -57,16 +58,16 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     start = time.time()
     platforms = platforms or [p for p, c in PLATFORMS.items() if c["enabled"]]
 
-    # ── auto-repair: journal + stale-state repair ──
+    # ── auto-repair: journal + stale-state repair (V2.1: repair BEFORE start) ──
     journal = RepairJournal()
+    journal.repair_if_crashed()          # detect a crashed PREVIOUS run first
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     journal.start_run(run_id, "short_pipeline")
-    journal.repair_if_crashed()
     cleanup(older_than_hours=24)
 
     # ── preflight ──
     Preflight().run(check_deps=True)
-    logger.info("🚀 COGNITIVE DARK V2 — platforms=%s dry_run=%s",
+    logger.info("🚀 COGNITIVE DARK V2.1 — platforms=%s dry_run=%s",
                 ",".join(platforms), dry_run)
 
     # ── ML engine ──
@@ -90,17 +91,19 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
                         topic=topic, ml=ml)
     logger.info("📝 %s [%s/%s] (%s)", script["title"], script["pillar"],
                 script["hook_style"], script["source"])
+    arm = script.get("arm_key")  # V2.1: the EXACT arm travels with the script
 
-    # ── 0% spam-detection: dedup & variation guard (retry w/ new strategy) ──
+    # ── dedup & variation guard (retry w/ new strategy) ──
     guard = ml.dedup_guard(" ".join(s["caption"] for s in script["scenes"]),
                            script.get("hook", ""))
     retries = 0
     while not guard["allowed"] and retries < 4:
         logger.warning("⛔ Too-similar content (%s) → retrying with fresh strategy (%d)",
                        guard["reason"], retries + 1)
-        ml.apply_penalty(ml.arm_key(script["pillar"], script["hook_style"], "any"),
-                         "dedup_blocked", 0.3)
+        if arm:
+            ml.apply_penalty(arm, "dedup_blocked", 0.3)
         script = generate_script(ml=ml, topic=topic)
+        arm = script.get("arm_key")
         guard = ml.dedup_guard(" ".join(s["caption"] for s in script["scenes"]),
                                script.get("hook", ""))
         retries += 1
@@ -109,7 +112,7 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         journal.finish_run(run_id, "blocked", guard["reason"])
         return {"success": False, "reason": guard["reason"]}
 
-    # ── 2. Clips (Pexels → Pixabay → procedural) — 3 cuts per scene ──
+    # ── 2. Clips (Pexels → Pixabay → procedural) — 3 DISTINCT cuts per scene ──
     clip_sets = prepare_clips(script["scenes"], per_scene=3)
     scene_visuals = [[c["path"] for c in s] for s in clip_sets]
     logger.info("🎞️  Clips: %s (%d scenes × %d cuts)",
@@ -127,15 +130,16 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     thumb = generate_thumbnail(scene_visuals[0][0], script.get("hook", ""))
     logger.info("🎬 Built %s + thumbnail", final_video)
 
-    # ── 5. Upload per platform (algorithm-adapted, ML-scheduled) ──
+    # ── 5. Upload per platform (algorithm-adapted, volume-guarded) ──
     uploaders = _platform_uploaders(dry_run)
     results = {}
+    caption_text = " ".join(s["caption"] for s in script["scenes"])
     ml.register_video({
         "title": script["title"], "hook": script.get("hook", ""),
         "pillar": script["pillar"], "hook_style": script["hook_style"],
-        "text_sha": __import__("ml_engine", fromlist=["text_sha"]).text_sha(
-            " ".join(s["caption"] for s in script["scenes"])),
-        "text": " ".join(s["caption"] for s in script["scenes"]),
+        "arm_key": arm,
+        "text_sha": text_sha(caption_text),
+        "text": caption_text,
         "source": script["source"], "run_id": run_id,
     })
 
@@ -147,36 +151,50 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         if not ml.platform_healthy(p):
             logger.warning("⛔ %s quarantined (3+ failures) — skipping", p)
             continue
+        # V2.1: daily cap + min-gap guards (consistency beats bursts)
+        allowed, why = ml.can_post(p, cfg.get("max_daily", 3), MIN_POST_GAP_HOURS)
+        if not allowed and not dry_run:
+            logger.info("⏭️  %s skipped: %s", p, why)
+            results[p] = {"platform": p, "ok": False, "skipped": True, "reason": why}
+            continue
+
         pkg = build_platform_package(script, p)
         sched = PlatformScheduler(p)
         publish_at = sched.next_peak().isoformat()
         try:
             res = uploaders[p].upload(final_video, thumb, pkg, publish_at=publish_at)
             results[p] = res
-            arm = ml.arm_key(script["pillar"], script["hook_style"],
-                             sched.next_peak().strftime("%A").lower())
             if res.get("ok"):
                 ml.report_success(p)
+                if not res.get("dry_run"):
+                    ml.record_post(p)
+                    # V2.1: attribute the published id back to the formula
+                    vid = res.get("video_id") or res.get("post_id") or res.get("media_id")
+                    if vid and arm:
+                        ml.record_video_id(p, vid, arm, script["title"])
             elif res.get("skipped"):
                 # not a real mistake — just missing config; don't penalize the ML
                 logger.info("ℹ️  %s: skipped (config) — no ML penalty", p.upper())
             else:
                 ml.report_failure(p, res.get("error") or res.get("reason", "unknown"))
-                ml.apply_penalty(arm, f"{p}_upload_failed", ml.cfg["penalty_failure"])
+                if arm:
+                    ml.apply_penalty(arm, f"{p}_upload_failed", ml.cfg["penalty_failure"])
         except Exception as exc:
             logger.error("Platform %s raised: %s", p, exc)
             ml.report_failure(p, str(exc))
+            if arm:
+                ml.apply_penalty(arm, f"{p}_raised", ml.cfg["penalty_failure"])
             results[p] = uploaders[p].result(False, error=str(exc))
 
-    # ── 6. ML feedback for strong output (rewards) ──
+    # ── 6. ML feedback for strong output (rewards on the EXACT arm) ──
     for p, res in results.items():
-        if res.get("ok") and not res.get("dry_run"):
-            arm = ml.arm_key(script["pillar"], script["hook_style"], "any")
-            ml.apply_reward(arm, f"{p}_published")
-            # A/B hint: freshly-published strong formula keeps its score high;
-            # actual metrics arrive via scripts/fetch_metrics.py.
+        if res.get("ok") and not res.get("dry_run") and arm:
+            ml.apply_reward(arm, f"{p}_published", ml.cfg["bonus_consistent"])
+            # Real performance metrics arrive via scripts/fetch_metrics.py,
+            # which credits this video's arm through the attribution map.
+    ml.save()
 
-    # ── 7. Monetization progress snapshot ──
+    # ── 7. Monetization progress snapshot (non-destructive merge) ──
     update_progress()
 
     journal.finish_run(run_id, "success",
@@ -189,7 +207,7 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Cognitive Dark V2 pipeline")
+    ap = argparse.ArgumentParser(description="Cognitive Dark V2.1 pipeline")
     ap.add_argument("--platforms", default=None,
                     help="comma list: youtube,facebook,instagram (default: all enabled)")
     ap.add_argument("--dry-run", action="store_true",
@@ -205,8 +223,6 @@ def main():
     if args.selftest:
         sys.exit(0 if selftest() else 1)
     if args.simulate:
-        sys.path.insert(0, "src")
-        from ml_engine import LearningSystem
         import random as _r
         ls = LearningSystem(store_path=Path("/tmp/ml_sim.json"))
         ls.data["arms"] = {}
