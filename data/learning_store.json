@@ -666,11 +666,11 @@
       "updated": "2026-08-02T13:05:30.884367+00:00"
     },
     "body_language::red_flag_checklist::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884371+00:00"
+      "updated": "2026-08-04T12:04:01.949087+00:00"
     },
     "cognitive_biases::pattern_interrupt::afternoon": {
       "plays": 0,
@@ -1498,6 +1498,17 @@
       "source": "template",
       "run_id": "20260804T012814",
       "ts": "2026-08-04T01:31:17.658333+00:00"
+    },
+    {
+      "title": "The Hand Gesture That Gives Away Anxiety | Dark Psychology Facts",
+      "hook": "The Hand Gesture That Gives Away Anxiety",
+      "pillar": "body_language",
+      "hook_style": "red_flag_checklist",
+      "text_sha": "70fcb8fe28ab48f84a14f4dc0c8a7f99e0a679b3140544da2b22bad47830f8fc",
+      "text": "The Hand Gesture That Gives Away Anxiety If you notice these three signs, the answer is simple. You've felt it before — that quiet discomfort you couldn't explain. Here's what it was. Psychologists call this a cognitive bias. Once you see it, you can't unsee it. Studies show it shapes decisions you make every hour. Once you recognize the pattern, you take your power back. Awareness is the only defense that actually works. Follow Cognitive Dark for the psychology they don't teach you in school.",
+      "source": "template",
+      "run_id": "20260804T120401",
+      "ts": "2026-08-04T12:05:05.726694+00:00"
     }
   ],
   "penalty_log": [
