@@ -694,11 +694,11 @@
       "updated": "2026-08-02T13:05:30.884381+00:00"
     },
     "cognitive_biases::curiosity_trigger::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T13:05:30.884384+00:00"
+      "updated": "2026-08-04T14:31:57.598288+00:00"
     },
     "cognitive_biases::counterintuitive::afternoon": {
       "plays": 1,
@@ -1509,6 +1509,17 @@
       "source": "template",
       "run_id": "20260804T120401",
       "ts": "2026-08-04T12:05:05.726694+00:00"
+    },
+    {
+      "title": "3 Mental Traps You Fall Into Daily | Dark Psychology Facts",
+      "hook": "3 Mental Traps You Fall Into Daily",
+      "pillar": "cognitive_biases",
+      "hook_style": "curiosity_trigger",
+      "text_sha": "f033cd7cfbb269c305866c4877641e57feb04ffc25d19dd622804277d21a1bba",
+      "text": "3 Mental Traps You Fall Into Daily There's a word manipulators are terrified you'll learn. The research is clear on this one. Your instincts were right to be suspicious. Studies on persuasion show this one factor explains more outcomes than any other — and it's the one nobody checks. And that's the part nobody tells you: it doesn't need your permission. It just needs your attention. Follow for more psychology that protects you.",
+      "source": "template",
+      "run_id": "20260804T143157",
+      "ts": "2026-08-04T14:34:10.714118+00:00"
     }
   ],
   "penalty_log": [
