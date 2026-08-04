@@ -58,6 +58,59 @@ class FacebookUploader(BasePlatform):
             raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:500]}")
         return resp.json()
 
+    def _reels_resumable(self, page_id: str, token: str, video_path: str,
+                         description: str) -> dict:
+        """Proper Page-Reels flow (Graph API): start → transfer chunks → finish.
+
+        V2.1.2: /video_reels REQUIRES this upload_phase handshake — a plain
+        multipart POST fails with '(#100) The parameter upload_phase is
+        required'. Reels don't support scheduling, so they publish immediately.
+        """
+        url = f"{GRAPH}/{API_VERSION}/{page_id}/video_reels"
+        size = os.path.getsize(video_path)
+
+        # 1) START — open an upload session
+        r = requests.post(url, data={"access_token": token,
+                                     "upload_phase": "start",
+                                     "file_size": str(size)}, timeout=60)
+        if r.status_code >= 400:
+            raise RuntimeError(f"reels start HTTP {r.status_code}: {r.text[:400]}")
+        sess = r.json()
+        session_id = sess.get("upload_session_id")
+        start = int(sess.get("start_offset", 0))
+        end = int(sess.get("end_offset", size))
+
+        # 2) TRANSFER — send the byte windows FB asks for
+        with open(video_path, "rb") as fh:
+            while start < size:
+                fh.seek(start)
+                chunk = fh.read(max(1, end - start))
+                r = requests.post(
+                    url,
+                    data={"access_token": token, "upload_phase": "transfer",
+                          "upload_session_id": session_id,
+                          "start_offset": str(start)},
+                    files={"video_file_chunk":
+                           (os.path.basename(video_path), chunk, "video/mp4")},
+                    timeout=300)
+                if r.status_code >= 400:
+                    raise RuntimeError(f"reels transfer HTTP {r.status_code}: {r.text[:400]}")
+                d = r.json()
+                new_start = int(d.get("start_offset", size))
+                new_end = int(d.get("end_offset", size))
+                if new_start <= start:      # no progress → bail out
+                    break
+                start, end = new_start, max(new_end, new_start)
+
+        # 3) FINISH — attach caption & publish
+        r = requests.post(url, data={"access_token": token,
+                                     "upload_phase": "finish",
+                                     "upload_session_id": session_id,
+                                     "description": description[:6300]}, timeout=120)
+        if r.status_code >= 400:
+            raise RuntimeError(f"reels finish HTTP {r.status_code}: {r.text[:400]}")
+        return r.json()
+
     def upload(self, video_path, thumb_path, pkg, publish_at=None):
         token = os.environ.get("FB_ACCESS_TOKEN", "")
         page_id = os.environ.get("FB_PAGE_ID", "")
@@ -85,35 +138,50 @@ class FacebookUploader(BasePlatform):
             data["published"] = "false"
             data["scheduled_publish_time"] = epoch
 
-        # V2.1.1: try a graceful strategy ladder — content landing matters more
-        # than exact scheduling; each failure logs the real API error body.
-        attempts = []
+        # V2.1.2: graceful strategy ladder — content landing matters more than
+        # exact scheduling; each failure logs the real API error body.
+        # 1) real Page Reels (resumable upload_phase flow) — monetization path
+        # 2) /videos scheduled fallback (regular feed video)
+        # 3) /videos immediate (last resort)
+        out, last_exc, how = None, None, ""
         if endpoint == "video_reels":
-            attempts.append(("video_reels+scheduled", f"{GRAPH}/{API_VERSION}/{page_id}/video_reels", data))
-        attempts.append(("videos+scheduled", f"{GRAPH}/{API_VERSION}/{page_id}/videos", data))
-        if epoch:
-            immediate = {k: v for k, v in data.items()
-                         if k not in ("published", "scheduled_publish_time")}
-            attempts.append(("videos+immediate", f"{GRAPH}/{API_VERSION}/{page_id}/videos", immediate))
-
-        out, last_exc = None, None
-        for label, url, payload in attempts:
             try:
-                out = self._post(url, payload, video_path)
-                logger.info("FB upload OK via %s", label)
-                break
+                out = self._reels_resumable(page_id, token, video_path,
+                                            data["description"])
+                how = "video_reels (resumable)"
             except Exception as exc:
                 last_exc = exc
-                logger.warning("FB %s failed: %s", label, exc)
+                logger.warning("FB reels resumable failed: %s", exc)
+        if out is None:
+            attempts = [
+                ("videos+scheduled", f"{GRAPH}/{API_VERSION}/{page_id}/videos", data),
+            ]
+            if epoch:
+                immediate = {k: v for k, v in data.items()
+                             if k not in ("published", "scheduled_publish_time")}
+                attempts.append(("videos+immediate",
+                                 f"{GRAPH}/{API_VERSION}/{page_id}/videos", immediate))
+            for label, url, payload in attempts:
+                try:
+                    out = self._post(url, payload, video_path)
+                    how = label
+                    break
+                except Exception as exc:
+                    last_exc = exc
+                    logger.warning("FB %s failed: %s", label, exc)
         if out is None:
             logger.error("Facebook upload failed on all strategies: %s", last_exc)
             return self.result(False, error=str(last_exc))
+        logger.info("FB upload OK via %s", how)
 
-        if "id" not in out:
+        # reels finish → {"success": true, "video_id": ...}; /videos → {"id": ...}
+        pid = out.get("id") or out.get("video_id") or out.get("post_id")
+        if not pid and not out.get("success"):
             return self.result(False, error=f"FB API returned: {out}")
-        logger.info("✅ Facebook post: https://facebook.com/%s", out["id"])
-        return self.result(True, post_id=out["id"],
-                           url=f"https://facebook.com/{out['id']}")
+        pid = pid or "reel"
+        logger.info("✅ Facebook post: https://facebook.com/%s", pid)
+        return self.result(True, post_id=pid,
+                           url=f"https://facebook.com/{pid}")
 
 
 if __name__ == "__main__":
