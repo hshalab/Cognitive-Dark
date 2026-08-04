@@ -37,7 +37,11 @@ CHANNEL_NAME = "Cognitive Dark"
 CHANNEL_TAGLINE = "The Psychology of Influence — and How to Protect Yourself"
 TARGET_COUNTRY = "US"
 TARGET_LANGUAGE = "en"
-CHANNEL_URL = "https://youtube.com/@CognitiveDark"
+# V2.1 FIX: the real, populated channel is @cognitive_dark (UC2zuZkPenTsLrrD2qu8sjrA).
+# V2 pointed at @CognitiveDark (UCRv8VGQna16QC0a5GEtGpBg) — an EMPTY channel —
+# so any CTA/link sent viewers to a channel with zero content.
+CHANNEL_URL = "https://youtube.com/@cognitive_dark"
+CHANNEL_ID = "UC2zuZkPenTsLrrD2qu8sjrA"
 
 NICHE = {
     "name": "Psychology of Influence & Self-Defense",
