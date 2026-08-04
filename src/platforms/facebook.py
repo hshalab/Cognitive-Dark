@@ -52,7 +52,10 @@ class FacebookUploader(BasePlatform):
         with open(video_path, "rb") as fh:
             files = {"source": (os.path.basename(video_path), fh, "video/mp4")}
             resp = requests.post(url, data=data, files=files, timeout=600)
-        resp.raise_for_status()
+        if resp.status_code >= 400:
+            # V2.1.1: log the API error BODY (raise_for_status hides it) —
+            # this is what tells us permission vs param vs token problems.
+            raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:500]}")
         return resp.json()
 
     def upload(self, video_path, thumb_path, pkg, publish_at=None):
@@ -81,25 +84,30 @@ class FacebookUploader(BasePlatform):
         if epoch:
             data["published"] = "false"
             data["scheduled_publish_time"] = epoch
-        if endpoint == "videos":
-            data.setdefault("published", data.get("published", "true"))
 
-        url = f"{GRAPH}/{API_VERSION}/{page_id}/{endpoint}"
-        try:
-            out = self._post(url, data, video_path)
-        except Exception as exc:
-            # V2.1: Reels endpoint can reject some pages/tokens → fall back to /videos
-            if endpoint == "video_reels":
-                logger.warning("FB video_reels failed (%s) → retrying /videos", exc)
-                try:
-                    url = f"{GRAPH}/{API_VERSION}/{page_id}/videos"
-                    out = self._post(url, data, video_path)
-                except Exception as exc2:
-                    logger.error("Facebook upload failed: %s", exc2)
-                    return self.result(False, error=str(exc2))
-            else:
-                logger.error("Facebook upload failed: %s", exc)
-                return self.result(False, error=str(exc))
+        # V2.1.1: try a graceful strategy ladder — content landing matters more
+        # than exact scheduling; each failure logs the real API error body.
+        attempts = []
+        if endpoint == "video_reels":
+            attempts.append(("video_reels+scheduled", f"{GRAPH}/{API_VERSION}/{page_id}/video_reels", data))
+        attempts.append(("videos+scheduled", f"{GRAPH}/{API_VERSION}/{page_id}/videos", data))
+        if epoch:
+            immediate = {k: v for k, v in data.items()
+                         if k not in ("published", "scheduled_publish_time")}
+            attempts.append(("videos+immediate", f"{GRAPH}/{API_VERSION}/{page_id}/videos", immediate))
+
+        out, last_exc = None, None
+        for label, url, payload in attempts:
+            try:
+                out = self._post(url, payload, video_path)
+                logger.info("FB upload OK via %s", label)
+                break
+            except Exception as exc:
+                last_exc = exc
+                logger.warning("FB %s failed: %s", label, exc)
+        if out is None:
+            logger.error("Facebook upload failed on all strategies: %s", last_exc)
+            return self.result(False, error=str(last_exc))
 
         if "id" not in out:
             return self.result(False, error=f"FB API returned: {out}")

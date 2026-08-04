@@ -55,10 +55,12 @@ class InstagramUploader(BasePlatform):
         url = f"{GRAPH}/{API_VERSION}/{self.ig_id}/media"
         r = requests.post(url, params={"access_token": self.token}, data=payload,
                           headers=self._headers(), timeout=120)
-        r.raise_for_status()
+        if r.status_code >= 400:
+            # V2.1.1: surface the API error body (token/scope/link issues show here)
+            raise RuntimeError(f"IG container HTTP {r.status_code}: {r.text[:500]}")
         cid = r.json().get("id")
         if not cid:
-            raise RuntimeError(f"no container id: {r.text}")
+            raise RuntimeError(f"no container id: {r.text[:300]}")
         return cid
 
     def _wait_ready(self, container_id: str, timeout_s: int = 300) -> None:
