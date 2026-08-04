@@ -1016,11 +1016,11 @@
       "updated": "2026-08-03T18:51:21.949852+00:00"
     },
     "influence::stoic_echo::evening": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-03T18:51:21.949855+00:00"
+      "updated": "2026-08-04T18:27:31.734271+00:00"
     },
     "influence::red_flag_checklist::evening": {
       "plays": 0,
@@ -1531,6 +1531,17 @@
       "source": "template",
       "run_id": "20260804T161309",
       "ts": "2026-08-04T16:14:20.850767+00:00"
+    },
+    {
+      "title": "How Advertisers Program Your Choices | Dark Psychology Facts",
+      "hook": "How Advertisers Program Your Choices",
+      "pillar": "influence",
+      "hook_style": "stoic_echo",
+      "text_sha": "8ff9f712cfcd55fce2b974553c1c09fb640c7a2c0db8c4de81399753bc3a3c3c",
+      "text": "How Advertisers Program Your Choices Even Marcus Aurelius warned against what you accept daily. You've felt it before — that quiet discomfort you couldn't explain. Here's what it was. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. Here's the twist — the people who use it often don't know they're doing it. It's learned behavior, passed down and repeated. Follow Cognitive Dark to see through the patterns before they see you.",
+      "source": "template",
+      "run_id": "20260804T182731",
+      "ts": "2026-08-04T18:30:24.442528+00:00"
     }
   ],
   "penalty_log": [
