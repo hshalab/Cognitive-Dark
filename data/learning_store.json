@@ -1255,10 +1255,10 @@
     },
     "stoic_mind::pattern_interrupt::evening": {
       "plays": 1,
-      "rewards": 1.0,
+      "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 3,
-      "updated": "2026-08-04T20:13:37.783576+00:00"
+      "n": 4,
+      "updated": "2026-08-04T20:22:37.237930+00:00"
     },
     "stoic_mind::knowledge_gap::evening": {
       "plays": 0,
@@ -1653,6 +1653,7 @@
       "penalty": -2.0
     },
     {
+<<<<<<< Updated upstream
       "ts": "2026-08-04T20:22:02.193558+00:00",
       "arm": "cognitive_biases::pattern_interrupt::evening",
       "reason": "facebook_upload_failed",
@@ -1663,6 +1664,12 @@
       "arm": "cognitive_biases::pattern_interrupt::evening",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+=======
+      "ts": "2026-08-04T20:22:37.237933+00:00",
+      "arm": "stoic_mind::pattern_interrupt::evening",
+      "reason": "low_metrics:7ITrnIZI4eM",
+      "penalty": -1.0
+>>>>>>> Stashed changes
     }
   ],
   "reward_log": [
@@ -1700,7 +1707,14 @@
       "platform": "youtube",
       "title": "Stoic Rules That End Overthinking | Dark Psychology Facts",
       "ts": "2026-08-04T20:13:35.066930+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "credited_at": "2026-08-04T20:22:37.237905+00:00"
     }
   },
   "post_log": {
