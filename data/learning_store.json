@@ -1142,11 +1142,11 @@
       "updated": "2026-08-03T18:51:21.949935+00:00"
     },
     "cognitive_biases::pattern_interrupt::evening": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-03T18:51:21.949938+00:00"
+      "n": 2,
+      "updated": "2026-08-04T20:22:02.388942+00:00"
     },
     "cognitive_biases::knowledge_gap::evening": {
       "plays": 0,
@@ -1589,6 +1589,18 @@
       "source": "template",
       "run_id": "20260804T200922",
       "ts": "2026-08-04T20:13:28.128091+00:00"
+    },
+    {
+      "title": "Why Your Brain Lies to You Every Day | Dark Psychology Facts",
+      "hook": "Why Your Brain Lies to You Every Day",
+      "pillar": "cognitive_biases",
+      "hook_style": "pattern_interrupt",
+      "arm_key": "cognitive_biases::pattern_interrupt::evening",
+      "text_sha": "6dc0fa6ea6d17bd2bb50db29599d886bca1754aacf040a71221ab1dd787b007a",
+      "text": "Why Your Brain Lies to You Every Day You need to hear this before your next conversation. Before you dismiss this, consider how often it's already happened to you. A landmark study on this pattern found it works in under ten seconds. That's faster than you can catch yourself. The moment you name it, it loses its power over you. That's why awareness is the single strongest defense. Follow Cognitive Dark to see through the patterns before they see you.",
+      "source": "template",
+      "run_id": "20260804T201742",
+      "ts": "2026-08-04T20:22:00.230346+00:00"
     }
   ],
   "penalty_log": [
@@ -1639,6 +1651,18 @@
       "arm": "stoic_mind::pattern_interrupt::evening",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-04T20:22:02.193558+00:00",
+      "arm": "cognitive_biases::pattern_interrupt::evening",
+      "reason": "facebook_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-04T20:22:02.388945+00:00",
+      "arm": "cognitive_biases::pattern_interrupt::evening",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0
     }
   ],
   "reward_log": [
@@ -1656,16 +1680,16 @@
       "last_check": "2026-08-04T20:13:35.062921+00:00"
     },
     "facebook": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "400 Client Error: Bad Request for url: https://graph.facebook.com/v25.0/1047235841816723/videos",
-      "last_check": "2026-08-04T20:13:37.455281+00:00"
+      "last_reason": "HTTP 400: {\"error\":{\"message\":\"(#100) No permission to publish the video\",\"type\":\"OAuthException\",\"code\":100,\"fbtrace_id\":\"AuqIHVwBFp9_F5DG0CTq_B1\"}}",
+      "last_check": "2026-08-04T20:22:02.191657+00:00"
     },
     "instagram": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "401 Client Error: Unauthorized for url: https://graph.instagram.com/v22.0/17841427429006050/media?access_token=***",
-      "last_check": "2026-08-04T20:13:37.779802+00:00"
+      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"A_dUUA7rbhpE5MkkvL19Uz4\"}}",
+      "last_check": "2026-08-04T20:22:02.387444+00:00"
     }
   },
   "model_version": 2,
