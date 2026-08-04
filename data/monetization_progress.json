@@ -3,9 +3,6 @@
     "subs": 7,
     "watch_hours": 0,
     "shorts_views_90d": 0,
-    "views": 81,
-    "videos": 31,
-    "last_growth": 0,
     "pct": {
       "subs": 0.7,
       "watch_hours": 0.0,
@@ -20,7 +17,6 @@
     "followers": 523,
     "minutes_60d": 0,
     "uploads_30d": 0,
-    "last_growth": 0,
     "pct": {
       "followers": 10.5,
       "minutes": 0.0
@@ -41,9 +37,5 @@
       "followers": 16
     }
   },
-<<<<<<< Updated upstream
-  "last_updated": "2026-08-04T20:22:02.391897+00:00"
-=======
-  "last_updated": "2026-08-04T20:22:37.033764+00:00"
->>>>>>> Stashed changes
+  "last_updated": "2026-08-04T23:11:21.997098+00:00"
 }
