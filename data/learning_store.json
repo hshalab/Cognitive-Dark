@@ -379,11 +379,11 @@
       "updated": "2026-08-02T04:10:58.084706+00:00"
     },
     "stoic_mind::stoic_echo::morning": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-02T04:10:58.084709+00:00"
+      "updated": "2026-08-04T01:28:14.659756+00:00"
     },
     "stoic_mind::red_flag_checklist::morning": {
       "plays": 0,
@@ -1487,6 +1487,17 @@
       "source": "template",
       "run_id": "20260803T230611",
       "ts": "2026-08-03T23:07:16.341566+00:00"
+    },
+    {
+      "title": "The Ancient Psychology of Handling Criticism | Dark Psychology Facts",
+      "hook": "The Ancient Psychology of Handling Criticism",
+      "pillar": "stoic_mind",
+      "hook_style": "stoic_echo",
+      "text_sha": "73699b68c6e288ec7631a30418da0a7bb8fae143c71a06a24272d2e7e5184001",
+      "text": "The Ancient Psychology of Handling Criticism Even Marcus Aurelius warned against what you accept daily. Psychologists have studied this pattern for decades. Here's what they found. Research into human behavior confirms it: familiarity breeds acceptance. The more you hear something, the more true it feels. What makes it dangerous is how ordinary it looks. But now that you've seen it, you'll start noticing it everywhere. Follow Cognitive Dark to see through the patterns before they see you.",
+      "source": "template",
+      "run_id": "20260804T012814",
+      "ts": "2026-08-04T01:31:17.658333+00:00"
     }
   ],
   "penalty_log": [
