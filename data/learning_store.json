@@ -1177,11 +1177,11 @@
       "updated": "2026-08-03T18:51:21.949951+00:00"
     },
     "cognitive_biases::dark_revelation::evening": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-03T18:51:21.949953+00:00"
+      "updated": "2026-08-04T19:16:44.063013+00:00"
     },
     "cognitive_biases::stoic_echo::evening": {
       "plays": 0,
@@ -1542,6 +1542,17 @@
       "source": "template",
       "run_id": "20260804T182731",
       "ts": "2026-08-04T18:30:24.442528+00:00"
+    },
+    {
+      "title": "How Confirmation Bias Controls Your Opinions | Dark Psychology Facts",
+      "hook": "How Confirmation Bias Controls Your Opinions",
+      "pillar": "cognitive_biases",
+      "hook_style": "dark_revelation",
+      "text_sha": "92300060cfe3663c02b6414b60a701361dd4b697d101f9d0e5a775159c197319",
+      "text": "How Confirmation Bias Controls Your Opinions You've been lied to about how influence really works. Here's how it actually works. Your brain takes a mental shortcut every single time — and that shortcut is exactly what gets exploited. A landmark study on this pattern found it works in under ten seconds. That's faster than you can catch yourself. And that's the part nobody tells you: it doesn't need your permission. It just needs your attention. Follow for more psychology that protects you.",
+      "source": "template",
+      "run_id": "20260804T191644",
+      "ts": "2026-08-04T19:17:52.321182+00:00"
     }
   ],
   "penalty_log": [
