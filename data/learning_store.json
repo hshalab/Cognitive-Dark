@@ -953,11 +953,11 @@
       "updated": "2026-08-03T18:51:21.949816+00:00"
     },
     "self_defense::dark_revelation::evening": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-03T18:51:21.949819+00:00"
+      "updated": "2026-08-04T20:00:31.033231+00:00"
     },
     "self_defense::stoic_echo::evening": {
       "plays": 0,
@@ -988,11 +988,11 @@
       "updated": "2026-08-03T18:51:21.949838+00:00"
     },
     "influence::fear_based::evening": {
-      "plays": 1,
+      "plays": 2,
       "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-03T23:06:11.179194+00:00"
+      "n": 1,
+      "updated": "2026-08-04T20:00:31.030982+00:00"
     },
     "influence::curiosity_trigger::evening": {
       "plays": 0,
@@ -1565,6 +1565,18 @@
       "source": "template",
       "run_id": "20260804T194011",
       "ts": "2026-08-04T19:44:45.573662+00:00"
+    },
+    {
+      "title": "The 30-Second Test That Reveals a Manipulator | Dark Psychology Facts",
+      "hook": "The 30-Second Test That Reveals a Manipulator",
+      "pillar": "self_defense",
+      "hook_style": "dark_revelation",
+      "arm_key": "self_defense::dark_revelation::evening",
+      "text_sha": "ba5d8b62e5d6a4dfbc5b5bae4fa6bebd9d6dd1676e9281a2da334781362876c5",
+      "text": "The 30-Second Test That Reveals a Manipulator You've been lied to about how influence really works. There's a reason this works on nearly everyone. It's wired into how we think. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. Here's the twist — the people who use it often don't know they're doing it. It's learned behavior, passed down and repeated. Follow Cognitive Dark for the psychology they don't teach you in school.",
+      "source": "template",
+      "run_id": "20260804T200030",
+      "ts": "2026-08-04T20:04:48.925984+00:00"
     }
   ],
   "penalty_log": [
@@ -1597,6 +1609,12 @@
       "arm": "stoic_mind::fear_based::monday",
       "reason": "facebook_upload_failed",
       "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-04T20:00:31.030985+00:00",
+      "arm": "influence::fear_based::evening",
+      "reason": "dedup_blocked",
+      "penalty": 0.3
     }
   ],
   "reward_log": [],
