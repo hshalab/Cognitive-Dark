@@ -1254,11 +1254,11 @@
       "updated": "2026-08-03T18:51:21.949981+00:00"
     },
     "stoic_mind::pattern_interrupt::evening": {
-      "plays": 0,
-      "rewards": 0.0,
+      "plays": 1,
+      "rewards": 1.0,
       "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-03T18:51:21.949984+00:00"
+      "n": 3,
+      "updated": "2026-08-04T20:13:37.783576+00:00"
     },
     "stoic_mind::knowledge_gap::evening": {
       "plays": 0,
@@ -1577,6 +1577,18 @@
       "source": "template",
       "run_id": "20260804T200030",
       "ts": "2026-08-04T20:04:48.925984+00:00"
+    },
+    {
+      "title": "Stoic Rules That End Overthinking | Dark Psychology Facts",
+      "hook": "Stoic Rules That End Overthinking",
+      "pillar": "stoic_mind",
+      "hook_style": "pattern_interrupt",
+      "arm_key": "stoic_mind::pattern_interrupt::evening",
+      "text_sha": "1b7cf2edd7d3cf2b30eb9c69202c8f111c4e4ad6b815c11dbc13662f2a4ac29a",
+      "text": "Stoic Rules That End Overthinking You need to hear this before your next conversation. There's a reason this works on nearly everyone. It's wired into how we think. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow for more psychology that protects you.",
+      "source": "template",
+      "run_id": "20260804T200922",
+      "ts": "2026-08-04T20:13:28.128091+00:00"
     }
   ],
   "penalty_log": [
@@ -1615,12 +1627,64 @@
       "arm": "influence::fear_based::evening",
       "reason": "dedup_blocked",
       "penalty": 0.3
+    },
+    {
+      "ts": "2026-08-04T20:13:37.457237+00:00",
+      "arm": "stoic_mind::pattern_interrupt::evening",
+      "reason": "facebook_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-04T20:13:37.781751+00:00",
+      "arm": "stoic_mind::pattern_interrupt::evening",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0
     }
   ],
-  "reward_log": [],
-  "health": {},
+  "reward_log": [
+    {
+      "ts": "2026-08-04T20:13:37.783579+00:00",
+      "arm": "stoic_mind::pattern_interrupt::evening",
+      "reason": "youtube_published",
+      "reward": 1.0
+    }
+  ],
+  "health": {
+    "youtube": {
+      "failures": 0,
+      "healthy": true,
+      "last_check": "2026-08-04T20:13:35.062921+00:00"
+    },
+    "facebook": {
+      "failures": 1,
+      "healthy": true,
+      "last_reason": "400 Client Error: Bad Request for url: https://graph.facebook.com/v25.0/1047235841816723/videos",
+      "last_check": "2026-08-04T20:13:37.455281+00:00"
+    },
+    "instagram": {
+      "failures": 1,
+      "healthy": true,
+      "last_reason": "401 Client Error: Unauthorized for url: https://graph.instagram.com/v22.0/17841427429006050/media?access_token=***",
+      "last_check": "2026-08-04T20:13:37.779802+00:00"
+    }
+  },
   "model_version": 2,
   "created_at": "2026-08-02T04:10:58.084531+00:00",
-  "attribution": {},
-  "post_log": {}
+  "attribution": {
+    "7ITrnIZI4eM": {
+      "arm_key": "stoic_mind::pattern_interrupt::evening",
+      "platform": "youtube",
+      "title": "Stoic Rules That End Overthinking | Dark Psychology Facts",
+      "ts": "2026-08-04T20:13:35.066930+00:00",
+      "credited": false
+    }
+  },
+  "post_log": {
+    "2026-08-04": {
+      "youtube": {
+        "count": 1,
+        "last_ts": "2026-08-04T20:13:35.065140+00:00"
+      }
+    }
+  }
 }
