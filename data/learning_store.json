@@ -2,8 +2,9 @@
   "arms": {
     "influence::curiosity_trigger::afternoon": {
       "plays": 0,
-      "rewards": 1.0,
+      "rewards": 0.0,
       "sum_sq": 0.0,
+<<<<<<< Updated upstream
       "n": 3,
       "updated": "2026-08-05T12:06:33.180413+00:00"
     },
@@ -447,6 +448,10 @@
       "sum_sq": 0.0,
       "n": 0,
       "updated": "2026-08-05T14:29:43.480601+00:00"
+=======
+      "n": 4,
+      "updated": "2026-08-05T14:33:35.904513+00:00"
+>>>>>>> Stashed changes
     }
   },
   "videos": [
@@ -481,7 +486,14 @@
       "platform": "youtube",
       "title": "The 6 Words That Make People Say Yes | Dark Psychology Facts",
       "ts": "2026-08-05T12:06:31.614741+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "credited_at": "2026-08-05T14:33:35.904496+00:00"
     }
   },
   "post_log": {
@@ -506,6 +518,7 @@
       "penalty": -2.0
     },
     {
+<<<<<<< Updated upstream
       "ts": "2026-08-05T14:33:06.463781+00:00",
       "arm": "mind_control::counterintuitive::afternoon",
       "reason": "facebook_upload_failed",
@@ -516,6 +529,12 @@
       "arm": "mind_control::counterintuitive::afternoon",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+=======
+      "ts": "2026-08-05T14:33:35.904516+00:00",
+      "arm": "influence::curiosity_trigger::afternoon",
+      "reason": "low_metrics:GX-4lwPgzus",
+      "penalty": -1.0
+>>>>>>> Stashed changes
     }
   ],
   "reward_log": [

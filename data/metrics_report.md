@@ -1,10 +1,10 @@
 # 📊 Cognitive Dark — Metrics Report
 
-*Updated: 2026-08-05T01:47:04.453142+00:00*
+*Updated: 2026-08-05T14:33:35.905566+00:00*
 
 **ML:** 1 arms · 1 videos · 1 attributed · 1 rewards · 3 penalties
 
-**Best formulas:** cognitive_biases/curiosity_trigger (0.0)
+**Best formulas:** influence/curiosity_trigger (0.0)
 
 **Videos credited this run:** 1
 
@@ -24,22 +24,21 @@
       "shorts_views": 333333
     },
     "views": 81,
-    "videos": 33,
+    "videos": 34,
     "last_growth": 0
   },
   "facebook": {
-    "followers": 513,
+    "followers": 523,
     "minutes_60d": 0,
     "uploads_30d": 0,
     "pct": {
-      "followers": 10.3,
+      "followers": 10.5,
       "minutes": 0.0
     },
     "daily_targets": {
       "followers": 149,
       "minutes": 2000
-    },
-    "last_growth": -10
+    }
   },
   "instagram": {
     "followers": 1,
@@ -52,6 +51,6 @@
       "followers": 16
     }
   },
-  "last_updated": "2026-08-05T01:47:04.199940+00:00"
+  "last_updated": "2026-08-05T14:33:35.621110+00:00"
 }
 ```
