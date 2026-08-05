@@ -60,8 +60,8 @@
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675791+00:00"
+      "n": 2,
+      "updated": "2026-08-05T23:09:29.218526+00:00"
     },
     "con_artists::case_file::evening": {
       "plays": 0,
@@ -468,6 +468,18 @@
       "source": "template",
       "run_id": "20260805T191001",
       "ts": "2026-08-05T19:14:25.854736+00:00"
+    },
+    {
+      "title": "Why Smart People Join Dangerous Cults | Mind Control Files",
+      "hook": "Why Smart People Join Dangerous Cults",
+      "pillar": "cults",
+      "hook_style": "red_flag",
+      "arm_key": "cults::red_flag::evening",
+      "text_sha": "3336799bcd5b2d7b1be409087cc921ebeac7dc862f584b3c442e11a74d12e21f",
+      "text": "Why Smart People Join Dangerous Cults Three signs. In order. Every single time. This isn't a theory. It's a documented pattern of human behavior. Research into human behavior confirms it: familiarity breeds acceptance. The more you hear something, the more true it feels. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow Mind Control Files — coercion decoded, daily.",
+      "source": "template",
+      "run_id": "20260805T230421",
+      "ts": "2026-08-05T23:09:28.070174+00:00"
     }
   ],
   "attribution": {
@@ -499,6 +511,18 @@
       "arm": "cognitive_biases::knowledge_gap::evening",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-05T23:09:28.921789+00:00",
+      "arm": "cults::red_flag::evening",
+      "reason": "facebook_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-05T23:09:29.218530+00:00",
+      "arm": "cults::red_flag::evening",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0
     }
   ],
   "reward_log": [
@@ -516,16 +540,16 @@
       "last_check": "2026-08-05T19:14:31.119094+00:00"
     },
     "facebook": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "HTTP 400: {\"error\":{\"message\":\"Error validating access token: The session has been invalidated because the user changed their password or Facebook has changed the session for security reasons.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":460,\"fbtrace_id\":\"AQBwNRIhJ8mgdVPfc3OX91h\"}}",
-      "last_check": "2026-08-05T19:14:34.693927+00:00"
+      "last_reason": "HTTP 400: {\"error\":{\"message\":\"Error validating access token: The session has been invalidated because the user changed their password or Facebook has changed the session for security reasons.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":460,\"fbtrace_id\":\"AFQ_RH1TzCIi3nch3-AQSmj\"}}",
+      "last_check": "2026-08-05T23:09:28.920844+00:00"
     },
     "instagram": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AfhnWdKEBkDY5LTKZQkGqkr\"}}",
-      "last_check": "2026-08-05T19:14:35.190165+00:00"
+      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AGOjDxe2iSgIWB83XEONbE6\"}}",
+      "last_check": "2026-08-05T23:09:29.217617+00:00"
     }
   },
   "model_version": 3,
