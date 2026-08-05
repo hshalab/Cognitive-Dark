@@ -6,6 +6,454 @@
       "sum_sq": 0.0,
       "n": 3,
       "updated": "2026-08-05T19:14:35.191085+00:00"
+    },
+    "cults::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675764+00:00"
+    },
+    "cults::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675774+00:00"
+    },
+    "cults::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675778+00:00"
+    },
+    "cults::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675781+00:00"
+    },
+    "cults::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675784+00:00"
+    },
+    "cults::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675786+00:00"
+    },
+    "cults::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675788+00:00"
+    },
+    "cults::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675791+00:00"
+    },
+    "con_artists::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675793+00:00"
+    },
+    "con_artists::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675796+00:00"
+    },
+    "con_artists::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675798+00:00"
+    },
+    "con_artists::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675801+00:00"
+    },
+    "con_artists::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675803+00:00"
+    },
+    "con_artists::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675805+00:00"
+    },
+    "con_artists::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675809+00:00"
+    },
+    "con_artists::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675811+00:00"
+    },
+    "mind_control_history::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675814+00:00"
+    },
+    "mind_control_history::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675816+00:00"
+    },
+    "mind_control_history::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675820+00:00"
+    },
+    "mind_control_history::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675822+00:00"
+    },
+    "mind_control_history::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675824+00:00"
+    },
+    "mind_control_history::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675828+00:00"
+    },
+    "mind_control_history::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675831+00:00"
+    },
+    "mind_control_history::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675833+00:00"
+    },
+    "interrogation::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675835+00:00"
+    },
+    "interrogation::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675837+00:00"
+    },
+    "interrogation::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675840+00:00"
+    },
+    "interrogation::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675842+00:00"
+    },
+    "interrogation::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675844+00:00"
+    },
+    "interrogation::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675846+00:00"
+    },
+    "interrogation::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675848+00:00"
+    },
+    "interrogation::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675852+00:00"
+    },
+    "coercive_control::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675854+00:00"
+    },
+    "coercive_control::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675857+00:00"
+    },
+    "coercive_control::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675859+00:00"
+    },
+    "coercive_control::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675861+00:00"
+    },
+    "coercive_control::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675864+00:00"
+    },
+    "coercive_control::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675866+00:00"
+    },
+    "coercive_control::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675868+00:00"
+    },
+    "coercive_control::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675870+00:00"
+    },
+    "mass_psychology::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675872+00:00"
+    },
+    "mass_psychology::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675875+00:00"
+    },
+    "mass_psychology::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675878+00:00"
+    },
+    "mass_psychology::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675881+00:00"
+    },
+    "mass_psychology::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675883+00:00"
+    },
+    "mass_psychology::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675886+00:00"
+    },
+    "mass_psychology::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675888+00:00"
+    },
+    "mass_psychology::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675890+00:00"
+    },
+    "brainwashing_myths::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675892+00:00"
+    },
+    "brainwashing_myths::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675894+00:00"
+    },
+    "brainwashing_myths::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675896+00:00"
+    },
+    "brainwashing_myths::warning::evening": {
+      "plays": 1,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675938+00:00"
+    },
+    "brainwashing_myths::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675901+00:00"
+    },
+    "brainwashing_myths::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675904+00:00"
+    },
+    "brainwashing_myths::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675907+00:00"
+    },
+    "brainwashing_myths::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675912+00:00"
+    },
+    "stoic_defense::case_file::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675914+00:00"
+    },
+    "stoic_defense::chilling_fact::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675916+00:00"
+    },
+    "stoic_defense::question_hook::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675918+00:00"
+    },
+    "stoic_defense::warning::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675920+00:00"
+    },
+    "stoic_defense::plot_twist::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675922+00:00"
+    },
+    "stoic_defense::timeline::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675925+00:00"
+    },
+    "stoic_defense::confession::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675928+00:00"
+    },
+    "stoic_defense::red_flag::evening": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T19:34:21.675930+00:00"
     }
   },
   "videos": [

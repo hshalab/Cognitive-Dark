@@ -1,97 +1,97 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.1 — Niche Strategy & Topic Bank.
+Cognitive Dark V2.2 — Niche Strategy & Topic Bank (Mind Control Files).
 
 Supplies the Autonomous Brain with a deep, monetization-safe topic pool
-per content pillar (2026 trend-researched). Every topic keeps the dark
-hook-power but stays in the educational "protect yourself" framing.
+per content pillar. True-crime × psychology positioning: story-driven,
+educational, "how it worked + how to defend" framing.
 """
 
 from config.settings import PILLARS
 
 # ─────────────────────────────────────────────────────────────
-# Deep topic bank per pillar (2026 viral angles)
+# Deep topic bank per pillar (2026 viral true-crime angles)
 # ─────────────────────────────────────────────────────────────
 TOPICS_BY_PILLAR = {
-    "self_defense": [
-        "How manipulators use silence as a weapon",
-        "The gaslighting phrases that sound like love",
-        "Why manipulators target empathetic people",
-        "The guilt-trip loop and how to exit it",
-        "How covert manipulation hides in compliments",
-        "The DARVO tactic: deny, attack, reverse victim",
-        "Why saying 'no' feels dangerous after manipulation",
-        "The fog technique: confusing you to control you",
+    "cults": [
+        "How NXIVM hid a cult inside self-help branding",
+        "The 3 questions cults forbid members to ask",
+        "Why high-achievers fall for cult recruitment",
+        "Love bombing: week one inside a cult",
+        "How Jonestown's obedience was engineered step by step",
+        "The cult exit interview that went viral",
+        "Isolation tactics: cutting the lifelines",
+        "The leader's script for killing doubt",
     ],
-    "influence": [
-        "How supermarkets engineer your buying decisions",
-        "The decoy effect: why you pick the middle option",
-        "How urgency timers hijack your judgment",
-        "Why free trials quietly rewire commitment",
-        "The foot-in-the-door pattern in everyday life",
-        "How social proof is manufactured online",
-        "The psychology of pricing: why 99 feels cheaper",
-        "How reciprocity traps you into saying yes",
+    "con_artists": [
+        "The psychology behind the Tinder Swindler's script",
+        "Why victims of romance scams wire money twice",
+        "Anatomy of the pig-butchering crypto scam",
+        "The confidence trick that sold the Eiffel Tower",
+        "Urgency framing: how scammers stop you thinking",
+        "How a con artist reads your first reply",
+        "The pigeon drop con, still working today",
+        "Verbal leakage: phrases scammers overuse",
     ],
-    "dark_triad": [
-        "How narcissists use charm as camouflage",
-        "The empathy gap: inside the dark triad mind",
-        "Love bombing → devaluation → discard cycle",
-        "How Machiavellians build alliances to betray them",
-        "The mask of sanity: psychopathy up close",
-        "Why dark triad people love power games at work",
-        "How to spot covert narcissism in 5 minutes",
-        "The discard phase: why it hurts so much",
+    "mind_control_history": [
+        "What the declassified MKUltra files actually show",
+        "The CIA experiments that crossed every line",
+        "Project Stargate and the psychic spy budget",
+        "Radio Rwanda: broadcasts that manufactured hate",
+        "How WWII propaganda posters hijacked emotion",
+        "The overton window shift of a single ad campaign",
+        "Cold War hypnosis programs: fact vs myth",
+        "The ethics fallout that changed research rules",
     ],
-    "body_language": [
-        "Micro-expressions that leak true feelings",
-        "How to detect discomfort in 3 seconds",
-        "The feet don't lie: lower-body signals",
-        "Pacifying behaviors: self-touch under stress",
-        "How confidence is signaled before words",
-        "Eye contact myths vs actual research",
-        "The difference between shy and deceptive gaze",
-        "Vocal tone shifts that reveal hidden emotion",
+    "interrogation": [
+        "Why innocent people confess under pressure",
+        "The question sequence that exposes liars",
+        "Baseline behavior: how detectives calibrate truth",
+        "Silence as a weapon in interrogation rooms",
+        "Statement analysis: the words that betray you",
+        "The Reid technique's psychological pressure points",
+        "Micro-expressions that leak during interviews",
+        "How to answer a manipulative question safely",
     ],
-    "cognitive_biases": [
-        "The sunk cost trap keeping you stuck",
-        "Why your memory rewrites events",
-        "The halo effect: beauty = trust illusion",
-        "Confirmation bias in your daily feed",
-        "The Dunning-Kruger effect explained",
-        "Availability bias: why fear feels factual",
-        "The anchoring trick in negotiations",
-        "Why your brain loves patterns that aren't there",
+    "coercive_control": [
+        "Coercive control: the abuse with no bruises",
+        "The daily rules abusers quietly enforce",
+        "How abusers isolate you from your own family",
+        "Financial abuse: control through the wallet",
+        "Why leaving is statistically the danger peak",
+        "The abuse cycle: tension, incident, reconciliation",
+        "Blame-shifting language decoded",
+        "Safety planning: document everything",
     ],
-    "red_flags": [
-        "The trauma bond chemistry explained",
-        "Why intermittent reinforcement is addictive",
-        "Isolation: the first move of control",
-        "The silent treatment as punishment",
-        "Why leaving feels harder than staying",
-        "The cycle of abuse: four phases mapped",
-        "How 'you're too sensitive' erodes reality",
-        "Breadcrumbing: crumbs instead of commitment",
+    "mass_psychology": [
+        "How crowds rewire individual judgment in minutes",
+        "The outrage loop: feeds engineered for anger",
+        "Why false stories spread 6x faster than truth",
+        "Astroturfing: fake movements, real money",
+        "Fear headlines and your attention budget",
+        "The bandwagon effect inside your comment section",
+        "Manufactured consent in modern media",
+        "How normal gets redefined one headline at a time",
     ],
-    "stoic_mind": [
-        "The Stoic pause between trigger and reaction",
-        "Marcus Aurelius on handling difficult people",
-        "Negative visualization: prehearsing adversity",
-        "The dichotomy of control in toxic situations",
-        "Epictetus: freedom starts with judgments",
-        "How Stoics neutralize insults",
-        "Amor fati: turning pain into fuel",
-        "Seneca on the shortness of anxious lives",
+    "brainwashing_myths": [
+        "Brainwashing myths vs the real science",
+        "The Manchurian Candidate: Hollywood vs reality",
+        "Why one video can't brainwash you",
+        "The six conditions real thought reform requires",
+        "Korean War POW controversy, explained calmly",
+        "Did deprogramming ever actually work?",
+        "Coercive persuasion: what the research says",
+        "Your phone isn't brainwashing you — it's nudging",
     ],
-    "mind_control": [
-        "MKUltra: what the files actually show",
-        "How cults use love bombing and isolation",
-        "The Milgram experiment: obedience to authority",
-        "Stanford Prison Experiment: power changes minds",
-        "How propaganda exploits the mere-exposure effect",
-        "Brainwashing myths vs real coercion research",
-        "The Asch conformity experiments explained",
-        "How information overload shuts down critical thought",
+    "stoic_defense": [
+        "Stoic mental immunity against manipulation",
+        "Marcus Aurelius on dealing with liars daily",
+        "The 5-second stoic pause before reacting",
+        "Epictetus: guard only your judgments",
+        "Premeditation of evils as a defense drill",
+        "How stoics defuse insults in one line",
+        "Amor fati: the mindset scammers can't crack",
+        "The stoic rule cult recruiters can't break",
     ],
 }
 
@@ -100,14 +100,14 @@ DARK_TOPICS = [t for topics in TOPICS_BY_PILLAR.values() for t in topics]
 
 # Keyword signature per pillar (for topic ↔ pillar matching)
 PILLAR_KEYWORDS = {
-    "self_defense": ["manipulat", "gaslight", "guilt", "silence", "darvo", "fog", "empath", "covert"],
-    "influence": ["buy", "price", "persuad", "market", "urgency", "reciprocity", "social proof", "decoy", "trial"],
-    "dark_triad": ["narciss", "psychopath", "machiavell", "love bombing", "discard", "dark triad", "charm", "betray"],
-    "body_language": ["body", "eye", "micro", "gesture", "posture", "vocal", "tone", "feet", "signal"],
-    "cognitive_biases": ["bias", "memory", "anchor", "halo", "kruger", "sunk cost", "pattern", "availability"],
-    "red_flags": ["trauma bond", "reinforcement", "isolation", "silent treatment", "abuse", "breadcrumb", "cycle", "too sensitive"],
-    "stoic_mind": ["stoic", "marcus", "seneca", "epictetus", "control", "pause", "adversity", "fate", "insult"],
-    "mind_control": ["mkultra", "cult", "milgram", "stanford", "propaganda", "brainwash", "asch", "obedience", "conform"],
+    "cults": ["cult", "jonestown", "nxivm", "recruit", "love bombing", "isolation", "leader", "exit"],
+    "con_artists": ["con", "scam", "swindler", "confidence", "crypto", "pigeon", "urgency", "verbal leakage"],
+    "mind_control_history": ["mkultra", "cia", "stargate", "propaganda", "radio rwanda", "declassified", "hypnosis", "overton"],
+    "interrogation": ["interrogat", "lie", "confess", "detective", "baseline", "reid", "micro-expression", "statement analysis"],
+    "coercive_control": ["abuse", "coercive", "isolat", "financial", "leaving", "cycle", "blame", "safety"],
+    "mass_psychology": ["crowd", "outrage", "misinformation", "astroturf", "headlines", "bandwagon", "consent", "feed"],
+    "brainwashing_myths": ["brainwash", "manchurian", "thought reform", "deprogramming", "myth", "coercive persuasion", "nudging"],
+    "stoic_defense": ["stoic", "marcus", "epictetus", "pause", "judgments", "insult", "amor fati", "immunity"],
 }
 
 

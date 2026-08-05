@@ -32,7 +32,7 @@ logger = logging.getLogger("script_generator")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-SYSTEM_PROMPT = """You are the scriptwriter for "Cognitive Dark" — a faceless YouTube/Instagram/Facebook channel about THE PSYCHOLOGY OF INFLUENCE & SELF-DEFENSE.
+SYSTEM_PROMPT = """You are the scriptwriter for "Mind Control Files" — a faceless YouTube/Instagram/Facebook channel about TRUE-CRIME PSYCHOLOGY: cults, con artists, coercion & mind control — decoded so viewers can defend themselves.
 
 AUDIENCE: USA adults (25-44), interested in psychology, self-improvement, toxic relationships, stoicism, human behavior.
 
@@ -43,7 +43,7 @@ HARD RULES:
 4. Total narration 100-150 words; Short duration target 45-58 seconds.
 5. Hook (scene 1) must be a pattern-interrupt: stop-scroll, curiosity/fear/knowledge-gap in the first 2 seconds. MAX 8 WORDS, perfect grammar, no emojis. Example: "Stop letting them do this to you."
 6. Include at least one REAL psychology concept/study (e.g., Milgram, Stanford, Cialdini, anchoring, cognitive dissonance, trauma bond).
-7. Final scene: CTA "Follow Cognitive Dark for more psychology they don't teach you in school."
+7. Final scene: CTA "Follow Mind Control Files for the psychology they don't teach you in school."
 8. Never diagnose or give medical advice. Add no emojis in captions.
 
 OUTPUT — ONLY valid JSON, no markdown:
@@ -122,15 +122,15 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
     """Offline template bank — randomized per call, per pillar, per style."""
     hook = random.choice(pillar["hooks"])
     style_line = {
-        "pattern_interrupt": "You need to hear this before your next conversation.",
-        "knowledge_gap": "Psychologists just confirmed what most people refuse to believe.",
-        "fear_based": "This is happening to you more often than you realize.",
-        "curiosity_trigger": "There's a word manipulators are terrified you'll learn.",
-        "counterintuitive": "The trait you think is kindness is actually your weakness.",
-        "dark_revelation": "You've been lied to about how influence really works.",
-        "stoic_echo": "Even Marcus Aurelius warned against what you accept daily.",
-        "red_flag_checklist": "If you notice these three signs, the answer is simple.",
-    }[hook_style]
+        "case_file": "The file starts normal. It does not stay normal.",
+        "chilling_fact": "The detail nobody noticed was the warning.",
+        "question_hook": "Would you have spotted it in time?",
+        "warning": "If this pattern shows up early, walk away.",
+        "plot_twist": "The part everyone trusted was the trap.",
+        "timeline": "It started with charm. It ended with control.",
+        "confession": "Later, the insider admitted the script.",
+        "red_flag": "Three signs. In order. Every single time.",
+    }.get(hook_style, "You need to see how this actually works.")
 
     # large variety bank → keeps 0% spam even without the LLM
     setups = [
@@ -174,10 +174,10 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "it, you'll start noticing it everywhere.",
     ]
     cta = random.choice([
-        "Follow Cognitive Dark for the psychology they don't teach you in school.",
-        "Follow for more psychology that protects you.",
-        "Follow Cognitive Dark — the dark side of the human mind, decoded daily.",
-        "Follow Cognitive Dark to see through the patterns before they see you.",
+        "Follow Mind Control Files for the psychology they don't teach you in school.",
+        "Follow for documented cases that protect you.",
+        "Follow Mind Control Files — coercion decoded, daily.",
+        "Follow Mind Control Files to see the pattern before it sees you.",
     ])
 
     body = (random.choice(setups), random.choice(proofs),
@@ -202,12 +202,12 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
                    "visual": "glowing brain abstract dark", "emotion": "revelatory"})
 
     return {
-        "title": f"{hook} | Dark Psychology Facts",
+        "title": f"{hook} | Mind Control Files",
         "hook": hook,
         "scenes": scenes,
         "tags": pillar["tags"][:10],
         "description": (f"{hook} — understand the psychology behind it and protect "
-                        f"yourself. {NICHE['angle']} #psychology #darkpsychology"),
+                        f"yourself. {NICHE['angle']} #psychology #truecrime"),
         "key_points": "• How the tactic works\n• Why it works on you\n• How to protect yourself",
         "pillar": pillar["key"],
         "pillar_name": pillar["name"],

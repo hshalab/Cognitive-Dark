@@ -21,14 +21,14 @@ POWER_WORDS = ["Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
                "They Don't Want You to Know", "Revealed", "Stop", "Master"]
 
 PLATFORM_HASHTAGS = {
-    "youtube": ["#psychology", "#darkpsychology", "#psychologyfacts"],
-    "facebook": ["#psychology", "#darkpsychology", "#manipulation", "#selfimprovement",
-                 "#gaslighting", "#stoicism", "#mindset", "#psychologyfacts"],
-    "instagram": ["#psychology", "#darkpsychology", "#psychologyfacts", "#manipulation",
-                  "#gaslighting", "#narcissist", "#stoicism", "#mindset", "#mentalhealth",
-                  "#selfimprovement", "#bodylanguage", "#emotionalintelligence",
+    "youtube": ["#psychology", "#truecrime", "#mindcontrol"],
+    "facebook": ["#psychology", "#truecrime", "#mindcontrol", "#scams",
+                 "#gaslighting", "#stoicism", "#cults", "#psychologyfacts"],
+    "instagram": ["#psychology", "#truecrime", "#mindcontrol", "#manipulation",
+                  "#gaslighting", "#coercivecontrol", "#stoicism", "#scamawareness",
+                  "#mentalhealth", "#selfimprovement", "#bodylanguage", "#emotionalintelligence",
                   "#toxicrelationships", "#psychologytips", "#humanbehavior",
-                  "#influence", "#brainhacks", "#factsvideo", "#foryou", "#viral"],
+                  "#interrogation", "#brainwashing", "#factsvideo", "#foryou", "#viral"],
 }
 
 CTA_IG = ["Save this for your next conversation.", "Save this — you'll need it.",

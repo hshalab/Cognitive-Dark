@@ -33,202 +33,205 @@ TMP_DIR.mkdir(parents=True, exist_ok=True)
 # ─────────────────────────────────────────────────────────────
 # Channel identity
 # ─────────────────────────────────────────────────────────────
-CHANNEL_NAME = "Cognitive Dark"
-CHANNEL_TAGLINE = "The Psychology of Influence — and How to Protect Yourself"
+CHANNEL_NAME = "Mind Control Files"
+CHANNEL_TAGLINE = "The Psychology of Coercion — Documented, Decoded, Defended"
 TARGET_COUNTRY = "US"
 TARGET_LANGUAGE = "en"
-# V2.1 FIX: the real, populated channel is @cognitive_dark (UC2zuZkPenTsLrrD2qu8sjrA).
-# V2 pointed at @CognitiveDark (UCRv8VGQna16QC0a5GEtGpBg) — an EMPTY channel —
-# so any CTA/link sent viewers to a channel with zero content.
-CHANNEL_URL = "https://youtube.com/@cognitive_dark"
-CHANNEL_ID = "UC2zuZkPenTsLrrD2qu8sjrA"
+# V2.2 positioning: fresh channel (2019 legacy channel retired to archive).
+# Create the new channel with EXACTLY this name/handle so CTAs match.
+CHANNEL_URL = "https://youtube.com/@mindcontrolfiles"
+CHANNEL_ID = ""  # fill after channel creation (Studio → Settings → Advanced)
 
 NICHE = {
-    "name": "Psychology of Influence & Self-Defense",
-    "parent_niche": "Dark Psychology / Behavioral Psychology",
-    "angle": ("Understand how the human mind is influenced, manipulated and "
-              "persuaded — and learn to spot it, resist it, and master it."),
+    "name": "Mind Control Files — The Psychology of Coercion & Defense",
+    "parent_niche": "True-Crime Psychology / Behavioral Science",
+    "angle": ("Documented cases of coercion, cults, con artistry and mind "
+              "control — decoded so viewers can spot the pattern and defend "
+              "themselves. Story-driven, evidence-first, educational."),
     "why_trending": (
-        "2026's fastest-growing faceless psychology sub-niches: stoicism, "
-        "cognitive biases, narcissist/gaslighting red flags, body language, "
-        "influence ethics. Educational framing = monetization-safe."
+        "2026's breakout format is true-crime × psychology: cult docs, con-"
+        "artist breakdowns and declassified mind-control history dominate "
+        "retention charts, while generic 'dark psychology facts' are "
+        "saturated. Story arcs hold viewers 2-3x longer than fact lists."
     ),
     "safety": (
-        "ALWAYS educational: 'learn to PROTECT yourself'. Never teach how to "
-        "harm others. Include educational disclaimer in every description."
+        "ALWAYS educational/documentary: explain HOW coercion worked so "
+        "viewers can PROTECT themselves. Never instruct how to manipulate. "
+        "Include educational disclaimer in every description."
     ),
 }
 
 # ─────────────────────────────────────────────────────────────
-# Content pillars (converted, trending-mapped)
+# Content pillars (V2.2 — Mind Control Files positioning)
 # ─────────────────────────────────────────────────────────────
 PILLARS = [
     {
-        "key": "self_defense",
-        "name": "Psychological Self-Defense",
-        "trend": "high — manipulation awareness is the #1 viral angle",
+        "key": "cults",
+        "name": "Cult Psychology Decoded",
+        "trend": "very high — cult documentaries are retention monsters",
         "hooks": [
-            "How Manipulators Quietly Take Control of You",
-            "7 Phrases Manipulators Use to Shut You Down",
-            "The 30-Second Test That Reveals a Manipulator",
-            "Why You Fall for Gaslighting (and How to Stop)",
-            "The 'Love Bombing' Trap Nobody Tells You About",
-            "How Narcissists Rewrite Your Reality",
-            "3 Boundary Phrases That Stop Manipulators Cold",
-            "The Silent Control Tactic You Accept Every Day",
+            "Why Smart People Join Dangerous Cults",
+            "The Cult That Banned These 3 Questions",
+            "How Cults Isolate You From Family",
+            "Love Bombing: The Cult Recruitment Pipeline",
+            "Jonestown: 900 People Obeyed. Why?",
+            "NXIVM: A Cult Hidden Inside a Self-Help Brand",
+            "How Members Finally Escaped",
+            "The Leader Trick That Kills Doubt Instantly",
         ],
-        "search_terms": ["psychological manipulation", "gaslighting signs", "manipulation tactics",
-                         "how to spot a manipulator", "emotional manipulation", "dark psychology"],
-        "tags": ["psychological self defense", "manipulation tactics", "gaslighting",
-                 "dark psychology", "emotional abuse", "boundaries", "psychology facts"],
+        "search_terms": ["cult psychology", "how cults brainwash", "signs of a cult",
+                         "love bombing cult", "jonestown explained"],
+        "tags": ["cult psychology", "brainwashing", "love bombing", "coercive control",
+                 "psychology documentary", "mind control"],
     },
     {
-        "key": "influence",
-        "name": "Influence & Persuasion Psychology",
-        "trend": "high — 'how persuasion works' is evergreen + advertiser-friendly",
+        "key": "con_artists",
+        "name": "Con Artists & Scam Psychology",
+        "trend": "very high — scam breakdowns are viral + advertiser-safe",
         "hooks": [
-            "The 6 Words That Make People Say Yes",
-            "Why Your Brain Decides Before You Do",
-            "The Psychology Behind Viral Content",
-            "How Advertisers Program Your Choices",
-            "The Anchoring Trick Used on You Every Day",
-            "Why Scarcity Makes You Buy (Brain Science)",
-            "The Framing Effect: Same Fact, Different Reality",
-            "How 'Social Proof' Quietly Runs Your Life",
+            "The Con Artist With 3 Simultaneous Wives",
+            "Anatomy of a Perfect Confidence Trick",
+            "Why Victims Wire Money Again and Again",
+            "The Tinder Swindler Playbook Explained",
+            "Urgency: The Trick That Stops You Thinking",
+            "How Scammers Script Your First Message",
+            "The Pigeon Drop: Oldest Con Alive",
+            "One Question That Exposes Most Scammers",
         ],
-        "search_terms": ["persuasion psychology", "influence", "psychological tricks",
-                         "how advertisers manipulate", "decision making psychology"],
-        "tags": ["persuasion", "influence", "psychology tricks", "consumer psychology",
-                 "decision making", "cognitive psychology", "brain hacks"],
+        "search_terms": ["con artist psychology", "how scams work", "romance scam signs",
+                         "confidence trick explained", "spot a scammer"],
+        "tags": ["scam psychology", "con artists", "fraud", "romance scam",
+                 "social engineering", "psychology facts"],
     },
     {
-        "key": "dark_triad",
-        "name": "Dark Personality Awareness",
-        "trend": "high — narcissist/psychopath content dominates shorts feeds",
+        "key": "mind_control_history",
+        "name": "Declassified Mind Control",
+        "trend": "high — MKUltra/true-history crossover is evergreen",
         "hooks": [
-            "10 Signs You're Dealing With a Narcissist",
-            "The Dark Triad Explained in 60 Seconds",
-            "Why Some People Feel No Remorse",
-            "The Psychopath Next Door: 7 Red Flags",
-            "How Machiavellians Manipulate Friendships",
-            "The Empathy Switch: What Psychopaths Lack",
-            "Narcissist or Confident? The 3-Second Difference",
-            "Why Toxic People Love Your Kindness",
+            "MKUltra: The CIA's Mind-Control Program",
+            "The Files They Didn't Burn",
+            "Cold War Plans to Weaponize Hypnosis",
+            "Project Stargate: The Psychic Spy Program",
+            "Radio Rwanda: Broadcasts That Built Hate",
+            "How One Ad Manipulated a Country",
+            "The Experiment That Crossed Every Line",
+            "What Declassified Papers Actually Show",
         ],
-        "search_terms": ["narcissist signs", "dark triad", "psychopath traits",
-                         "machiavellian", "dark personality test"],
-        "tags": ["narcissist", "dark triad", "psychopath", "machiavellian",
-                 "narcissism", "dark personality", "toxic people"],
+        "search_terms": ["MKUltra explained", "cia mind control", "project stargate",
+                         "psychological experiments history", "propaganda psychology"],
+        "tags": ["MKUltra", "mind control", "declassified", "psychology history",
+                 "propaganda", "true crime"],
     },
     {
-        "key": "body_language",
-        "name": "Body Language & Micro-Expressions",
-        "trend": "high — 'read people' is a top psychology search cluster",
+        "key": "interrogation",
+        "name": "Interrogation & Lie Detection",
+        "trend": "high — interrogation content has elite retention",
         "hooks": [
-            "7 Body Language Signs Someone Is Lying",
-            "How to Read Anyone in 3 Seconds",
-            "The Micro-Expression That Exposes a Liar",
-            "What Crossed Arms Really Mean (It's Not What You Think)",
-            "FBI Agents Read These 5 Cues",
-            "The Eye Contact Secret of Confident People",
-            "Body Language That Makes People Respect You",
-            "The Hand Gesture That Gives Away Anxiety",
+            "Why Innocent People Confess",
+            "The Question Sequence That Catches Liars",
+            "Silence: The Interrogator's Weapon",
+            "How Detectives Read Baseline Behavior",
+            "Words That Betray You: Statement Analysis",
+            "The Reid Technique Under the Microscope",
+            "Micro-Expressions Interviewers Watch For",
+            "How to Answer a Manipulative Question",
         ],
-        "search_terms": ["body language", "how to read people", "micro expressions",
-                         "lying body language", "psychology of body language"],
-        "tags": ["body language", "read people", "micro expressions", "nonverbal communication",
-                 "lying signs", "psychology facts"],
+        "search_terms": ["lie detection", "interrogation psychology", "how to spot a liar",
+                         "false confessions psychology", "body language lying"],
+        "tags": ["lie detection", "interrogation", "body language", "psychology",
+                 "statement analysis", "true crime"],
     },
     {
-        "key": "cognitive_biases",
-        "name": "Cognitive Biases & Brain Traps",
-        "trend": "high — bias explainers are the breakout 2026 format",
+        "key": "coercive_control",
+        "name": "Coercive Control Awareness",
+        "trend": "very high — biggest psychology sub-niche, evergreen",
         "hooks": [
-            "The Cognitive Bias Ruining Your Decisions",
-            "Why Your Brain Lies to You Every Day",
-            "The Sunk Cost Trap You're Stuck In",
-            "How Confirmation Bias Controls Your Opinions",
-            "The Anchoring Effect Everyone Falls For",
-            "3 Mental Traps You Fall Into Daily",
-            "Why Your Memory Rewrites the Past",
-            "The Bias That Makes You Trust the Wrong People",
+            "Coercive Control: The Invisible Abuse",
+            "The Daily Rules Abusers Enforce",
+            "How Abusers Turn Family Against You",
+            "Financial Abuse: Control Through Money",
+            "Why Leaving Is the Most Dangerous Time",
+            "The Cycle That Keeps Victims Returning",
+            "Blame-Shifting: The Language of Control",
+            "Document Everything: Protect Yourself",
         ],
-        "search_terms": ["cognitive biases", "cognitive bias examples", "brain tricks",
-                         "thinking errors", "psychology of decision making"],
-        "tags": ["cognitive biases", "brain tricks", "psychological biases", "thinking errors",
-                 "anchoring effect", "confirmation bias", "decision making"],
+        "search_terms": ["coercive control signs", "emotional abuse signs",
+                         "gaslighting examples", "toxic relationship red flags",
+                         "narcissist abuse"],
+        "tags": ["coercive control", "emotional abuse", "gaslighting", "red flags",
+                 "toxic relationships", "psychology"],
     },
     {
-        "key": "red_flags",
-        "name": "Toxic Relationships & Red Flags",
-        "trend": "very high — gaslighting/trauma-bond shorts are the biggest psychology sub-niche",
+        "key": "mass_psychology",
+        "name": "Crowds, Propaganda & Feed Manipulation",
+        "trend": "high — 'the algorithm is manipulating you' meta-angle pops",
         "hooks": [
-            "7 Red Flags You're Being Emotionally Manipulated",
-            "How Gaslighting Destroys Your Self-Esteem",
-            "The Trauma Bond That Keeps You Trapped",
-            "5 Signs Your Partner Is Emotionally Abusing You",
-            "Why You Can't Leave a Toxic Relationship",
-            "The Cycle of Abuse You Keep Repeating",
-            "How Love Bombing Turns Into Control",
-            "The Silent Treatment: A Power Move Explained",
+            "How Crowds Change Your Brain in Minutes",
+            "The Feed That Outrages You on Purpose",
+            "Why Misinformation Spreads 6x Faster",
+            "Astroturfing: Fake Grassroots Movements",
+            "Fear Headlines: Rewiring Your Attention",
+            "The Bandwagon Effect in Your Feed",
+            "Overton Window: Shifting What's Normal",
+            "Manufactured Consent in 60 Seconds",
         ],
-        "search_terms": ["gaslighting", "toxic relationship signs", "trauma bond",
-                         "emotional abuse", "narcissist relationship"],
-        "tags": ["gaslighting", "toxic relationship", "red flags", "emotional abuse",
-                 "trauma bond", "love bombing", "narcissist"],
+        "search_terms": ["mass psychology", "propaganda techniques", "how algorithms manipulate",
+                         "misinformation psychology", "crowd psychology"],
+        "tags": ["mass psychology", "propaganda", "media manipulation", "crowd psychology",
+                 "misinformation", "psychology facts"],
     },
     {
-        "key": "stoic_mind",
-        "name": "Stoicism × Modern Psychology",
-        "trend": "very high — stoicism is the #1 trending philosophy/psychology fusion of 2025-26",
+        "key": "brainwashing_myths",
+        "name": "Brainwashing: Myth vs Science",
+        "trend": "medium-high — myth-busting is shareable + authoritative",
         "hooks": [
-            "Stoic Rules That End Overthinking",
-            "The Marcus Aurelius Trick for Emotional Control",
-            "Why Stoics Never Get Manipulated",
-            "4 Stoic Lessons for a Dark World",
-            "The Ancient Psychology of Handling Criticism",
-            "How Stoics Control What You Can't",
-            "The 5-Second Stoic Pause That Changes Everything",
-            "What Seneca Knew About Toxic People",
+            "Brainwashing Is Not What You Think",
+            "The Manchurian Candidate Myth",
+            "You Can't Be Brainwashed by One Video",
+            "What Real Coercive Persuasion Requires",
+            "The POW Controversy, Explained",
+            "Did Deprogramming Ever Work?",
+            "Thought Reform: The 6 Conditions",
+            "Your Phone Isn't Brainwashing You. Worse.",
         ],
-        "search_terms": ["stoicism", "stoic psychology", "stoic quotes", "emotional control",
-                         "mindset psychology", "mental toughness"],
-        "tags": ["stoicism", "stoic", "marcus aurelius", "seneca", "mental toughness",
-                 "emotional control", "psychology", "mindset"],
+        "search_terms": ["brainwashing myth", "is brainwashing real", "coercive persuasion",
+                         "thought reform", "manchurian candidate"],
+        "tags": ["brainwashing", "psychology myths", "coercion", "psychology science",
+                 "mind control", "facts"],
     },
     {
-        "key": "mind_control",
-        "name": "Mind Control & Dark History",
-        "trend": "medium-high — true-crime-psychology crossover, evergreen",
+        "key": "stoic_defense",
+        "name": "Mental Immunity (Stoic Defense)",
+        "trend": "very high — stoicism fusion remains #1 philosophy trend",
         "hooks": [
-            "MKUltra: The CIA's Mind Control Program",
-            "The Stanford Prison Experiment Explained",
-            "How Cults Rewire Your Brain",
-            "The Milgram Experiment: Would You Obey?",
-            "How Jonestown Brainwashed 900 People",
-            "The Asch Experiment: Why You Conform",
-            "How Propaganda Programs the Public",
-            "The Psychology of Brainwashing Revealed",
+            "Stoic Immunity Against Manipulation",
+            "Marcus Aurelius on Handling Liars",
+            "The 5-Second Stoic Pause",
+            "Epictetus: Control Only Your Judgments",
+            "Premeditation of Evils as a Shield",
+            "How Stoics Defuse Insults Instantly",
+            "Amor Fati: The Unhackable Mindset",
+            "The Stoic Rule Cults Can't Break",
         ],
-        "search_terms": ["MKUltra", "stanford prison experiment", "milgram experiment",
-                         "cult psychology", "brainwashing", "psychology experiments"],
-        "tags": ["mind control", "MKUltra", "stanford prison experiment", "milgram experiment",
-                 "cult psychology", "dark history", "psychology experiments"],
+        "search_terms": ["stoicism manipulation", "stoic mindset", "marcus aurelius quotes",
+                         "emotional control", "mental toughness"],
+        "tags": ["stoicism", "marcus aurelius", "mental toughness", "emotional control",
+                 "psychology", "mindset"],
     },
 ]
 
 # ─────────────────────────────────────────────────────────────
-# Hook styles (ML learns which perform best)
+# Hook styles (true-crime flavored; ML learns which perform)
 # ─────────────────────────────────────────────────────────────
 HOOK_STYLES = [
-    "pattern_interrupt",   # "Stop scrolling — this affects you daily"
-    "knowledge_gap",       # "Psychologists just discovered why..."
-    "fear_based",          # "This is happening to you right now"
-    "curiosity_trigger",   # "The word manipulators are terrified of"
-    "counterintuitive",    # "Kindness is your biggest weakness"
-    "dark_revelation",     # "You've been lied to about manipulation"
-    "stoic_echo",          # "Marcus Aurelius would never allow this"
-    "red_flag_checklist",  # "If they do these 3 things, run"
+    "case_file",        # "Case #12: the salesman who wasn't a salesman"
+    "chilling_fact",    # "The detail nobody noticed until it was too late"
+    "question_hook",    # "Would you have spotted the lie?"
+    "warning",          # "If this happens in your first chat, run"
+    "plot_twist",       # "The victim defended him. Here's why."
+    "timeline",         # "Day 1: charm. Day 30: control."
+    "confession",       # "The recruiter later admitted the script"
+    "red_flag",         # "Three signs, in order, every time"
 ]
 
 # ─────────────────────────────────────────────────────────────
