@@ -6,6 +6,447 @@
       "sum_sq": 0.0,
       "n": 3,
       "updated": "2026-08-05T12:06:33.180413+00:00"
+    },
+    "self_defense::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480370+00:00"
+    },
+    "self_defense::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480379+00:00"
+    },
+    "self_defense::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480383+00:00"
+    },
+    "self_defense::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480386+00:00"
+    },
+    "self_defense::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480389+00:00"
+    },
+    "self_defense::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480392+00:00"
+    },
+    "self_defense::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480396+00:00"
+    },
+    "self_defense::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480402+00:00"
+    },
+    "influence::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480408+00:00"
+    },
+    "influence::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480411+00:00"
+    },
+    "influence::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480414+00:00"
+    },
+    "influence::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480432+00:00"
+    },
+    "influence::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480435+00:00"
+    },
+    "influence::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480437+00:00"
+    },
+    "influence::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480440+00:00"
+    },
+    "dark_triad::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480443+00:00"
+    },
+    "dark_triad::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480446+00:00"
+    },
+    "dark_triad::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480449+00:00"
+    },
+    "dark_triad::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480451+00:00"
+    },
+    "dark_triad::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480454+00:00"
+    },
+    "dark_triad::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480456+00:00"
+    },
+    "dark_triad::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480459+00:00"
+    },
+    "dark_triad::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480461+00:00"
+    },
+    "body_language::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480464+00:00"
+    },
+    "body_language::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480467+00:00"
+    },
+    "body_language::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480473+00:00"
+    },
+    "body_language::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480476+00:00"
+    },
+    "body_language::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480479+00:00"
+    },
+    "body_language::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480503+00:00"
+    },
+    "body_language::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480506+00:00"
+    },
+    "body_language::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480512+00:00"
+    },
+    "cognitive_biases::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480517+00:00"
+    },
+    "cognitive_biases::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480520+00:00"
+    },
+    "cognitive_biases::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480522+00:00"
+    },
+    "cognitive_biases::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480525+00:00"
+    },
+    "cognitive_biases::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480527+00:00"
+    },
+    "cognitive_biases::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480530+00:00"
+    },
+    "cognitive_biases::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480532+00:00"
+    },
+    "cognitive_biases::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480534+00:00"
+    },
+    "red_flags::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480537+00:00"
+    },
+    "red_flags::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480540+00:00"
+    },
+    "red_flags::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480542+00:00"
+    },
+    "red_flags::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480545+00:00"
+    },
+    "red_flags::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480548+00:00"
+    },
+    "red_flags::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480550+00:00"
+    },
+    "red_flags::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480555+00:00"
+    },
+    "red_flags::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480557+00:00"
+    },
+    "stoic_mind::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480560+00:00"
+    },
+    "stoic_mind::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480562+00:00"
+    },
+    "stoic_mind::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480565+00:00"
+    },
+    "stoic_mind::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480567+00:00"
+    },
+    "stoic_mind::counterintuitive::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480569+00:00"
+    },
+    "stoic_mind::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480572+00:00"
+    },
+    "stoic_mind::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480574+00:00"
+    },
+    "stoic_mind::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480577+00:00"
+    },
+    "mind_control::pattern_interrupt::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480579+00:00"
+    },
+    "mind_control::knowledge_gap::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480583+00:00"
+    },
+    "mind_control::fear_based::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480586+00:00"
+    },
+    "mind_control::curiosity_trigger::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480588+00:00"
+    },
+    "mind_control::counterintuitive::afternoon": {
+      "plays": 1,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 2,
+      "updated": "2026-08-05T14:33:06.812730+00:00"
+    },
+    "mind_control::dark_revelation::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480595+00:00"
+    },
+    "mind_control::stoic_echo::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480597+00:00"
+    },
+    "mind_control::red_flag_checklist::afternoon": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-05T14:29:43.480601+00:00"
     }
   },
   "videos": [
@@ -20,6 +461,18 @@
       "source": "template",
       "run_id": "20260805T120200",
       "ts": "2026-08-05T12:06:25.883483+00:00"
+    },
+    {
+      "title": "The Psychology of Brainwashing Revealed | Dark Psychology Facts",
+      "hook": "The Psychology of Brainwashing Revealed",
+      "pillar": "mind_control",
+      "hook_style": "counterintuitive",
+      "arm_key": "mind_control::counterintuitive::afternoon",
+      "text_sha": "3a93bb1149ec7d435355cb2adc1a6007a2cd34e01e2af98df6a6b1384db7530f",
+      "text": "The Psychology of Brainwashing Revealed The trait you think is kindness is actually your weakness. You've felt it before — that quiet discomfort you couldn't explain. Here's what it was. Studies on persuasion show this one factor explains more outcomes than any other — and it's the one nobody checks. What makes it dangerous is how ordinary it looks. But now that you've seen it, you'll start noticing it everywhere. Follow Cognitive Dark to see through the patterns before they see you.",
+      "source": "template",
+      "run_id": "20260805T142943",
+      "ts": "2026-08-05T14:33:03.837429+00:00"
     }
   ],
   "attribution": {
@@ -51,6 +504,18 @@
       "arm": "influence::curiosity_trigger::afternoon",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-05T14:33:06.463781+00:00",
+      "arm": "mind_control::counterintuitive::afternoon",
+      "reason": "facebook_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-05T14:33:06.812734+00:00",
+      "arm": "mind_control::counterintuitive::afternoon",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0
     }
   ],
   "reward_log": [
@@ -68,16 +533,16 @@
       "last_check": "2026-08-05T12:06:31.614031+00:00"
     },
     "facebook": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "HTTP 400: {\"error\":{\"message\":\"(#100) No permission to publish the video\",\"type\":\"OAuthException\",\"code\":100,\"fbtrace_id\":\"A32NqKBrMHs89IZhS6o1yNR\"}}",
-      "last_check": "2026-08-05T12:06:32.998695+00:00"
+      "last_reason": "HTTP 400: {\"error\":{\"message\":\"Error validating access token: The session has been invalidated because the user changed their password or Facebook has changed the session for security reasons.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":460,\"fbtrace_id\":\"A-dknf3TGiFQva1FclF7jt_\"}}",
+      "last_check": "2026-08-05T14:33:06.462557+00:00"
     },
     "instagram": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AIQAYyCFCHlkMCnO01wWssR\"}}",
-      "last_check": "2026-08-05T12:06:33.179642+00:00"
+      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AUJAZ8QEkFstAMG12kfDry8\"}}",
+      "last_check": "2026-08-05T14:33:06.811811+00:00"
     }
   },
   "model_version": 3,
