@@ -125,8 +125,9 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     logger.info("🎙️  Narration: %.1fs", narration_s)
     release_tts()  # free the ~300MB Kokoro model before video render
 
-    # ── 4. Video (USA style: fast cuts + word captions) ──
-    final_video = build_short(scene_visuals, segments, script["scenes"])
+    # ── 4. Video (USA style: fast cuts + word captions + hook overlay) ──
+    final_video = build_short(scene_visuals, segments, script["scenes"],
+                              hook=script.get("hook", ""))
     thumb = generate_thumbnail(scene_visuals[0][0], script.get("hook", ""))
     logger.info("🎬 Built %s + thumbnail", final_video)
 

@@ -212,21 +212,22 @@ def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
 
 
 def _hook_overlay_usa(hook: str) -> Image.Image:
-    font = _load_font(72)
+    # V2.1.4: bigger, higher-contrast hook (first 2.2s decide swipe-away)
+    font = _load_font(84)
     ov = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(ov)
-    lines = textwrap.wrap(hook, width=20) or [hook]
+    lines = textwrap.wrap(hook, width=18) or [hook]
     if len(lines) > 3:
         lines = lines[:3] + ["..."]
-    box_h = 104 * len(lines) + 70
-    draw.rounded_rectangle([40, 130, WIDTH - 40, 130 + box_h], radius=24,
-                           fill=(120, 8, 8, 220))
-    y = 150
+    box_h = 118 * len(lines) + 80
+    draw.rounded_rectangle([40, 120, WIDTH - 40, 120 + box_h], radius=26,
+                           fill=(140, 10, 10, 235))
+    y = 148
     for line in lines:
         w = draw.textlength(line, font=font)
         draw.text(((WIDTH - w) / 2, y), line, font=font, fill=(255, 255, 255, 255),
-                  stroke_width=3, stroke_fill=(0, 0, 0))
-        y += 106
+                  stroke_width=4, stroke_fill=(0, 0, 0))
+        y += 120
     return ov
 
 
@@ -337,7 +338,7 @@ def _build_audio(audio_segments: list, total_duration: float) -> str:
 
 
 def build_short(scene_visuals: list, audio_segments: list, scenes: list,
-                out_path: str = None) -> str:
+                out_path: str = None, hook: str = None) -> str:
     """scene_visuals: list (per scene) of lists (cuts) of clip paths."""
     import gc
     from moviepy.editor import CompositeVideoClip, ImageClip
@@ -351,7 +352,10 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
             f"scenes={len(scenes)}")
 
     os.makedirs(TMP, exist_ok=True)
-    hook = scenes[0].get("hook") or ""
+    # V2.1.4 FIX: the hook lives at SCRIPT level, not on scenes[0]. V2 read
+    # scenes[0].get("hook") → always empty → the hook overlay & loop trick
+    # NEVER rendered on any video (missing the critical first-2s hook).
+    hook = hook or scenes[0].get("hook") or ""
 
     # 1) render each scene → temp mp4 (fast cuts + word captions baked in)
     scene_files = []

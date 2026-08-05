@@ -14,6 +14,8 @@ USA viral-channel conventions applied:
 
 import random
 
+from config.settings import PILLARS
+
 POWER_WORDS = ["Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
                "Deadly", "Silently", "Brutal", "Finally", "Nobody Tells You",
                "They Don't Want You to Know", "Revealed", "Stop", "Master"]
@@ -53,6 +55,8 @@ def _title_case_word(w: str, first: bool, stop: set) -> str:
     if w.isupper() and len(w) >= 2:
         return w
     if first or w.lower() not in stop:
+        if "-" in w:  # "30-second" → "30-Second"
+            return "-".join(p.capitalize() for p in w.split("-"))
         return w.capitalize()
     return w.lower()
 
@@ -76,11 +80,17 @@ def _power_title(hook: str, max_len: int = 70) -> str:
 def _title(script: dict, platform: str) -> str:
     hook = script.get("hook", "") or script.get("title", "")
     if platform == "youtube":
-        t = _power_title(hook, 70)
-        # ensure a keyword appears in the first 40 chars
-        keyword = script.get("pillar_name", "")[:18] or "Psychology"
-        if keyword.lower() not in t.lower() and len(t) < 55:
-            t = f"{t} | {keyword}"
+        # V2.1.5: SEARCH-INTENT titles. On dormant/legacy channels the feed
+        # test-batch is weak, but SEARCH views don't depend on channel history.
+        # Always pair the hook with the pillar's top searched query.
+        t = _power_title(hook, 58)
+        kw = "psychology facts"
+        for p in PILLARS:
+            if p["key"] == script.get("pillar"):
+                kw = p["search_terms"][0]
+                break
+        if kw.lower() not in t.lower():
+            t = f"{t} | {kw.title()}"
         return t[:100]
     if platform == "facebook":
         return hook[:58]  # FB feed shows ~58 chars fully
