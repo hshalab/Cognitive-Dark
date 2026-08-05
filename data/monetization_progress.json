@@ -11,10 +11,7 @@
     "daily_targets": {
       "subs": 33,
       "shorts_views": 333333
-    },
-    "views": 81,
-    "videos": 35,
-    "last_growth": 0
+    }
   },
   "facebook": {
     "followers": 523,
@@ -40,9 +37,5 @@
       "followers": 16
     }
   },
-<<<<<<< Updated upstream
-  "last_updated": "2026-08-05T18:27:25.822881+00:00"
-=======
-  "last_updated": "2026-08-05T18:28:01.563291+00:00"
->>>>>>> Stashed changes
+  "last_updated": "2026-08-05T19:14:35.191947+00:00"
 }
