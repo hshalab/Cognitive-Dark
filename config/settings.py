@@ -252,9 +252,9 @@ PLATFORMS = {
         "format": "shorts",            # shorts | long
         "width": SHORTS["width"], "height": SHORTS["height"],
         "category": "27",              # Education
-        "max_daily": 3,
+        "max_daily": 4,
         "timezone": "America/New_York",
-        "peak_hours": [7, 12, 20],     # EST/EDT
+        "peak_hours": [7, 12, 17, 20],  # EST/EDT (4 windows)
         "hashtags": 3,
         "algorithm_notes": ("Retention first 5s + 100% watch-through drive the "
                             "Shorts feed; title keyword in first 100 chars; "
@@ -264,9 +264,9 @@ PLATFORMS = {
         "enabled": True,
         "format": "reels",             # reels | video
         "width": SHORTS["width"], "height": SHORTS["height"],
-        "max_daily": 2,
+        "max_daily": 4,
         "timezone": "America/New_York",
-        "peak_hours": [9, 13, 20],
+        "peak_hours": [9, 13, 17, 20],
         "hashtags": 8,
         "algorithm_notes": ("FB Reels: first-3s hook + comments in first hour "
                             "drive reach; 9:16 <90s posts to Reels tab; "
@@ -276,9 +276,9 @@ PLATFORMS = {
         "enabled": True,
         "format": "reels",
         "width": SHORTS["width"], "height": SHORTS["height"],
-        "max_daily": 2,
+        "max_daily": 4,
         "timezone": "America/New_York",
-        "peak_hours": [11, 19],
+        "peak_hours": [11, 14, 17, 19],
         "hashtags": 20,                # IG allows 30; 15-20 sweet spot
         "algorithm_notes": ("IG Reels: watch-time %, replay, shares, saves; "
                             "post at 11am-2pm / 7-9pm EST; save-value content "
@@ -312,7 +312,7 @@ MONETIZATION = {
 # ─────────────────────────────────────────────────────────────
 # Posting discipline (2026 algorithm: consistency beats bursts)
 # ─────────────────────────────────────────────────────────────
-MIN_POST_GAP_HOURS = float(os.environ.get("MIN_POST_GAP_HOURS", "4.0"))
+MIN_POST_GAP_HOURS = float(os.environ.get("MIN_POST_GAP_HOURS", "3.0"))
 
 # ─────────────────────────────────────────────────────────────
 # Music

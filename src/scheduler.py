@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Platform-Aware Scheduler.
+Cognitive Dark V2.5.1 — Platform-Aware Scheduler.
 
-• DST-correct: uses IANA tz `America/New_York` (EDT/EST handled automatically —
-  fixes the V1 bug where EST was hardcoded to UTC-5 and drifted all summer).
-• Per-platform peak hours (USA audience) tuned to each algorithm:
-    YouTube  : 7-9a / 12-2p / 7-11p
-    Facebook : 9a-1p / 8p-12a
-    Instagram: 11a-2p / 7-9p
+• DST-correct: uses IANA tz `America/New_York` (EDT/EST handled automatically).
+• 4 daily peak windows per platform (USA audience), tuned per algorithm:
+    YouTube  : 7a / 12p / 5p / 8p ET
+    Facebook : 9a / 1p / 5p / 8p ET
+    Instagram: 11a / 2p / 5p / 7p ET
 """
 
 import logging
@@ -21,19 +20,22 @@ TZ = ZoneInfo(os.environ.get("CD_TIMEZONE", "America/New_York"))
 
 DAY_PEAKS = {
     "youtube": {
-        "monday": [7, 12, 20], "tuesday": [7, 12, 20], "wednesday": [7, 12, 20, 22],
-        "thursday": [7, 12, 20], "friday": [7, 12, 21], "saturday": [10, 15, 21],
-        "sunday": [10, 19, 21],
+        "monday": [7, 12, 17, 20], "tuesday": [7, 12, 17, 20],
+        "wednesday": [7, 12, 17, 20], "thursday": [7, 12, 17, 20],
+        "friday": [7, 12, 17, 21], "saturday": [10, 14, 17, 21],
+        "sunday": [10, 14, 17, 20],
     },
     "facebook": {
-        "monday": [9, 13, 20], "tuesday": [9, 13, 20], "wednesday": [9, 13, 20],
-        "thursday": [9, 13, 20], "friday": [9, 12, 20], "saturday": [10, 14, 21],
-        "sunday": [10, 14, 20],
+        "monday": [9, 13, 17, 20], "tuesday": [9, 13, 17, 20],
+        "wednesday": [9, 13, 17, 20], "thursday": [9, 13, 17, 20],
+        "friday": [9, 12, 17, 20], "saturday": [10, 13, 17, 21],
+        "sunday": [10, 13, 17, 20],
     },
     "instagram": {
-        "monday": [11, 19], "tuesday": [11, 19], "wednesday": [11, 19],
-        "thursday": [11, 19], "friday": [11, 18], "saturday": [10, 18],
-        "sunday": [10, 17],
+        "monday": [11, 14, 17, 19], "tuesday": [11, 14, 17, 19],
+        "wednesday": [11, 14, 17, 19], "thursday": [11, 14, 17, 19],
+        "friday": [11, 14, 17, 18], "saturday": [10, 13, 16, 19],
+        "sunday": [10, 13, 16, 18],
     },
 }
 
@@ -62,8 +64,8 @@ class PlatformScheduler:
     def cron_utc_times(self) -> list:
         """All peak hours as UTC cron strings (for GitHub Actions).
 
-        V2.1: convert using the CURRENT date so the offset reflects the active
-        DST state (V2 pinned a January date → every summer cron drifted 1h).
+        Converted using the CURRENT date so the offset reflects the active
+        DST state.
         """
         anchor = datetime.now(self.tz).date()
         crons = []

@@ -1,12 +1,8 @@
 name: "⚔️ Cognitive Dark - 30 Day Monetization War Plan"
 
 on:
-  schedule:
-    # 4 videos per day for maximum growth - US Peak Times (UTC)
-    - cron: "0 10 * * *"   # 6am ET
-    - cron: "0 14 * * *"   # 10am ET
-    - cron: "0 18 * * *"   # 2pm ET
-    - cron: "0 22 * * *"   # 6pm ET
+  # V2.5.1: schedules consolidated into daily_pipeline (4 windows).
+  # War Mode stays manual-only to avoid duplicate runs / wasted CI minutes.
   workflow_dispatch:
 
 permissions:
