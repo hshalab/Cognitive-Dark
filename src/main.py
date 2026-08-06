@@ -143,6 +143,7 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     # ── 5. Upload per platform (algorithm-adapted, volume-guarded) ──
     uploaders = _platform_uploaders(dry_run)
     results = {}
+    packs = {}
     caption_text = " ".join(s["caption"] for s in script["scenes"])
     ml.register_video({
         "title": script["title"], "hook": script.get("hook", ""),
@@ -170,6 +171,7 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
 
         pkg = build_platform_package(script, p,
                                      durations=[s["duration"] for s in segments])
+        packs[p] = pkg
         sched = PlatformScheduler(p)
         publish_at = sched.next_peak().isoformat()
         try:
@@ -196,6 +198,19 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
             if arm:
                 ml.apply_penalty(arm, f"{p}_raised", ml.cfg["penalty_failure"])
             results[p] = uploaders[p].result(False, error=str(exc))
+
+    # ── 5b. Content pack for manual posting (CI artifact) ──
+    # V2.6: while the IG API link propagates, the runner exposes video +
+    # thumbnail + per-platform captions as a downloadable artifact so the
+    # owner can post manually in ~1 minute.
+    try:
+        import json as _json
+        with open(os.path.join("output", "seo_packages.json"), "w",
+                  encoding="utf-8") as fh:
+            _json.dump({"title": script["title"], "hook": script.get("hook", ""),
+                        "packages": packs}, fh, ensure_ascii=False, indent=2)
+    except Exception as exc:
+        logger.warning("content pack write failed: %s", exc)
 
     # ── 6. ML feedback for strong output (rewards on the EXACT arm) ──
     for p, res in results.items():

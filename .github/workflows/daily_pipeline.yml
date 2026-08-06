@@ -88,6 +88,21 @@ jobs:
         # is noticed, instead of reporting success while uploading nothing.
         run: python src/main.py --platforms "$PLATFORMS" $([ "$DRY_RUN" = "1" ] && echo --dry-run)
 
+      - name: Package content for manual posting
+        if: always()
+        run: |
+          mkdir -p content_pack
+          cp output/final_video.mp4 content_pack/video.mp4 2>/dev/null || true
+          cp output/thumbnail.jpg content_pack/thumbnail.jpg 2>/dev/null || true
+          cp output/seo_packages.json content_pack/ 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: daily-content
+          path: content_pack/
+          retention-days: 3
+
       - name: Commit learning memory back
         run: |
           git config user.name "Cognitive Dark Bot"

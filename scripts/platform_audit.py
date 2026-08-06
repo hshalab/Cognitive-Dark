@@ -99,6 +99,19 @@ def main():
             print(f"  published  : {d.get('is_published')}")
             igb = d.get("instagram_business_account", {}).get("id")
             print(f"  IG linked  : {'✅ ' + igb if igb else '❌ NOT LINKED'}")
+
+            # V2.6: scan ALL pages of this account — IG may be linked to a
+            # DIFFERENT page than the one in secrets
+            print("\n  ── all pages of this account ──")
+            r2 = requests.get("https://graph.facebook.com/v25.0/me/accounts",
+                              params={"access_token": tok,
+                                      "fields": "name,id,instagram_business_account,"
+                                                "followers_count"},
+                              timeout=30)
+            for p in r2.json().get("data", []):
+                igp = p.get("instagram_business_account", {}).get("id")
+                print(f"   • {p['name']} ({p['id']}) followers="
+                      f"{p.get('followers_count', '?')} IG={'✅ ' + igp if igp else '—'}")
         except Exception as e:
             print("  ❌", str(e)[:200])
 
