@@ -16,7 +16,6 @@ import json
 import logging
 import os
 import sys
-import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -61,15 +60,22 @@ def _service():
 
 
 def list_uploads(yt):
-    items, token = [], None
+    # uploads playlist → video ids (newest first), then full details
+    ch = yt.channels().list(part="contentDetails", mine=True).execute()["items"][0]
+    upl = ch["contentDetails"]["relatedPlaylists"]["uploads"]
+    ids, token = [], None
     while True:
-        r = yt.videos().list(part="snippet,status,statistics", myRating="upload",
-                             maxResults=50, pageToken=token).execute()
-        items += r.get("items", [])
+        r = yt.playlistItems().list(part="contentDetails", playlistId=upl,
+                                    maxResults=50, pageToken=token).execute()
+        ids += [i["contentDetails"]["videoId"] for i in r.get("items", [])]
         token = r.get("nextPageToken")
         if not token:
             break
-    items.sort(key=lambda i: i["snippet"]["publishedAt"], reverse=True)
+    items = []
+    for s in range(0, len(ids), 50):
+        r = yt.videos().list(part="snippet,status,statistics",
+                             id=",".join(ids[s:s + 50])).execute()
+        items += r.get("items", [])
     print(f"\n📺 TOTAL UPLOADS: {len(items)}")
     for it in items:
         st = it["status"]["privacyStatus"]
