@@ -32,7 +32,7 @@ logger = logging.getLogger("script_generator")
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-SYSTEM_PROMPT = """You are the scriptwriter for "Mind Control Files" — a faceless YouTube/Instagram/Facebook channel about TRUE-CRIME PSYCHOLOGY: cults, con artists, coercion & mind control — decoded so viewers can defend themselves.
+SYSTEM_PROMPT = """You are the scriptwriter for "Coercion Files" — a faceless YouTube/Instagram/Facebook channel about TRUE-CRIME PSYCHOLOGY: cults, con artists, coercion & mind control — decoded so viewers can defend themselves.
 
 AUDIENCE: USA adults (25-44), interested in psychology, self-improvement, toxic relationships, stoicism, human behavior.
 
@@ -43,7 +43,7 @@ HARD RULES:
 4. Total narration 100-150 words; Short duration target 45-58 seconds.
 5. Hook (scene 1) must be a pattern-interrupt: stop-scroll, curiosity/fear/knowledge-gap in the first 2 seconds. MAX 8 WORDS, perfect grammar, no emojis. Example: "Stop letting them do this to you."
 6. Include at least one REAL psychology concept/study (e.g., Milgram, Stanford, Cialdini, anchoring, cognitive dissonance, trauma bond).
-7. Final scene: CTA "Follow Mind Control Files for the psychology they don't teach you in school."
+7. Final scene: CTA "Follow Coercion Files for the psychology they don't teach you in school."
 8. Never diagnose or give medical advice. Add no emojis in captions.
 
 OUTPUT — ONLY valid JSON, no markdown:
@@ -174,10 +174,10 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "it, you'll start noticing it everywhere.",
     ]
     cta = random.choice([
-        "Follow Mind Control Files for the psychology they don't teach you in school.",
+        "Follow Coercion Files for the psychology they don't teach you in school.",
         "Follow for documented cases that protect you.",
-        "Follow Mind Control Files — coercion decoded, daily.",
-        "Follow Mind Control Files to see the pattern before it sees you.",
+        "Follow Coercion Files — coercion decoded, daily.",
+        "Follow Coercion Files to see the pattern before it sees you.",
     ])
 
     body = (random.choice(setups), random.choice(proofs),
@@ -202,7 +202,7 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
                    "visual": "glowing brain abstract dark", "emotion": "revelatory"})
 
     return {
-        "title": f"{hook} | Mind Control Files",
+        "title": f"{hook} | Coercion Files",
         "hook": hook,
         "scenes": scenes,
         "tags": pillar["tags"][:10],

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.2 — Niche Strategy & Topic Bank (Mind Control Files).
+Cognitive Dark V2.2 — Niche Strategy & Topic Bank (Coercion Files).
 
 Supplies the Autonomous Brain with a deep, monetization-safe topic pool
 per content pillar. True-crime × psychology positioning: story-driven,

@@ -33,17 +33,17 @@ TMP_DIR.mkdir(parents=True, exist_ok=True)
 # ─────────────────────────────────────────────────────────────
 # Channel identity
 # ─────────────────────────────────────────────────────────────
-CHANNEL_NAME = "Mind Control Files"
+CHANNEL_NAME = "Coercion Files"
 CHANNEL_TAGLINE = "The Psychology of Coercion — Documented, Decoded, Defended"
 TARGET_COUNTRY = "US"
 TARGET_LANGUAGE = "en"
 # V2.2 positioning: fresh channel (2019 legacy channel retired to archive).
 # Create the new channel with EXACTLY this name/handle so CTAs match.
-CHANNEL_URL = "https://youtube.com/@mindcontrolfiles"
+CHANNEL_URL = "https://youtube.com/@coercionfiles"
 CHANNEL_ID = ""  # fill after channel creation (Studio → Settings → Advanced)
 
 NICHE = {
-    "name": "Mind Control Files — The Psychology of Coercion & Defense",
+    "name": "Coercion Files — The Psychology of Coercion & Defense",
     "parent_niche": "True-Crime Psychology / Behavioral Science",
     "angle": ("Documented cases of coercion, cults, con artistry and mind "
               "control — decoded so viewers can spot the pattern and defend "
@@ -62,7 +62,7 @@ NICHE = {
 }
 
 # ─────────────────────────────────────────────────────────────
-# Content pillars (V2.2 — Mind Control Files positioning)
+# Content pillars (V2.2 — Coercion Files positioning)
 # ─────────────────────────────────────────────────────────────
 PILLARS = [
     {
