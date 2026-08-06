@@ -131,9 +131,15 @@ class YouTubeUploader(BasePlatform):
                 if status and int(status.progress() * 100) % 25 == 0:
                     logger.info("⬆️  YT upload %d%%", int(status.progress() * 100))
             vid = response["id"]
+            # V2.2.1: thumbnail failure must NOT kill the upload — the video
+            # is already in. (Custom thumbnails also need channel phone-
+            # verification in Studio; unverified accounts 403 here.)
             if thumb_path and os.path.exists(thumb_path):
-                youtube.thumbnails().set(
-                    videoId=vid, media_body=MediaFileUpload(thumb_path)).execute()
+                try:
+                    youtube.thumbnails().set(
+                        videoId=vid, media_body=MediaFileUpload(thumb_path)).execute()
+                except Exception as texc:
+                    logger.warning("Thumbnail set failed (non-fatal): %s", texc)
             logger.info("✅ YouTube uploaded: https://youtu.be/%s", vid)
             return self.result(True, video_id=vid, url=f"https://youtu.be/{vid}")
         except Exception as exc:

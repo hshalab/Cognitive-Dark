@@ -62,10 +62,10 @@ OUTPUT — ONLY valid JSON, no markdown:
 Output ONLY the JSON object."""
 
 
-def _groq(prompt: str) -> str:
+def _groq_with(model: str, prompt: str) -> str:
     url = "https://api.groq.com/openai/v1/chat/completions"
     payload = {
-        "model": os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
+        "model": model,
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
@@ -80,6 +80,26 @@ def _groq(prompt: str) -> str:
                  "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=90) as resp:
         return json.loads(resp.read())["choices"][0]["message"]["content"]
+
+
+def _groq(prompt: str) -> str:
+    """V2.2.1: Groq DEPRECATED the Llama chat models (403 on
+    llama-3.3-70b-versatile). Walk a model ladder: gpt-oss-120b → 20b → legacy.
+    Override via GROQ_MODELS env (comma list) or GROQ_MODEL (single)."""
+    single = os.environ.get("GROQ_MODEL", "").strip()
+    models = ([single] if single else
+              [m.strip() for m in os.environ.get(
+                  "GROQ_MODELS",
+                  "openai/gpt-oss-120b,openai/gpt-oss-20b,llama-3.3-70b-versatile"
+              ).split(",") if m.strip()])
+    last_exc = None
+    for model in models:
+        try:
+            return _groq_with(model, prompt)
+        except Exception as exc:
+            last_exc = exc
+            logger.warning("Groq model %s failed: %s", model, exc)
+    raise last_exc
 
 
 def _gemini(prompt: str) -> str:
