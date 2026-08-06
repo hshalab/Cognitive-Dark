@@ -28,9 +28,13 @@ from .base import BasePlatform
 
 logger = logging.getLogger("instagram")
 
-GRAPH = "https://graph.instagram.com"
-API_VERSION = "v22.0"
-RUP_URL = "https://rupload.instagram.com/ig-api-upload"
+# V2.2.3: use the graph.FACEBOOK host — it accepts the long-lived PAGE token
+# (the graph.instagram.com host needs an IG-native token, which is why every
+# run died with 'Cannot parse access token'). Resumable uploads move to the
+# facebook rupload host accordingly.
+GRAPH = "https://graph.facebook.com"
+API_VERSION = "v25.0"
+RUP_URL = "https://rupload.facebook.com/ig-api-upload"
 
 
 def _duration_ms(video_path: str) -> int:

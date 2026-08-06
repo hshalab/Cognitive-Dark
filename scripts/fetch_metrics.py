@@ -155,7 +155,7 @@ def instagram_metrics() -> dict:
     if not tok or not ig:
         return {}
     try:
-        r = requests.get(f"https://graph.instagram.com/v22.0/{ig}",
+        r = requests.get(f"https://graph.facebook.com/v25.0/{ig}",
                          params={"access_token": tok,
                                  "fields": "followers_count,media_count"}, timeout=30)
         r.raise_for_status()
