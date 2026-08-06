@@ -77,36 +77,18 @@ class FacebookUploader(BasePlatform):
             raise RuntimeError(f"reels start HTTP {r.status_code}: {r.text[:400]}")
         sess = r.json()
         session_id = sess.get("upload_session_id")
-        start = int(sess.get("start_offset", 0))
-        end = int(sess.get("end_offset", size))
 
-        # 2) TRANSFER — send the byte windows FB asks for
+        # 2) TRANSFER — V2.2.4: /video_reels only accepts {START, FINISH}
+        # (no transfer phase). Send the whole file with FINISH in one go;
+        # oversized files fail fast and the /videos ladder catches them.
         with open(video_path, "rb") as fh:
-            while start < size:
-                fh.seek(start)
-                chunk = fh.read(max(1, end - start))
-                r = requests.post(
-                    url,
-                    data={"access_token": token, "upload_phase": "transfer",
-                          "upload_session_id": session_id,
-                          "start_offset": str(start)},
-                    files={"video_file_chunk":
-                           (os.path.basename(video_path), chunk, "video/mp4")},
-                    timeout=300)
-                if r.status_code >= 400:
-                    raise RuntimeError(f"reels transfer HTTP {r.status_code}: {r.text[:400]}")
-                d = r.json()
-                new_start = int(d.get("start_offset", size))
-                new_end = int(d.get("end_offset", size))
-                if new_start <= start:      # no progress → bail out
-                    break
-                start, end = new_start, max(new_end, new_start)
-
-        # 3) FINISH — attach caption & publish
-        r = requests.post(url, data={"access_token": token,
-                                     "upload_phase": "finish",
-                                     "upload_session_id": session_id,
-                                     "description": description[:6300]}, timeout=120)
+            r = requests.post(
+                url,
+                data={"access_token": token, "upload_phase": "finish",
+                      "upload_session_id": session_id,
+                      "description": description[:6300]},
+                files={"source": (os.path.basename(video_path), fh, "video/mp4")},
+                timeout=600)
         if r.status_code >= 400:
             raise RuntimeError(f"reels finish HTTP {r.status_code}: {r.text[:400]}")
         return r.json()
