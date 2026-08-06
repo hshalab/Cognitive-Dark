@@ -336,7 +336,9 @@ USA_STYLE = {
     "cut_seconds": float(os.environ.get("USA_CUT_SECS", "2.4")),   # fast cut length
     "min_cut_seconds": 1.4,                                        # don't go shorter
     "caption_words_per_group": int(os.environ.get("CAPTION_GROUP_WORDS", "2")),
-    "caption_y": 1520,          # lower-third placement (1080x1920 canvas)
+    # V2.3: 1150 = above the Shorts UI overlay (title/hashtags/buttons cover
+    # the bottom ~25% of the frame). V2.2's 1520 sat hidden under the UI.
+    "caption_y": 1150,          # safe zone on 1080x1920 canvas
     "caption_h": 260,
     "highlight_color": (255, 210, 60),   # yellow pop on current word (USA style)
     "dim_future_alpha": 120,             # upcoming words dimmed

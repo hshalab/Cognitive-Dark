@@ -152,61 +152,39 @@ def _caption_window(full_text: str, chunks: list, current_idx: int) -> tuple:
 
 def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
                        emotion: str = "dark") -> Image.Image:
-    """Render the caption WINDOW containing the current word-chunk.
+    """V2.3 POP-STYLE captions (user feedback driven):
 
-    Past chunks → white; current chunk → yellow pop; future chunks → dim.
-    The window slides with the narration (V2.1) so long captions stay fully
-    legible instead of freezing after the first two lines.
+    • ONLY the current 1-2 word chunk on screen — huge, centered, bold.
+      (V2.2 showed a 2-line window ≈ 5+ words at once → looked cluttered.)
+    • NO underline under the current word (user didn't like it).
+    • Sits at caption_y ≈ 1150 — ABOVE the Shorts UI overlay (title, buttons)
+      which covers the bottom ~25% of the frame (V2.2 sat at 1520 = hidden).
     """
-    font = _load_font(56)
     strip = Image.new("RGBA", (WIDTH, CAP_H), (0, 0, 0, 0))
     draw = ImageDraw.Draw(strip)
-
-    if not _split_words(full_text):
+    if current_idx >= len(chunks):
         return strip
-
-    lines, first_word = _caption_window(full_text, chunks, current_idx)
-    bounds = _chunk_word_bounds(chunks)
-
-    def chunk_of_word(wi: int) -> int:
-        for ci, (s, e) in enumerate(bounds):
-            if s <= wi < e:
-                return ci
-        return max(0, len(bounds) - 1)
+    text = chunks[current_idx]
 
     accents = {"intense": (255, 110, 70), "revelatory": (255, 220, 100),
                "chilling": (120, 190, 255), "mysterious": (200, 170, 255)}
-    hl_color = accents.get(emotion, HL)
+    color = accents.get(emotion, HL)
+
+    # size scales down for longer chunks so 1-2 words always read HUGE
+    size = 100 if len(text) <= 12 else (84 if len(text) <= 20 else 68)
+    font = _load_font(size)
+    lines = textwrap.wrap(text, width=16) or [text]
 
     # background pill
-    draw.rounded_rectangle([20, 0, WIDTH - 20, CAP_H], radius=28,
-                           fill=(0, 0, 0, 165))
+    draw.rounded_rectangle([30, 0, WIDTH - 30, CAP_H], radius=30,
+                           fill=(0, 0, 0, 175))
 
-    # vertically center 1-2 lines
-    line_h = 92
+    line_h = size + 36
     y = (CAP_H - line_h * len(lines)) // 2 + 8
-    word_idx = first_word
     for line in lines:
-        line_words = line.split(" ")
-        widths = [draw.textlength(w + " ", font=font) for w in line_words]
-        total_w = sum(widths)
-        x = (WIDTH - total_w) / 2
-        for li, w in enumerate(line_words):
-            wchunk = chunk_of_word(word_idx)
-            if wchunk < current_idx:
-                fill = PAST + (255,)
-            elif wchunk == current_idx:
-                fill = hl_color + (255,)
-                # underline pop on the current word
-                ww = draw.textlength(w, font=font)
-                draw.rounded_rectangle([x - 2, y + 60, x + ww + 2, y + 68], radius=3,
-                                       fill=hl_color + (230,))
-            else:
-                fill = PAST + (DIM_A,)
-            draw.text((x, y), w, font=font, fill=fill,
-                      stroke_width=2, stroke_fill=(0, 0, 0))
-            x += widths[li]
-            word_idx += 1
+        w = draw.textlength(line, font=font)
+        draw.text(((WIDTH - w) / 2, y), line, font=font, fill=color + (255,),
+                  stroke_width=3, stroke_fill=(0, 0, 0))
         y += line_h
     return strip
 
