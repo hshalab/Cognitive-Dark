@@ -101,6 +101,9 @@ class YouTubeUploader(BasePlatform):
                     # V2.1: clean cap (V2's `x[:500] and x` was a no-op)
                     "tags": [t for t in (pkg.get("tags") or [])][:50],
                     "categoryId": os.environ.get("YT_CATEGORY_ID", "27"),
+                    # V2.5: language signals → serves US/English audience first
+                    "defaultLanguage": "en",
+                    "defaultAudioLanguage": "en-US",
                 },
                 "status": {
                     "privacyStatus": "private",

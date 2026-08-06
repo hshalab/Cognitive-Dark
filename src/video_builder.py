@@ -453,9 +453,12 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
     # 4) mux
     os.makedirs(OUT, exist_ok=True)
     if track and os.path.exists(track):
+        # V2.5: loudness-normalize to -14 LUFS (social-standard) so voice is
+        # consistently punchy across videos — USA retention hygiene.
         subprocess.run(
             ["ffmpeg", "-y", "-i", silent_video, "-i", track,
              "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+             "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
              "-movflags", "+faststart", out_path],
             check=True, capture_output=True)
     else:

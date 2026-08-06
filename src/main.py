@@ -123,6 +123,15 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     segments = generate_voice_segments(script["scenes"])
     narration_s = sum(s["duration"] for s in segments)
     logger.info("🎙️  Narration: %.1fs", narration_s)
+
+    # V2.5 SHORTS CAP GUARD: >60s = NOT a Short on YouTube; IG/FB Reels also
+    # favor <60s. Trim trailing scenes (clips+audio together) to stay 40-58s.
+    while narration_s > 57 and len(script["scenes"]) > 3:
+        script["scenes"].pop()
+        narration_s -= segments.pop()["duration"]
+        scene_visuals.pop()
+    logger.info("✂️  Final scenes: %d (%.1fs narration — Shorts-safe)",
+                len(script["scenes"]), narration_s)
     release_tts()  # free the ~300MB Kokoro model before video render
 
     # ── 4. Video (USA style: fast cuts + word captions + hook overlay) ──
@@ -159,7 +168,8 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
             results[p] = {"platform": p, "ok": False, "skipped": True, "reason": why}
             continue
 
-        pkg = build_platform_package(script, p)
+        pkg = build_platform_package(script, p,
+                                     durations=[s["duration"] for s in segments])
         sched = PlatformScheduler(p)
         publish_at = sched.next_peak().isoformat()
         try:

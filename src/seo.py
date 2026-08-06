@@ -42,12 +42,22 @@ EDUCATIONAL_DISCLAIMER = (
     "⚠️ For educational purposes only — learn to recognize and protect yourself. "
     "Not a substitute for professional advice.")
 
-CHAPTER_TEMPLATE = """⏱ CHAPTERS:
-00:00 The Hook
-00:05 What's Really Happening
-00:12 The Pattern Nobody Sees
-00:20 Why It Works On You
-00:28 How To Protect Yourself"""
+CHAPTER_NAMES = ["The Hook", "What's Really Happening", "The Pattern Nobody Sees",
+                 "Why It Works On You", "How To Protect Yourself", "The Takeaway",
+                 "Follow For More"]
+
+
+def _chapters(durations: list) -> str:
+    """V2.5: REAL chapter timestamps computed from actual scene durations
+    (V2's were static/fake — YouTube penalizes misleading chapters)."""
+    if not durations:
+        return ""
+    lines, t = [], 0.0
+    for i, d in enumerate(durations):
+        mm, ss = int(t // 60), int(t % 60)
+        lines.append(f"{mm:02d}:{ss:02d} {CHAPTER_NAMES[i] if i < len(CHAPTER_NAMES) else 'More'}")
+        t += d
+    return "⏱ CHAPTERS:\n" + "\n".join(lines)
 
 
 def _title_case_word(w: str, first: bool, stop: set) -> str:
@@ -99,15 +109,16 @@ def _title(script: dict, platform: str) -> str:
     return _power_title(hook, 70)[:100]
 
 
-def _description(script: dict, platform: str) -> str:
+def _description(script: dict, platform: str, durations: list = None) -> str:
     hook = script.get("hook", "")
     key_points = script.get("key_points", "")
     if platform == "youtube":
         keyword = script.get("pillar_name", "psychology")
+        chapters = _chapters(durations) if durations else ""
         desc = (f"{script.get('title','')} — {hook}\n"
                 f"{keyword}: how manipulation works, why it works on you, and "
                 f"exactly how to protect yourself.\n\n"
-                f"{CHAPTER_TEMPLATE}\n\n"
+                f"{chapters}\n\n"
                 f"🔍 WHAT YOU'LL LEARN:\n{key_points}\n\n"
                 f"📌 SUBSCRIBE for daily psychology shorts — new uploads daily.\n"
                 f"{EDUCATIONAL_DISCLAIMER}\n\n"
@@ -159,12 +170,13 @@ def _tags(script: dict, platform: str) -> list:
     return final
 
 
-def build_platform_package(script: dict, platform: str) -> dict:
+def build_platform_package(script: dict, platform: str,
+                           durations: list = None) -> dict:
     """Return {title, description, tags, hashtags, hook} for a platform."""
     return {
         "platform": platform,
         "title": _title(script, platform),
-        "description": _description(script, platform),
+        "description": _description(script, platform, durations),
         "tags": _tags(script, platform),
         "hashtags": PLATFORM_HASHTAGS.get(platform, []),
         "hook": script.get("hook", ""),
