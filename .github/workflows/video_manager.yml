@@ -1,0 +1,40 @@
+name: "🎛️ Video Manager (list / cleanup faulty uploads)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "list | keep_latest"
+        required: true
+        type: choice
+        options:
+          - list
+          - keep_latest
+        default: list
+      keep_count:
+        description: "how many latest uploads to keep (keep_latest only)"
+        required: false
+        type: string
+        default: "3"
+
+permissions:
+  contents: read
+
+jobs:
+  manage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          pip install -q python-dotenv google-api-python-client google-auth-oauthlib
+      - name: Run manager
+        env:
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        run: python scripts/manage_uploads.py "${{ inputs.action }}" "${{ inputs.keep_count }}"
