@@ -1,1066 +1,511 @@
 {
   "arms": {
-    "cognitive_biases::knowledge_gap::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 4,
-      "updated": "2026-08-06T01:36:04.867779+00:00"
-    },
-    "cults::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675764+00:00"
-    },
-    "cults::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675774+00:00"
-    },
-    "cults::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675778+00:00"
-    },
-    "cults::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675781+00:00"
-    },
-    "cults::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675784+00:00"
-    },
-    "cults::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675786+00:00"
-    },
-    "cults::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675788+00:00"
-    },
-    "cults::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 2,
-      "updated": "2026-08-05T23:09:29.218526+00:00"
-    },
-    "con_artists::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675793+00:00"
-    },
-    "con_artists::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675796+00:00"
-    },
-    "con_artists::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675798+00:00"
-    },
-    "con_artists::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675801+00:00"
-    },
-    "con_artists::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675803+00:00"
-    },
-    "con_artists::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675805+00:00"
-    },
-    "con_artists::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675809+00:00"
-    },
-    "con_artists::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675811+00:00"
-    },
-    "mind_control_history::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675814+00:00"
-    },
-    "mind_control_history::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675816+00:00"
-    },
-    "mind_control_history::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675820+00:00"
-    },
-    "mind_control_history::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675822+00:00"
-    },
-    "mind_control_history::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675824+00:00"
-    },
-    "mind_control_history::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675828+00:00"
-    },
-    "mind_control_history::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675831+00:00"
-    },
-    "mind_control_history::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675833+00:00"
-    },
-    "interrogation::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675835+00:00"
-    },
-    "interrogation::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675837+00:00"
-    },
-    "interrogation::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675840+00:00"
-    },
-    "interrogation::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675842+00:00"
-    },
-    "interrogation::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675844+00:00"
-    },
-    "interrogation::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675846+00:00"
-    },
-    "interrogation::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675848+00:00"
-    },
-    "interrogation::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675852+00:00"
-    },
-    "coercive_control::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675854+00:00"
-    },
-    "coercive_control::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675857+00:00"
-    },
-    "coercive_control::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675859+00:00"
-    },
-    "coercive_control::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675861+00:00"
-    },
-    "coercive_control::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675864+00:00"
-    },
-    "coercive_control::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675866+00:00"
-    },
-    "coercive_control::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675868+00:00"
-    },
-    "coercive_control::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675870+00:00"
-    },
-    "mass_psychology::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675872+00:00"
-    },
-    "mass_psychology::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675875+00:00"
-    },
-    "mass_psychology::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675878+00:00"
-    },
-    "mass_psychology::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675881+00:00"
-    },
-    "mass_psychology::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675883+00:00"
-    },
-    "mass_psychology::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675886+00:00"
-    },
-    "mass_psychology::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675888+00:00"
-    },
-    "mass_psychology::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675890+00:00"
-    },
-    "brainwashing_myths::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675892+00:00"
-    },
-    "brainwashing_myths::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675894+00:00"
-    },
-    "brainwashing_myths::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675896+00:00"
-    },
-    "brainwashing_myths::warning::evening": {
-      "plays": 1,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675938+00:00"
-    },
-    "brainwashing_myths::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675901+00:00"
-    },
-    "brainwashing_myths::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675904+00:00"
-    },
-    "brainwashing_myths::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675907+00:00"
-    },
-    "brainwashing_myths::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675912+00:00"
-    },
-    "stoic_defense::case_file::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675914+00:00"
-    },
-    "stoic_defense::chilling_fact::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675916+00:00"
-    },
-    "stoic_defense::question_hook::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675918+00:00"
-    },
-    "stoic_defense::warning::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675920+00:00"
-    },
-    "stoic_defense::plot_twist::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675922+00:00"
-    },
-    "stoic_defense::timeline::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675925+00:00"
-    },
-    "stoic_defense::confession::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675928+00:00"
-    },
-    "stoic_defense::red_flag::evening": {
-      "plays": 0,
-      "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-05T19:34:21.675930+00:00"
-    },
     "cults::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228523+00:00"
+      "updated": "2026-08-06T06:28:26.697842+00:00"
     },
     "cults::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228535+00:00"
+      "updated": "2026-08-06T06:28:26.697854+00:00"
     },
     "cults::question_hook::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228541+00:00"
+      "updated": "2026-08-06T06:28:26.697860+00:00"
     },
     "cults::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228546+00:00"
+      "updated": "2026-08-06T06:28:26.697865+00:00"
     },
     "cults::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228551+00:00"
+      "updated": "2026-08-06T06:28:26.697869+00:00"
     },
     "cults::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228556+00:00"
+      "updated": "2026-08-06T06:28:26.697874+00:00"
     },
     "cults::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228561+00:00"
+      "updated": "2026-08-06T06:28:26.697880+00:00"
     },
     "cults::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228570+00:00"
+      "updated": "2026-08-06T06:28:26.697889+00:00"
     },
     "con_artists::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228583+00:00"
+      "updated": "2026-08-06T06:28:26.697898+00:00"
     },
     "con_artists::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228589+00:00"
+      "updated": "2026-08-06T06:28:26.697903+00:00"
     },
     "con_artists::question_hook::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228594+00:00"
+      "updated": "2026-08-06T06:28:26.697908+00:00"
     },
     "con_artists::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228599+00:00"
+      "updated": "2026-08-06T06:28:26.697914+00:00"
     },
     "con_artists::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228604+00:00"
+      "updated": "2026-08-06T06:28:26.697919+00:00"
     },
     "con_artists::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228612+00:00"
+      "updated": "2026-08-06T06:28:26.697923+00:00"
     },
     "con_artists::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228616+00:00"
+      "updated": "2026-08-06T06:28:26.697928+00:00"
     },
     "con_artists::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228620+00:00"
+      "updated": "2026-08-06T06:28:26.697933+00:00"
     },
     "mind_control_history::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228625+00:00"
+      "updated": "2026-08-06T06:28:26.697938+00:00"
     },
     "mind_control_history::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228630+00:00"
+      "updated": "2026-08-06T06:28:26.697942+00:00"
     },
     "mind_control_history::question_hook::morning": {
-      "plays": 1,
-      "rewards": 1.0,
+      "plays": 0,
+      "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 3,
-      "updated": "2026-08-06T01:35:23.391828+00:00"
+      "n": 0,
+      "updated": "2026-08-06T06:28:26.697947+00:00"
     },
     "mind_control_history::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228640+00:00"
+      "updated": "2026-08-06T06:28:26.697951+00:00"
     },
     "mind_control_history::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228645+00:00"
+      "updated": "2026-08-06T06:28:26.697956+00:00"
     },
     "mind_control_history::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228651+00:00"
+      "updated": "2026-08-06T06:28:26.697960+00:00"
     },
     "mind_control_history::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228656+00:00"
+      "updated": "2026-08-06T06:28:26.697964+00:00"
     },
     "mind_control_history::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228661+00:00"
+      "updated": "2026-08-06T06:28:26.697969+00:00"
     },
     "interrogation::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228669+00:00"
+      "updated": "2026-08-06T06:28:26.697973+00:00"
     },
     "interrogation::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228673+00:00"
+      "updated": "2026-08-06T06:28:26.697978+00:00"
     },
     "interrogation::question_hook::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228678+00:00"
+      "updated": "2026-08-06T06:28:26.697982+00:00"
     },
     "interrogation::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228682+00:00"
+      "updated": "2026-08-06T06:28:26.697986+00:00"
     },
     "interrogation::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228687+00:00"
+      "updated": "2026-08-06T06:28:26.697990+00:00"
     },
     "interrogation::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228691+00:00"
+      "updated": "2026-08-06T06:28:26.697995+00:00"
     },
     "interrogation::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228699+00:00"
+      "updated": "2026-08-06T06:28:26.697999+00:00"
     },
     "interrogation::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228704+00:00"
+      "updated": "2026-08-06T06:28:26.698004+00:00"
     },
     "coercive_control::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228709+00:00"
+      "updated": "2026-08-06T06:28:26.698009+00:00"
     },
     "coercive_control::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228714+00:00"
+      "updated": "2026-08-06T06:28:26.698013+00:00"
     },
     "coercive_control::question_hook::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228720+00:00"
+      "updated": "2026-08-06T06:28:26.698018+00:00"
     },
     "coercive_control::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228725+00:00"
+      "updated": "2026-08-06T06:28:26.698023+00:00"
     },
     "coercive_control::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228730+00:00"
+      "updated": "2026-08-06T06:28:26.698027+00:00"
     },
     "coercive_control::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228735+00:00"
+      "updated": "2026-08-06T06:28:26.698032+00:00"
     },
     "coercive_control::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228740+00:00"
+      "updated": "2026-08-06T06:28:26.698036+00:00"
     },
     "coercive_control::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228745+00:00"
+      "updated": "2026-08-06T06:28:26.698040+00:00"
     },
     "mass_psychology::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228750+00:00"
+      "updated": "2026-08-06T06:28:26.698045+00:00"
     },
     "mass_psychology::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228755+00:00"
+      "updated": "2026-08-06T06:28:26.698049+00:00"
     },
     "mass_psychology::question_hook::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228760+00:00"
+      "updated": "2026-08-06T06:28:26.698054+00:00"
     },
     "mass_psychology::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228768+00:00"
+      "updated": "2026-08-06T06:28:26.698060+00:00"
     },
     "mass_psychology::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228773+00:00"
+      "updated": "2026-08-06T06:28:26.698064+00:00"
     },
     "mass_psychology::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228781+00:00"
+      "updated": "2026-08-06T06:28:26.698070+00:00"
     },
     "mass_psychology::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228786+00:00"
+      "updated": "2026-08-06T06:28:26.698080+00:00"
     },
     "mass_psychology::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228791+00:00"
+      "updated": "2026-08-06T06:28:26.698085+00:00"
     },
     "brainwashing_myths::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228796+00:00"
+      "updated": "2026-08-06T06:28:26.698090+00:00"
     },
     "brainwashing_myths::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228801+00:00"
+      "updated": "2026-08-06T06:28:26.698094+00:00"
     },
     "brainwashing_myths::question_hook::morning": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-06T01:31:07.228805+00:00"
+      "n": 3,
+      "updated": "2026-08-06T06:33:17.871721+00:00"
     },
     "brainwashing_myths::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228810+00:00"
+      "updated": "2026-08-06T06:28:26.698103+00:00"
     },
     "brainwashing_myths::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228815+00:00"
+      "updated": "2026-08-06T06:28:26.698107+00:00"
     },
     "brainwashing_myths::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228819+00:00"
+      "updated": "2026-08-06T06:28:26.698111+00:00"
     },
     "brainwashing_myths::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228824+00:00"
+      "updated": "2026-08-06T06:28:26.698115+00:00"
     },
     "brainwashing_myths::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228828+00:00"
+      "updated": "2026-08-06T06:28:26.698120+00:00"
     },
     "stoic_defense::case_file::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228837+00:00"
+      "updated": "2026-08-06T06:28:26.698124+00:00"
     },
     "stoic_defense::chilling_fact::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228841+00:00"
+      "updated": "2026-08-06T06:28:26.698128+00:00"
     },
     "stoic_defense::question_hook::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228846+00:00"
+      "updated": "2026-08-06T06:28:26.698133+00:00"
     },
     "stoic_defense::warning::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228854+00:00"
+      "updated": "2026-08-06T06:28:26.698138+00:00"
     },
     "stoic_defense::plot_twist::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228858+00:00"
+      "updated": "2026-08-06T06:28:26.698146+00:00"
     },
     "stoic_defense::timeline::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228863+00:00"
+      "updated": "2026-08-06T06:28:26.698151+00:00"
     },
     "stoic_defense::confession::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228867+00:00"
+      "updated": "2026-08-06T06:28:26.698155+00:00"
     },
     "stoic_defense::red_flag::morning": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-06T01:31:07.228872+00:00"
+      "updated": "2026-08-06T06:28:26.698160+00:00"
     }
   },
   "videos": [
     {
-      "title": "The Sunk Cost Trap You're Stuck In | Dark Psychology Facts",
-      "hook": "The Sunk Cost Trap You're Stuck In",
-      "pillar": "cognitive_biases",
-      "hook_style": "knowledge_gap",
-      "arm_key": "cognitive_biases::knowledge_gap::evening",
-      "text_sha": "458c061e3c678f08fab1a129c851013a6872ce9a16ad061597d99c3ded9dd823",
-      "text": "The Sunk Cost Trap You're Stuck In Psychologists just confirmed what most people refuse to believe. The research is clear on this one. Your instincts were right to be suspicious. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow Cognitive Dark — the dark side of the human mind, decoded daily.",
-      "source": "template",
-      "run_id": "20260805T191001",
-      "ts": "2026-08-05T19:14:25.854736+00:00"
-    },
-    {
-      "title": "Why Smart People Join Dangerous Cults | Mind Control Files",
-      "hook": "Why Smart People Join Dangerous Cults",
-      "pillar": "cults",
-      "hook_style": "red_flag",
-      "arm_key": "cults::red_flag::evening",
-      "text_sha": "3336799bcd5b2d7b1be409087cc921ebeac7dc862f584b3c442e11a74d12e21f",
-      "text": "Why Smart People Join Dangerous Cults Three signs. In order. Every single time. This isn't a theory. It's a documented pattern of human behavior. Research into human behavior confirms it: familiarity breeds acceptance. The more you hear something, the more true it feels. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow Mind Control Files — coercion decoded, daily.",
-      "source": "template",
-      "run_id": "20260805T230421",
-      "ts": "2026-08-05T23:09:28.070174+00:00"
-    },
-    {
-      "title": "The Files They Didn't Burn | Mind Control Files",
-      "hook": "The Files They Didn't Burn",
-      "pillar": "mind_control_history",
+      "title": "Thought Reform: The 6 Conditions | Coercion Files",
+      "hook": "Thought Reform: The 6 Conditions",
+      "pillar": "brainwashing_myths",
       "hook_style": "question_hook",
-      "arm_key": "mind_control_history::question_hook::morning",
-      "text_sha": "d4d03513d369c5a6221bd8fa1910ff8f904eb03cbb6bfc13267ffc8c7922b47f",
-      "text": "The Files They Didn't Burn Would you have spotted it in time? Psychologists have studied this pattern for decades. Here's what they found. A landmark study on this pattern found it works in under ten seconds. That's faster than you can catch yourself. Here's the twist — the people who use it often don't know they're doing it. It's learned behavior, passed down and repeated. Follow Mind Control Files to see the pattern before it sees you.",
+      "arm_key": "brainwashing_myths::question_hook::morning",
+      "text_sha": "ccd64924ec330677023d8c1d67b0d4f9e167f76aa7ff209b6427c4d90bf84f5d",
+      "text": "Thought Reform: The 6 Conditions Would you have spotted it in time? There's a reason this works on nearly everyone. It's wired into how we think. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow Coercion Files to see the pattern before it sees you.",
       "source": "template",
-      "run_id": "20260806T013107",
-      "ts": "2026-08-06T01:35:18.470566+00:00"
+      "run_id": "20260806T062826",
+      "ts": "2026-08-06T06:33:14.253902+00:00"
     }
   ],
-  "attribution": {
-    "i8M-KEj-QG4": {
-      "arm_key": "cognitive_biases::knowledge_gap::evening",
-      "platform": "youtube",
-      "title": "The Sunk Cost Trap You're Stuck In | Dark Psychology Facts",
-      "ts": "2026-08-05T19:14:31.119821+00:00",
-<<<<<<< Updated upstream
-      "credited": false
-    },
-    "5-LFsyedFhs": {
-      "arm_key": "mind_control_history::question_hook::morning",
-      "platform": "youtube",
-      "title": "The Files They Didn't Burn | Mind Control Files",
-      "ts": "2026-08-06T01:35:22.736266+00:00",
-      "credited": false
-=======
-      "credited": true,
-      "metrics": {
-        "views": 0,
-        "likes": 0,
-        "comments": 0,
-        "retention": 0.0
-      },
-      "credited_at": "2026-08-06T01:36:04.867754+00:00"
->>>>>>> Stashed changes
-    }
-  },
-  "post_log": {
-    "2026-08-05": {
-      "youtube": {
-        "count": 1,
-        "last_ts": "2026-08-05T19:14:31.119577+00:00"
-      }
-    },
-    "2026-08-06": {
-      "youtube": {
-        "count": 1,
-        "last_ts": "2026-08-06T01:35:22.735106+00:00"
-      }
-    }
-  },
+  "attribution": {},
+  "post_log": {},
   "penalty_log": [
     {
-      "ts": "2026-08-05T19:14:34.694407+00:00",
-      "arm": "cognitive_biases::knowledge_gap::evening",
+      "ts": "2026-08-06T06:33:16.905200+00:00",
+      "arm": "brainwashing_myths::question_hook::morning",
+      "reason": "youtube_upload_failed",
+      "penalty": -2.0
+    },
+    {
+      "ts": "2026-08-06T06:33:17.689883+00:00",
+      "arm": "brainwashing_myths::question_hook::morning",
       "reason": "facebook_upload_failed",
       "penalty": -2.0
     },
     {
-      "ts": "2026-08-05T19:14:35.190731+00:00",
-      "arm": "cognitive_biases::knowledge_gap::evening",
+      "ts": "2026-08-06T06:33:17.871725+00:00",
+      "arm": "brainwashing_myths::question_hook::morning",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
-    },
-    {
-      "ts": "2026-08-05T23:09:28.921789+00:00",
-      "arm": "cults::red_flag::evening",
-      "reason": "facebook_upload_failed",
-      "penalty": -2.0
-    },
-    {
-      "ts": "2026-08-05T23:09:29.218530+00:00",
-      "arm": "cults::red_flag::evening",
-      "reason": "instagram_upload_failed",
-      "penalty": -2.0
-    },
-    {
-<<<<<<< Updated upstream
-      "ts": "2026-08-06T01:35:23.199929+00:00",
-      "arm": "mind_control_history::question_hook::morning",
-      "reason": "facebook_upload_failed",
-      "penalty": -2.0
-    },
-    {
-      "ts": "2026-08-06T01:35:23.390608+00:00",
-      "arm": "mind_control_history::question_hook::morning",
-      "reason": "instagram_upload_failed",
-      "penalty": -2.0
-=======
-      "ts": "2026-08-06T01:36:04.867783+00:00",
-      "arm": "cognitive_biases::knowledge_gap::evening",
-      "reason": "low_metrics:i8M-KEj-QG4",
-      "penalty": -1.0
->>>>>>> Stashed changes
     }
   ],
-  "reward_log": [
-    {
-      "ts": "2026-08-05T19:14:35.191094+00:00",
-      "arm": "cognitive_biases::knowledge_gap::evening",
-      "reason": "youtube_published",
-      "reward": 1.0
-    },
-    {
-      "ts": "2026-08-06T01:35:23.391833+00:00",
-      "arm": "mind_control_history::question_hook::morning",
-      "reason": "youtube_published",
-      "reward": 1.0
-    }
-  ],
+  "reward_log": [],
   "health": {
     "youtube": {
-      "failures": 0,
+      "failures": 1,
       "healthy": true,
-      "last_check": "2026-08-06T01:35:22.733663+00:00"
+      "last_reason": "<HttpError 403 when requesting https://youtube.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=lQ6iO5VPmCE&alt=json&uploadType=media returned \"The thumbnail can't be set for the specified video. The request might not be properly authorized.\". Details: \"[{'message': \"The thumbnail can't be set for the specified video. The request might not be properly authorized.\", 'domain': 'youtube.thumbn",
+      "last_check": "2026-08-06T06:33:16.904255+00:00"
     },
     "facebook": {
-      "failures": 3,
-      "healthy": false,
-      "last_reason": "HTTP 400: {\"error\":{\"message\":\"Error validating access token: The session has been invalidated because the user changed their password or Facebook has changed the session for security reasons.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":460,\"fbtrace_id\":\"ALkY-3oCcRaUXKK3wEn6KG1\"}}",
-      "last_check": "2026-08-06T01:35:23.198179+00:00"
+      "failures": 1,
+      "healthy": true,
+      "last_reason": "HTTP 400: {\"error\":{\"message\":\"Error validating access token: The session has been invalidated because the user changed their password or Facebook has changed the session for security reasons.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":460,\"fbtrace_id\":\"A4_28mhdqijMoe_t8r67M8j\"}}",
+      "last_check": "2026-08-06T06:33:17.688629+00:00"
     },
     "instagram": {
-      "failures": 3,
-      "healthy": false,
-      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"Axv2xyoSDp-YBeutA1C7Bad\"}}",
-      "last_check": "2026-08-06T01:35:23.389104+00:00"
+      "failures": 1,
+      "healthy": true,
+      "last_reason": "IG container HTTP 401: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"ADU7gZgYIspXDkc2-7VX_vD\"}}",
+      "last_check": "2026-08-06T06:33:17.870760+00:00"
     }
   },
   "model_version": 3,
-  "created_at": "2026-08-05T19:10:01.532148+00:00"
+  "created_at": "2026-08-06T06:28:26.697782+00:00"
 }
