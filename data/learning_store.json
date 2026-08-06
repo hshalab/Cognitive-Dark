@@ -2,10 +2,10 @@
   "arms": {
     "cognitive_biases::knowledge_gap::evening": {
       "plays": 0,
-      "rewards": 1.0,
+      "rewards": 0.0,
       "sum_sq": 0.0,
-      "n": 3,
-      "updated": "2026-08-05T19:14:35.191085+00:00"
+      "n": 4,
+      "updated": "2026-08-06T01:36:04.867779+00:00"
     },
     "cults::case_file::evening": {
       "plays": 0,
@@ -948,6 +948,7 @@
       "platform": "youtube",
       "title": "The Sunk Cost Trap You're Stuck In | Dark Psychology Facts",
       "ts": "2026-08-05T19:14:31.119821+00:00",
+<<<<<<< Updated upstream
       "credited": false
     },
     "5-LFsyedFhs": {
@@ -956,6 +957,16 @@
       "title": "The Files They Didn't Burn | Mind Control Files",
       "ts": "2026-08-06T01:35:22.736266+00:00",
       "credited": false
+=======
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "credited_at": "2026-08-06T01:36:04.867754+00:00"
+>>>>>>> Stashed changes
     }
   },
   "post_log": {
@@ -998,6 +1009,7 @@
       "penalty": -2.0
     },
     {
+<<<<<<< Updated upstream
       "ts": "2026-08-06T01:35:23.199929+00:00",
       "arm": "mind_control_history::question_hook::morning",
       "reason": "facebook_upload_failed",
@@ -1008,6 +1020,12 @@
       "arm": "mind_control_history::question_hook::morning",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+=======
+      "ts": "2026-08-06T01:36:04.867783+00:00",
+      "arm": "cognitive_biases::knowledge_gap::evening",
+      "reason": "low_metrics:i8M-KEj-QG4",
+      "penalty": -1.0
+>>>>>>> Stashed changes
     }
   ],
   "reward_log": [
