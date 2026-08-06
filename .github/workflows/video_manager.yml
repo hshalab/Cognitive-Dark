@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "list | keep_latest | spread | audit"
+        description: "list | keep_latest | spread | audit | social_list | social_cleanup"
         required: true
         type: choice
         options:
@@ -12,6 +12,8 @@ on:
           - keep_latest
           - spread
           - audit
+          - social_list
+          - social_cleanup
         default: list
       keep_count:
         description: "how many latest uploads to keep (keep_latest only)"
@@ -34,7 +36,7 @@ jobs:
         run: |
           pip install -q python-dotenv google-api-python-client google-auth-oauthlib
       - name: Run manager
-        if: ${{ inputs.action != 'audit' }}
+        if: ${{ inputs.action != 'audit' && inputs.action != 'social_list' && inputs.action != 'social_cleanup' }}
         env:
           YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -54,3 +56,12 @@ jobs:
           IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/platform_audit.py
+
+      - name: Social content manager (FB/IG old videos)
+        if: ${{ inputs.action == 'social_list' || inputs.action == 'social_cleanup' }}
+        env:
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/social_manager.py "${{ inputs.action == 'social_cleanup' && 'cleanup' || 'list' }}"
