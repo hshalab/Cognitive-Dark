@@ -122,7 +122,8 @@ def main():
                 print(f"  {m['id']}  age={a:5.0f}d plays={p:4} {tag} | "
                       f"{m.get('media_type')} {m.get('permalink', '')[-24:]}")
         except Exception as e:
-            print("  ❌", str(e)[:160])
+            body = getattr(getattr(e, "response", None), "text", "")
+            print("  ❌", str(e)[:120], "|", body[:300])
 
     print("\n✅ done")
 
