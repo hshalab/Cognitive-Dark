@@ -102,9 +102,9 @@ def _groq(prompt: str) -> str:
     raise last_exc
 
 
-def _gemini(prompt: str) -> str:
+def _gemini_with(model: str, prompt: str) -> str:
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
-           f"{os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash')}:generateContent")
+           f"{model}:generateContent")
     payload = {
         "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
         "contents": [{"parts": [{"text": prompt}]}],
@@ -118,6 +118,20 @@ def _gemini(prompt: str) -> str:
     with urllib.request.urlopen(req, timeout=90) as resp:
         data = json.loads(resp.read())
         return data["candidates"][0]["content"]["parts"][0]["text"]
+
+
+def _gemini(prompt: str) -> str:
+    """V2.2.2: model ladder — older flash models get deprecated over time."""
+    models = [m.strip() for m in os.environ.get(
+        "GEMINI_MODELS", "gemini-2.5-flash,gemini-2.0-flash").split(",") if m.strip()]
+    last_exc = None
+    for model in models:
+        try:
+            return _gemini_with(model, prompt)
+        except Exception as exc:
+            last_exc = exc
+            logger.warning("Gemini model %s failed: %s", model, exc)
+    raise last_exc
 
 
 def _parse_script(text: str) -> dict:
