@@ -295,13 +295,22 @@ def _pick_music() -> str:
 # ─────────────────────────────────────────────────────────────
 # main build (memory-safe: one scene at a time)
 # ─────────────────────────────────────────────────────────────
-def _build_audio(audio_segments: list, total_duration: float) -> str:
-    from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
+def _build_audio(audio_segments: list, total_duration: float,
+                 scene_starts: list = None) -> str:
+    from moviepy.editor import AudioFileClip, CompositeAudioClip
     tracks = []
-    voices = [AudioFileClip(s["path"]) for s in audio_segments
-              if s.get("path") and os.path.exists(s["path"])]
-    if voices:
-        tracks.append(concatenate_audioclips(voices))
+    # V2.6 SYNC FIX: place each voice at its EXACT scene start time.
+    # (V2 concatenated voices back-to-back while video scenes carry a +0.4s
+    #  pad each → captions drifted ~0.4s later per scene; by scene 6 the
+    #  voice led captions by ~2.4s.)
+    if scene_starts:
+        for seg, start in zip(audio_segments, scene_starts):
+            if seg.get("path") and os.path.exists(seg["path"]):
+                tracks.append(AudioFileClip(seg["path"]).set_start(start))
+    else:
+        for seg in audio_segments:
+            if seg.get("path") and os.path.exists(seg["path"]):
+                tracks.append(AudioFileClip(seg["path"]))
     music_path = _pick_music()
     if music_path and os.path.exists(music_path):
         try:
@@ -351,8 +360,12 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
 
     # 1) render each scene → temp mp4 (fast cuts + word captions baked in)
     scene_files = []
+    scene_starts = []
+    running = 0.0
     for i, (visuals, seg, scene) in enumerate(zip(scene_visuals, audio_segments, scenes)):
         duration = float(seg.get("duration", 4.0)) + 0.4
+        scene_starts.append(running)
+        running += duration
         narration_dur = float(seg.get("duration", 4.0))
         visuals = visuals or [os.path.join(TMP, "none.jpg")]
         caption_text = scene.get("caption_roman") or scene.get("caption", "")
@@ -448,7 +461,8 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=nw=1:nk=1", silent_video],
         capture_output=True, text=True).stdout.strip())
-    track = _build_audio(audio_segments, total_duration=dur)
+    track = _build_audio(audio_segments, total_duration=dur,
+                         scene_starts=scene_starts)
 
     # 4) mux
     os.makedirs(OUT, exist_ok=True)
