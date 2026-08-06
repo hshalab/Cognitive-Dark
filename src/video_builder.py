@@ -55,6 +55,10 @@ HOOK_SECS = USA_STYLE["hook_seconds"]
 LOOP_SECS = USA_STYLE["loop_seconds"]
 
 FONT_CANDIDATES = [
+    # V2.4 USA VIRAL: bundled condensed display faces (OFL) — the
+    # MrBeast/Hormozi look. DejaVu only as last resort.
+    "assets/fonts/Anton-Regular.ttf",
+    "assets/fonts/BebasNeue-Regular.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
     "assets/fonts/DejaVuSans-Bold.ttf",
@@ -152,60 +156,70 @@ def _caption_window(full_text: str, chunks: list, current_idx: int) -> tuple:
 
 def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
                        emotion: str = "dark") -> Image.Image:
-    """V2.3 POP-STYLE captions (user feedback driven):
+    """V2.4 USA VIRAL caption style (bundled Anton face + effects):
 
-    • ONLY the current 1-2 word chunk on screen — huge, centered, bold.
-      (V2.2 showed a 2-line window ≈ 5+ words at once → looked cluttered.)
-    • NO underline under the current word (user didn't like it).
-    • Sits at caption_y ≈ 1150 — ABOVE the Shorts UI overlay (title, buttons)
-      which covers the bottom ~25% of the frame (V2.2 sat at 1520 = hidden).
+    • ALL-CAPS condensed Anton — the MrBeast/Hormozi look
+    • 1-2 word chunk, HUGE (110px), centered
+    • EFFECTS: slight rotation jitter per chunk, heavy black stroke +
+      drop shadow, emotion color pop (yellow default)
+    • Motion pop-zoom is applied at clip level in build_short
     """
     strip = Image.new("RGBA", (WIDTH, CAP_H), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(strip)
     if current_idx >= len(chunks):
         return strip
-    text = chunks[current_idx]
+    text = chunks[current_idx].upper()
 
-    accents = {"intense": (255, 110, 70), "revelatory": (255, 220, 100),
-               "chilling": (120, 190, 255), "mysterious": (200, 170, 255)}
+    accents = {"intense": (255, 90, 60), "revelatory": (255, 210, 60),
+               "chilling": (110, 190, 255), "mysterious": (200, 170, 255)}
     color = accents.get(emotion, HL)
 
-    # size scales down for longer chunks so 1-2 words always read HUGE
-    size = 100 if len(text) <= 12 else (84 if len(text) <= 20 else 68)
+    size = 116 if len(text) <= 12 else (96 if len(text) <= 20 else 76)
     font = _load_font(size)
     lines = textwrap.wrap(text, width=16) or [text]
 
-    # background pill
-    draw.rounded_rectangle([30, 0, WIDTH - 30, CAP_H], radius=30,
-                           fill=(0, 0, 0, 175))
+    draw = ImageDraw.Draw(strip)
+    line_h = size + 30
+    y = (CAP_H - line_h * len(lines)) // 2 + 4
 
-    line_h = size + 36
-    y = (CAP_H - line_h * len(lines)) // 2 + 8
-    for line in lines:
+    for li, line in enumerate(lines):
         w = draw.textlength(line, font=font)
-        draw.text(((WIDTH - w) / 2, y), line, font=font, fill=color + (255,),
-                  stroke_width=3, stroke_fill=(0, 0, 0))
+        x = (WIDTH - w) / 2
+        # drop shadow (offset black) + heavy stroke + color fill
+        draw.text((x + 5, y + 6), line, font=font, fill=(0, 0, 0, 200))
+        draw.text((x, y), line, font=font, fill=color + (255,),
+                  stroke_width=5, stroke_fill=(0, 0, 0))
         y += line_h
+
+    # rotation jitter per chunk (deterministic) — energy without chaos.
+    # expand=False keeps the canvas fixed so on-screen position stays exact.
+    angle = ((current_idx * 7) % 7) - 3
+    if angle:
+        strip = strip.rotate(angle, expand=False, resample=Image.BICUBIC)
     return strip
 
 
 def _hook_overlay_usa(hook: str) -> Image.Image:
-    # V2.1.4: bigger, higher-contrast hook (first 2.2s decide swipe-away)
-    font = _load_font(84)
+    """V2.4: condensed ALL-CAPS hook badge (Bebas/Anton) — USA viral look."""
+    font = _load_font(92)
     ov = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(ov)
-    lines = textwrap.wrap(hook, width=18) or [hook]
+    lines = textwrap.wrap(hook.upper(), width=18) or [hook.upper()]
     if len(lines) > 3:
         lines = lines[:3] + ["..."]
-    box_h = 118 * len(lines) + 80
+    box_h = 122 * len(lines) + 80
+    # layered badge: black offset + red main (depth effect)
+    draw.rounded_rectangle([46, 128, WIDTH - 34, 128 + box_h], radius=26,
+                           fill=(0, 0, 0, 200))
     draw.rounded_rectangle([40, 120, WIDTH - 40, 120 + box_h], radius=26,
-                           fill=(140, 10, 10, 235))
-    y = 148
+                           fill=(150, 12, 12, 240))
+    y = 150
     for line in lines:
         w = draw.textlength(line, font=font)
-        draw.text(((WIDTH - w) / 2, y), line, font=font, fill=(255, 255, 255, 255),
-                  stroke_width=4, stroke_fill=(0, 0, 0))
-        y += 120
+        x = (WIDTH - w) / 2
+        draw.text((x + 4, y + 5), line, font=font, fill=(0, 0, 0, 210))
+        draw.text((x, y), line, font=font, fill=(255, 255, 255, 255),
+                  stroke_width=3, stroke_fill=(60, 5, 5))
+        y += 122
     return ov
 
 
@@ -366,10 +380,24 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
             img = _caption_strip_usa(caption_text, chunks, idx, emotion)
             cap_path = os.path.join(TMP, f"cap_{i:02d}_{idx:02d}.png")
             img.save(cap_path)
-            layers.append(ImageClip(cap_path)
+            # V2.4.1: reliable pop — first 0.15s shows a PIL-prescaled (1.14x)
+            # strip, then the normal one. (moviepy's resize-lambda proved
+            # time-base fragile → text flew off-frame.)
+            big = img.resize((int(WIDTH * 1.14), int(img.height * 1.14)),
+                             Image.LANCZOS)
+            big_path = cap_path.replace(".png", "_big.png")
+            big.save(big_path)
+            dy = (big.height - img.height) // 2
+            pop = min(0.15, t1 - t0)
+            layers.append(ImageClip(big_path)
                           .set_start(t0)
-                          .set_duration(t1 - t0)
-                          .set_position(("center", CAP_Y)))
+                          .set_duration(pop)
+                          .set_position(("center", CAP_Y - dy)))
+            if t1 - t0 > pop:
+                layers.append(ImageClip(cap_path)
+                              .set_start(t0 + pop)
+                              .set_duration(t1 - t0 - pop)
+                              .set_position(("center", CAP_Y)))
 
         # ── HOOK overlay (scene 0, first seconds) ──
         if i == 0 and hook:
