@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "list | keep_latest"
+        description: "list | keep_latest | spread"
         required: true
         type: choice
         options:
           - list
           - keep_latest
+          - spread
         default: list
       keep_count:
         description: "how many latest uploads to keep (keep_latest only)"

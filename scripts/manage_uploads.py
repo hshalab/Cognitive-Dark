@@ -105,6 +105,44 @@ def keep_latest(yt, n: int, include_public: bool = False):
               f"{k['snippet']['title'][:45]}")
 
 
+def spread_schedule(yt):
+    """V2.5.2: pending scheduled uploads ko alag-alag USA peak slots par
+    phailao (same-time publishing impressions cannibalize karti hai)."""
+    from datetime import datetime, timedelta, timezone as tz
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+    from scheduler import PlatformScheduler
+
+    items = [i for i in list_uploads(yt)
+             if i["status"]["privacyStatus"] != "public"
+             and i["status"].get("publishAt")]
+    if not items:
+        print("✅ Koi pending scheduled video nahi")
+        return
+    items.reverse()  # oldest first
+
+    sched = PlatformScheduler("youtube")
+    now = datetime.now(sched.tz)
+    peaks = []
+    for off in range(10):
+        d = now + timedelta(days=off)
+        for h in sched.peaks.get(d.strftime("%A").lower(), [12, 20]):
+            t = d.replace(hour=h, minute=0, second=0, microsecond=0)
+            if t > now + timedelta(minutes=10):
+                peaks.append(t)
+
+    for it, peak in zip(items, peaks):
+        body = {"id": it["id"],
+                "status": {"privacyStatus": "private",
+                           "selfDeclaredMadeForKids": False,
+                           "publishAt": peak.astimezone(tz.utc)
+                           .strftime("%Y-%m-%dT%H:%M:%S.000Z")}}
+        yt.videos().update(part="status", body=body).execute()
+        print(f"  ⏰ {it['id']} → {peak.strftime('%a %I:00 %p ET')} "
+              f"({peak.astimezone(tz.utc).strftime('%H:%M UTC')}) | "
+              f"{it['snippet']['title'][:38]}")
+    print(f"\n✅ {min(len(items), len(peaks))} videos alag peak times par set")
+
+
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "list"
     yt = _service()
@@ -114,6 +152,8 @@ def main():
         n = int(sys.argv[2]) if len(sys.argv) > 2 else 3
         include_public = "--include-public" in sys.argv
         keep_latest(yt, n, include_public)
+    elif action == "spread":
+        spread_schedule(yt)
     else:
         sys.exit(f"unknown action: {action}")
 
