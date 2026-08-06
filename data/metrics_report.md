@@ -1,31 +1,31 @@
 # 📊 Cognitive Dark — Metrics Report
 
-*Updated: 2026-08-06T01:36:04.869946+00:00*
+*Updated: 2026-08-06T06:33:54.503145+00:00*
 
-**ML:** 65 arms · 2 videos · 1 attributed · 1 rewards · 5 penalties
+**ML:** 0 arms · 0 videos · 0 attributed · 0 rewards · 0 penalties
 
-**Best formulas:** cults/red_flag (0.0), cognitive_biases/knowledge_gap (0.0)
+**Best formulas:** none yet
 
-**Videos credited this run:** 1
+**Videos credited this run:** 0
 
 ```json
 {
   "youtube": {
-    "subs": 7,
+    "subs": 0,
     "watch_hours": 0,
     "shorts_views_90d": 0,
+    "views": 0,
+    "videos": 0,
+    "last_growth": 0,
     "pct": {
-      "subs": 0.7,
+      "subs": 0.0,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
     "daily_targets": {
       "subs": 33,
       "shorts_views": 333333
-    },
-    "views": 81,
-    "videos": 36,
-    "last_growth": 0
+    }
   },
   "facebook": {
     "followers": 523,
@@ -51,6 +51,6 @@
       "followers": 16
     }
   },
-  "last_updated": "2026-08-06T01:36:04.379777+00:00"
+  "last_updated": "2026-08-06T06:33:54.502236+00:00"
 }
 ```
