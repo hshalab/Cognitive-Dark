@@ -31,7 +31,7 @@ def page_info(tok, page):
     d = get(f"{GRAPH}/{V}/{page}", {
         "access_token": tok,
         "fields": ("id,name,username,category,about,description,followers_count,"
-                   "fan_count,is_published,link,likes,new_follower_count,"
+                   "fan_count,is_published,link,likes,"
                    "talking_about_count,verification_status,were_here_count"),
     })
     return d
@@ -66,8 +66,7 @@ def all_videos(tok, page):
         "access_token": tok,
         "fields": ("id,title,description,created_time,updated_time,length,"
                    "views,likes.summary(true),comments.summary(true),"
-                   "shares,permalink_url,picture,status,"
-                   "video_insights{name,values}"),
+                   "permalink_url,picture,status"),
         "limit": 100,
     }
     while url:
@@ -75,7 +74,14 @@ def all_videos(tok, page):
         for v in d.get("data", []):
             v["likes_count"] = (v.get("likes", {}) or {}).get("summary", {}).get("total_count", 0)
             v["comments_count"] = (v.get("comments", {}) or {}).get("summary", {}).get("total_count", 0)
-            v["shares_count"] = (v.get("shares", {}) or {}).get("count", 0)
+            # shares is not a direct /videos field — fetch per video (best effort)
+            v["shares_count"] = 0
+            try:
+                sd = get(f"{GRAPH}/{V}/{v['id']}",
+                         {"access_token": tok, "fields": "shares"})
+                v["shares_count"] = (sd.get("shares", {}) or {}).get("count", 0)
+            except Exception:
+                pass
             out.append(v)
         url = d.get("paging", {}).get("next")
         params = None  # next URL already has params
