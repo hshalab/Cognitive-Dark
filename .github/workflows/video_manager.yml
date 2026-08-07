@@ -44,7 +44,7 @@ jobs:
         run: |
           pip install -q python-dotenv google-api-python-client google-auth-oauthlib
       - name: Run manager
-        if: ${{ inputs.action != 'audit' && inputs.action != 'social_list' && inputs.action != 'social_cleanup' }}
+        if: ${{ inputs.action == 'list' || inputs.action == 'keep_latest' || inputs.action == 'spread' }}
         env:
           YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
