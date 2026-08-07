@@ -297,7 +297,7 @@ def _pick_music() -> str:
 # ─────────────────────────────────────────────────────────────
 def _build_audio(audio_segments: list, total_duration: float,
                  scene_starts: list = None) -> str:
-    from moviepy.editor import AudioFileClip, CompositeAudioClip
+    from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
     tracks = []
     # V2.6 SYNC FIX: place each voice at its EXACT scene start time.
     # (V2 concatenated voices back-to-back while video scenes carry a +0.4s
