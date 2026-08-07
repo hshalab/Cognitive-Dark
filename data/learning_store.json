@@ -30,10 +30,10 @@
     },
     "cults::plot_twist::afternoon": {
       "plays": 1,
-      "rewards": 2.0,
+      "rewards": 1.0,
       "sum_sq": 0.0,
-      "n": 3,
-      "updated": "2026-08-06T15:57:51.290855+00:00"
+      "n": 4,
+      "updated": "2026-08-07T11:51:08.212110+00:00"
     },
     "cults::timeline::afternoon": {
       "plays": 0,
@@ -929,7 +929,14 @@
       "platform": "youtube",
       "title": "Love Bombing: The Cult Recruitment Pipeline | Coercion Files",
       "ts": "2026-08-06T15:57:43.573993+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "credited_at": "2026-08-07T11:51:08.212090+00:00"
     },
     "1372919451595630": {
       "arm_key": "cults::plot_twist::afternoon",
@@ -983,10 +990,17 @@
       "penalty": -2.0
     },
     {
+<<<<<<< Updated upstream
       "ts": "2026-08-07T11:50:41.320880+00:00",
       "arm": "con_artists::red_flag::morning",
       "reason": "instagram_upload_failed",
       "penalty": -2.0
+=======
+      "ts": "2026-08-07T11:51:08.212113+00:00",
+      "arm": "cults::plot_twist::afternoon",
+      "reason": "low_metrics:DizAC5thQnk",
+      "penalty": -1.0
+>>>>>>> Stashed changes
     }
   ],
   "reward_log": [
