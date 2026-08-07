@@ -1,13 +1,13 @@
 {
   "youtube": {
-    "subs": 7,
+    "subs": 0,
     "watch_hours": 0,
     "shorts_views_90d": 0,
     "views": 0,
-    "videos": 5,
-    "last_growth": 0,
+    "videos": 6,
+    "last_growth": -7,
     "pct": {
-      "subs": 0.7,
+      "subs": 0.0,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
@@ -17,12 +17,12 @@
     }
   },
   "facebook": {
-    "followers": 523,
+    "followers": 513,
     "minutes_60d": 0,
     "uploads_30d": 0,
-    "last_growth": 0,
+    "last_growth": -10,
     "pct": {
-      "followers": 10.5,
+      "followers": 10.3,
       "minutes": 0.0
     },
     "daily_targets": {
@@ -41,5 +41,9 @@
       "followers": 16
     }
   },
+<<<<<<< Updated upstream
   "last_updated": "2026-08-07T21:38:45.906502+00:00"
+=======
+  "last_updated": "2026-08-07T21:39:16.668178+00:00"
+>>>>>>> Stashed changes
 }
