@@ -1,6 +1,6 @@
 # 📊 Cognitive Dark — Metrics Report
 
-*Updated: 2026-08-06T16:02:32.553605+00:00*
+*Updated: 2026-08-07T01:05:33.732817+00:00*
 
 **ML:** 0 arms · 0 videos · 0 attributed · 0 rewards · 0 penalties
 
@@ -11,14 +11,11 @@
 ```json
 {
   "youtube": {
-    "subs": 0,
+    "subs": 7,
     "watch_hours": 0,
     "shorts_views_90d": 0,
-    "views": 0,
-    "videos": 4,
-    "last_growth": 0,
     "pct": {
-      "subs": 0.0,
+      "subs": 0.7,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
@@ -28,7 +25,7 @@
     }
   },
   "facebook": {
-    "followers": 514,
+    "followers": 513,
     "minutes_60d": 0,
     "uploads_30d": 0,
     "last_growth": 0,
@@ -52,6 +49,6 @@
       "followers": 16
     }
   },
-  "last_updated": "2026-08-06T16:02:32.552985+00:00"
+  "last_updated": "2026-08-07T01:05:33.732319+00:00"
 }
 ```

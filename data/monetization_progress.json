@@ -14,11 +14,12 @@
     }
   },
   "facebook": {
-    "followers": 523,
+    "followers": 513,
     "minutes_60d": 0,
     "uploads_30d": 0,
+    "last_growth": 0,
     "pct": {
-      "followers": 10.5,
+      "followers": 10.3,
       "minutes": 0.0
     },
     "daily_targets": {
@@ -37,5 +38,9 @@
       "followers": 16
     }
   },
+<<<<<<< Updated upstream
   "last_updated": "2026-08-07T01:04:52.092333+00:00"
+=======
+  "last_updated": "2026-08-07T01:05:33.732319+00:00"
+>>>>>>> Stashed changes
 }
