@@ -15,6 +15,7 @@ sys) and replaced the empty stub with real repair logic.
 import logging
 import sys
 from pathlib import Path
+from datetime import timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -35,7 +36,7 @@ def heal_ml_store() -> dict:
         "attribution": len(ml.data.get("attribution", {})),
     }
     # Clear stale quarantines (healthy=True again after 48h without failures)
-    from datetime import datetime, timezone
+    from datetime import datetime
     now = datetime.now(timezone.utc)
     cleared = []
     for plat, h in ml.data.get("health", {}).items():

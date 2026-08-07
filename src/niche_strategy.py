@@ -3,7 +3,7 @@
 Cognitive Dark V2.2 — Niche Strategy & Topic Bank (Coercion Files).
 
 Supplies the Autonomous Brain with a deep, monetization-safe topic pool
-per content pillar. True-crime × psychology positioning: story-driven,
+per content pillar. True-crime x psychology positioning: story-driven,
 educational, "how it worked + how to defend" framing.
 """
 

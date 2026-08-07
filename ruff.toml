@@ -1,0 +1,46 @@
+# Cognitive Dark — Ruff configuration
+line-length = 240
+target-version = "py311"
+
+[lint]
+select = [
+    "E", "F", "W",      # pyflakes / pycodestyle basics (genuine bugs)
+    "I",                # isort (import ordering)
+    "UP",               # pyupgrade
+    "B",                # flake8-bugbear
+    "SIM",              # flake8-simplify
+    "RUF",              # ruff-specific
+]
+ignore = [
+    "UP017",            # datetime.UTC alias requires Python 3.12+; CI runs 3.11
+    "BLE001",           # broad `except Exception` is intentional in the self-healing
+                        #   pipeline (cleanup/close/API-failure isolation)
+    "TRY004",           # TypeError-vs-ValueError on type checks — not user-facing
+    "PLW1510",          # subprocess.run without check= — handled explicitly per call
+    "RUF012",           # mutable class-level constants (Preflight.CRITICAL etc.)
+    "RUF013",           # typing Optional[] — kept for readability
+    "ISC004",           # implicit string concatenation (used for long SQL-less text)
+    "UP031",            # printf % formatting — harmless in the plan printer
+    "S110",             # try/finally raise — false positives in our cleanup paths
+]
+
+[lint.per-file-ignores]
+# main.py must manipulate sys.path / load dotenv BEFORE importing project
+# modules (config reads env at import time), so the E402 ordering is intentional.
+# Logs/emojis intentionally use unicode (ℹ️, →) too.
+"src/main.py" = ["E402", "RUF001"]
+# Heavy / optional dependencies are imported lazily inside functions so the
+# modules import on a bare runner. That's intentional, not a code smell.
+"src/tts_engine.py" = ["E402", "PLC0415"]
+"src/video_builder.py" = ["E402", "PLC0415"]
+"src/platforms/*.py" = ["E402", "PLC0415"]
+"scripts/*.py" = ["E402", "PLC0415", "I001"]
+# Resolution text (1080×1920) uses the multiplication sign on purpose.
+"src/visuals.py" = ["RUF001", "RUF002"]
+"src/auto_repair.py" = ["RUF001"]
+
+[lint.isort]
+known-first-party = ["config", "compat", "ml_engine", "seo", "scheduler",
+                     "tts_engine", "video_builder", "visuals", "auto_repair",
+                     "script_generator", "clips_downloader", "niche_strategy",
+                     "monetization_tracker", "platforms"]

@@ -4,14 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "list | keep_latest | spread | audit | social_list | social_cleanup"
+        description: "list | keep_latest | spread | shorts_repair | ig_diagnose | audit | fb_metrics | social_list | social_cleanup"
         required: true
         type: choice
         options:
           - list
           - keep_latest
           - spread
+          - shorts_repair
+          - ig_diagnose
           - audit
+          - fb_metrics
           - social_list
           - social_cleanup
         default: list
@@ -20,6 +23,11 @@ on:
         required: false
         type: string
         default: "3"
+      fix_public:
+        description: "shorts_repair: actually make past-due private videos public"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -44,6 +52,16 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
         run: python scripts/manage_uploads.py "${{ inputs.action }}" "${{ inputs.keep_count }}"
 
+      - name: YouTube Shorts diagnostic & repair
+        if: ${{ inputs.action == 'shorts_repair' }}
+        env:
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        run: |
+          python scripts/youtube_shorts_repair.py ${{ inputs.fix_public && '--fix-public' || '' }}
+
       - name: Run 3-platform audit
         if: ${{ inputs.action == 'audit' }}
         env:
@@ -56,6 +74,13 @@ jobs:
           IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/platform_audit.py
+
+      - name: Facebook full metrics
+        if: ${{ inputs.action == 'fb_metrics' }}
+        env:
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+        run: python scripts/facebook_metrics.py
 
       - name: Social content manager (FB/IG old videos)
         if: ${{ inputs.action == 'social_list' || inputs.action == 'social_cleanup' }}

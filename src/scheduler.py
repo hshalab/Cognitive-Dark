@@ -11,7 +11,7 @@ Cognitive Dark V2.5.1 — Platform-Aware Scheduler.
 
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 logger = logging.getLogger("scheduler")
@@ -80,13 +80,10 @@ class PlatformScheduler:
     def validate_gap(self, last_dt, min_hours: float = 6.0) -> bool:
         if last_dt is None:
             return True
-        elapsed = (datetime.now(timezone_utc()) - last_dt).total_seconds() / 3600
+        if last_dt.tzinfo is None:
+            last_dt = last_dt.replace(tzinfo=timezone.utc)
+        elapsed = (datetime.now(timezone.utc) - last_dt).total_seconds() / 3600
         return elapsed >= min_hours
-
-
-def timezone_utc():
-    from datetime import timezone
-    return timezone.utc
 
 
 if __name__ == "__main__":

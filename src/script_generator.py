@@ -19,12 +19,12 @@ import os
 import random
 import re
 import sys
-import urllib.request
 import urllib.parse
+import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from config.settings import PILLARS, HOOK_STYLES, NICHE
+from config.settings import HOOK_STYLES, NICHE, PILLARS
 from ml_engine import LearningSystem
 
 logger = logging.getLogger("script_generator")
@@ -40,7 +40,8 @@ HARD RULES:
 1. Educational framing ONLY: teach viewers how manipulation WORKS so they can PROTECT themselves. NEVER instruct how to manipulate/harm others. (This keeps the channel monetization-safe.)
 2. American English, dark-mysterious-authoritative tone, short punchy sentences.
 3. Each scene = one spoken sentence block, 8-14 seconds of speech (~20-35 words).
-4. Total narration 100-150 words; Short duration target 45-58 seconds.
+4. Total narration 100-150 words
+Short duration target 45-58 seconds.
 5. Hook (scene 1) must be a pattern-interrupt: stop-scroll, curiosity/fear/knowledge-gap in the first 2 seconds. MAX 8 WORDS, perfect grammar, no emojis. Example: "Stop letting them do this to you."
 6. Include at least one REAL psychology concept/study (e.g., Milgram, Stanford, Cialdini, anchoring, cognitive dissonance, trauma bond).
 7. Final scene: CTA "Follow Coercion Files for the psychology they don't teach you in school."
@@ -142,7 +143,7 @@ def _parse_script(text: str) -> dict:
     script = json.loads(text)
     assert "title" in script and "scenes" in script, "missing title/scenes"
     assert len(script["scenes"]) >= 3, "need >=3 scenes"
-    for i, s in enumerate(script["scenes"]):
+    for s in script["scenes"]:
         s.setdefault("caption", "")
         s.setdefault("caption_roman", s["caption"])
         s.setdefault("visual", "dark moody city night cinematic")
@@ -291,16 +292,19 @@ Write it now — valid JSON only."""
     source = None
     if GROQ_KEY:
         try:
-            script = _parse_script(_groq(prompt)); source = "groq"
+            script = _parse_script(_groq(prompt))
+            source = "groq"
         except Exception as exc:
             logger.warning("Groq failed: %s", exc)
     if script is None and GEMINI_KEY:
         try:
-            script = _parse_script(_gemini(prompt)); source = "gemini"
+            script = _parse_script(_gemini(prompt))
+            source = "gemini"
         except Exception as exc:
             logger.warning("Gemini failed: %s", exc)
     if script is None:
-        script = _template_script(pillar, hook_style); source = "template"
+        script = _template_script(pillar, hook_style)
+        source = "template"
         logger.info("Using template fallback (no LLM key or LLM failed)")
 
     script["source"] = source

@@ -49,7 +49,7 @@ NICHE = {
               "control — decoded so viewers can spot the pattern and defend "
               "themselves. Story-driven, evidence-first, educational."),
     "why_trending": (
-        "2026's breakout format is true-crime × psychology: cult docs, con-"
+        "2026's breakout format is true-crime x psychology: cult docs, con-"
         "artist breakdowns and declassified mind-control history dominate "
         "retention charts, while generic 'dark psychology facts' are "
         "saturated. Story arcs hold viewers 2-3x longer than fact lists."

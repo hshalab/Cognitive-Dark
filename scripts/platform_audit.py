@@ -18,6 +18,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from dotenv import load_dotenv
+
 load_dotenv()
 
 logging.basicConfig(level=logging.ERROR)
@@ -51,8 +52,8 @@ def main():
         print("  ❌ no credentials")
     else:
         try:
-            from google.oauth2.credentials import Credentials
             from google.auth.transport.requests import Request
+            from google.oauth2.credentials import Credentials
             from googleapiclient.discovery import build
             creds = Credentials.from_authorized_user_info(info)
             if (creds.expired or not creds.valid) and creds.refresh_token:

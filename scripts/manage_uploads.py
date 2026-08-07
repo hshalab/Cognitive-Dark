@@ -21,6 +21,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
+
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -50,8 +52,8 @@ def _service():
     info = _creds()
     if not info:
         sys.exit("❌ No YouTube credentials in environment")
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
     creds = Credentials.from_authorized_user_info(info)
     if (creds.expired or not creds.valid) and creds.refresh_token:
@@ -108,7 +110,6 @@ def keep_latest(yt, n: int, include_public: bool = False):
 def spread_schedule(yt):
     """V2.5.2: pending scheduled uploads ko alag-alag USA peak slots par
     phailao (same-time publishing impressions cannibalize karti hai)."""
-    from datetime import datetime, timedelta, timezone as tz
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
     from scheduler import PlatformScheduler
 
@@ -130,32 +131,39 @@ def spread_schedule(yt):
             if t > now + timedelta(minutes=10):
                 peaks.append(t)
 
-    for it, peak in zip(items, peaks):
+    for it, peak in zip(items, peaks, strict=False):
         body = {"id": it["id"],
                 "status": {"privacyStatus": "private",
                            "selfDeclaredMadeForKids": False,
-                           "publishAt": peak.astimezone(tz.utc)
+                           "publishAt": peak.astimezone(timezone.utc)
                            .strftime("%Y-%m-%dT%H:%M:%S.000Z")}}
         yt.videos().update(part="status", body=body).execute()
         print(f"  ⏰ {it['id']} → {peak.strftime('%a %I:00 %p ET')} "
-              f"({peak.astimezone(tz.utc).strftime('%H:%M UTC')}) | "
+              f"({peak.astimezone(timezone.utc).strftime('%H:%M UTC')}) | "
               f"{it['snippet']['title'][:38]}")
     print(f"\n✅ {min(len(items), len(peaks))} videos alag peak times par set")
 
 
 def main():
-    action = sys.argv[1] if len(sys.argv) > 1 else "list"
+    import argparse
+    ap = argparse.ArgumentParser(description="Cognitive Dark YouTube upload manager")
+    ap.add_argument("action", nargs="?", default="list",
+                    choices=["list", "keep_latest", "spread"],
+                    help="list | keep_latest | spread")
+    ap.add_argument("keep_count", nargs="?", default="3",
+                    help="how many uploads to keep (keep_latest only)")
+    ap.add_argument("--include-public", action="store_true",
+                    help="also delete older PUBLIC videos (keep_latest)")
+    args = ap.parse_args()
+
     yt = _service()
-    if action == "list":
+    if args.action == "list":
         list_uploads(yt)
-    elif action == "keep_latest":
-        n = int(sys.argv[2]) if len(sys.argv) > 2 else 3
-        include_public = "--include-public" in sys.argv
-        keep_latest(yt, n, include_public)
-    elif action == "spread":
+    elif args.action == "keep_latest":
+        n = int(args.keep_count)
+        keep_latest(yt, n, args.include_public)
+    elif args.action == "spread":
         spread_schedule(yt)
-    else:
-        sys.exit(f"unknown action: {action}")
 
 
 if __name__ == "__main__":

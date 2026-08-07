@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dotenv import load_dotenv
+
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO,
@@ -30,22 +31,22 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("main")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config.settings import PLATFORMS, MIN_POST_GAP_HOURS
-from auto_repair import (Preflight, RepairJournal, StageRunner, cleanup, selftest)
+from auto_repair import Preflight, RepairJournal, StageRunner, cleanup, selftest
+from clips_downloader import prepare_clips
+from config.settings import MIN_POST_GAP_HOURS, PLATFORMS
 from ml_engine import LearningSystem, text_sha
+from monetization_tracker import update_progress
 from scheduler import PlatformScheduler
 from script_generator import generate_script
-from clips_downloader import prepare_clips
+from seo import build_platform_package
 from tts_engine import generate_voice_segments, release_tts
 from video_builder import build_short, generate_thumbnail
-from seo import build_platform_package
-from monetization_tracker import update_progress
 
 
 def _platform_uploaders(dry_run: bool) -> dict:
-    from platforms.youtube import YouTubeUploader
     from platforms.facebook import FacebookUploader
     from platforms.instagram import InstagramUploader
+    from platforms.youtube import YouTubeUploader
     return {
         "youtube": YouTubeUploader(dry_run=dry_run),
         "facebook": FacebookUploader(dry_run=dry_run),
@@ -115,7 +116,7 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     # ── 2. Clips (Pexels → Pixabay → procedural) — 3 DISTINCT cuts per scene ──
     clip_sets = prepare_clips(script["scenes"], per_scene=3)
     scene_visuals = [[c["path"] for c in s] for s in clip_sets]
-    logger.info("🎞️  Clips: %s (%d scenes × %d cuts)",
+    logger.info("🎞️  Clips: %s (%d scenes x %d cuts)",
                 ", ".join(sorted({c["source"] for s in clip_sets for c in s})),
                 len(scene_visuals), len(scene_visuals[0]) if scene_visuals else 0)
 

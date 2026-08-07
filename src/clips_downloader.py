@@ -19,7 +19,12 @@ from pathlib import Path
 
 import requests
 
-from config.settings import CLIP_CACHE, CLIP_CACHE_TTL_DAYS, MIN_CLIP_BYTES, CLIP_PROVIDER_ORDER
+from config.settings import (
+    CLIP_CACHE,
+    CLIP_CACHE_TTL_DAYS,
+    CLIP_PROVIDER_ORDER,
+    MIN_CLIP_BYTES,
+)
 from visuals import generate_procedural_scene  # fallback
 
 logger = logging.getLogger("clips_downloader")
@@ -106,8 +111,7 @@ def _download(url: str, dest: Path) -> Path:
     with requests.get(url, headers=UA, stream=True, timeout=120) as r:
         r.raise_for_status()
         with open(tmp, "wb") as fh:
-            for chunk in r.iter_content(chunk_size=1 << 16):
-                fh.write(chunk)
+            fh.writelines(r.iter_content(chunk_size=1 << 16))
     size = tmp.stat().st_size          # V2.1: read size BEFORE unlink
     if size < MIN_CLIP_BYTES:           # (V2 stat()'d after unlink → FileNotFoundError)
         tmp.unlink(missing_ok=True)

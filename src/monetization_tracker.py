@@ -18,7 +18,7 @@ import json
 import logging
 from datetime import datetime, timezone
 
-from config.settings import MONETIZATION, DATA_DIR
+from config.settings import DATA_DIR, MONETIZATION
 
 logger = logging.getLogger("monetization")
 
@@ -119,7 +119,7 @@ def print_plan(prog: dict) -> str:
                  % (ig["followers"], ig["pct"]["followers"], ig["daily_targets"]["followers"]))
 
     lines.append("\n📅 DAILY CADENCE:")
-    lines.append("   • 2 Shorts/day × YouTube + 2 Reels/day × FB + 2 Reels/day × IG")
+    lines.append("   • 2 Shorts/day x YouTube + 2 Reels/day x FB + 2 Reels/day x IG")
     lines.append("   • 1 long-form (10-15 min) per week on YouTube for watch-hours")
     lines.append("   • Post at platform peak hours (ML schedules these)")
     lines.append("   • Reuse 1 master video across all 3 platforms (native captions)")

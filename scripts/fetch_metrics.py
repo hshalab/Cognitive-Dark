@@ -21,6 +21,7 @@ V2.1 fixes:
   • apply_ml_updates() actually applies rewards (V2's loop body was `pass`).
 """
 
+import contextlib
 import json
 import logging
 import os
@@ -31,13 +32,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from dotenv import load_dotenv
+
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("fetch_metrics")
 
 from ml_engine import LearningSystem
-from monetization_tracker import update_progress, PROGRESS_PATH
+from monetization_tracker import PROGRESS_PATH, update_progress
 
 
 def _resolve_yt_creds():
@@ -70,8 +72,8 @@ def _yt_service():
     info = _resolve_yt_creds()
     if not info:
         return None
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
     creds = Credentials.from_authorized_user_info(info)
     if (creds.expired or not creds.valid) and creds.refresh_token:
@@ -195,10 +197,8 @@ def main():
     ig = instagram_metrics()
 
     prev = {}
-    try:
+    with contextlib.suppress(OSError, json.JSONDecodeError):
         prev = json.loads(PROGRESS_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        pass
 
     overrides = {}
     for plat, cur, key in (("youtube", yt, "subs"),

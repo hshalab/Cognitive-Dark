@@ -3,12 +3,13 @@
 Cognitive Dark V2 — Procedural Visual Fallback.
 
 Used when stock clips are unavailable (no API keys, offline, rate-limited).
-Dark cinematic stills (1080×1920) generated with numpy/PIL — the same
+Dark cinematic stills (1080x1920) generated with numpy/PIL — the same
 approach as V1 but tuned for the converted niche.
 """
 
 import logging
 import os
+
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 

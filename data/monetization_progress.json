@@ -1,10 +1,13 @@
 {
   "youtube": {
-    "subs": 7,
+    "subs": 0,
     "watch_hours": 0,
     "shorts_views_90d": 0,
+    "views": 0,
+    "videos": 4,
+    "last_growth": 0,
     "pct": {
-      "subs": 0.7,
+      "subs": 0.0,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
@@ -37,9 +40,5 @@
       "followers": 16
     }
   },
-<<<<<<< Updated upstream
-  "last_updated": "2026-08-07T02:12:31.640628+00:00"
-=======
-  "last_updated": "2026-08-07T02:13:05.220743+00:00"
->>>>>>> Stashed changes
+  "last_updated": "2026-08-06T19:39:59.963532+00:00"
 }

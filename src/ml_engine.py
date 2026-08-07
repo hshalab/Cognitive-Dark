@@ -5,7 +5,7 @@ Cognitive Dark V2.1 — ML Learning Engine (advanced).
 A lightweight online-learning system that makes the pipeline smarter over time:
 
   • Strategy selection  — UCB1 multi-armed bandit over
-    (pillar × hook_style × day-part) arms, with recency decay so stale
+    (pillar x hook_style x day-part) arms, with recency decay so stale
     formulas get re-tested. Explores when uncertain, exploits winners.
   • Reward / penalty    — strong output ADDS reward to the EXACT arm that
     produced it; mistakes PENALIZE that same arm. V2.1 fixes the V2 bug
@@ -32,10 +32,10 @@ import math
 import os
 import random
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from config.settings import LEARNING, ML_STORE_PATH, PILLARS, HOOK_STYLES
+from config.settings import HOOK_STYLES, LEARNING, ML_STORE_PATH, PILLARS
 
 logger = logging.getLogger("ml_engine")
 
@@ -67,7 +67,7 @@ def token_overlap(a: str, b: str) -> float:
 
 
 def current_day_part() -> str:
-    """morning / afternoon / evening (UTC) — shared by selection & fallback keys."""
+    """morning / afternoon / evening (timezone.utc) — shared by selection & fallback keys."""
     hour = datetime.now(timezone.utc).hour
     return "morning" if hour < 12 else ("afternoon" if hour < 17 else "evening")
 
@@ -157,10 +157,8 @@ class LearningSystem:
                 candidates.append((score, key, arm, pillar["key"], style, day_part))
 
         # Explore random arm with prob epsilon
-        if random.random() < epsilon:
-            chosen = random.choice(candidates)
-        else:
-            chosen = max(candidates, key=lambda c: c[0])
+        chosen = (random.choice(candidates) if random.random() < epsilon
+                  else max(candidates, key=lambda c: c[0]))
 
         score, key, arm, pillar, style, dp = chosen
         arm["plays"] += 1
@@ -282,7 +280,7 @@ class LearningSystem:
         self.save()
         logger.info("🔗 Attributed %s:%s → %s", platform, video_id, arm_key)
 
-    def pending_video_ids(self, platform: str = None) -> list:
+    def pending_video_ids(self, platform: str | None = None) -> list:
         """Uncredited video ids (optionally filtered by platform)."""
         return [vid for vid, a in self.data["attribution"].items()
                 if not a.get("credited") and (platform is None or a["platform"] == platform)]
@@ -331,12 +329,13 @@ class LearningSystem:
         info = day.setdefault(platform, {"count": 0, "last_ts": None})
         info["count"] += 1
         info["last_ts"] = _now_iso()
-        # keep 30 days of post log
+        # Keep a rolling 30-day post log. V2.1.6: the previous loop body was
+        # `pass` (no-op) so stale dates were never pruned; the length cap below
+        # only trimmed when >30 distinct keys. Do an explicit date prune now.
+        cutoff = (datetime.now(timezone.utc).date() -
+                  timedelta(days=30)).isoformat()
         for d in list(self.data["post_log"].keys()):
-            if d < (datetime.now(timezone.utc).strftime("%Y-%m-%d"))[:8] + "01":
-                pass
-        if len(self.data["post_log"]) > 30:
-            for d in sorted(self.data["post_log"].keys())[:-30]:
+            if d < cutoff:
                 del self.data["post_log"][d]
         self.save()
 
@@ -434,7 +433,7 @@ class LearningSystem:
         scored.sort(reverse=True)
         out = []
         for mean, key, n in scored[:top]:
-            pillar, style, dp = key.split("::")
+            pillar, style, _day_part = key.split("::")
             out.append({"pillar": pillar, "hook_style": style, "mean": round(mean, 3), "n": n})
         return out
 
@@ -459,7 +458,7 @@ if __name__ == "__main__":
         # 300-round simulation: arms with high retention should rise to top
         ls = LearningSystem(store_path=Path("/tmp/ml_sim.json"))
         ls.data["arms"] = {}
-        for i in range(300):
+        for _ in range(300):
             s = ls.choose_strategy()
             # arm quality depends on pillar & style (synthetic)
             quality = {"pattern_interrupt": 0.8, "knowledge_gap": 0.7,

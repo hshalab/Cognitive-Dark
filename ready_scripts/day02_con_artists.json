@@ -1,0 +1,63 @@
+{
+  "title": "The Sentence Every Con Artist Uses",
+  "hook": "Every con artist uses this sentence.",
+  "scenes": [
+    {
+      "caption": "There is one sentence behind almost every con, every scam, every fraud you've ever heard of. It has four words.",
+      "caption_roman": "There is one sentence behind almost every con, every scam, every fraud you've ever heard of. It has four words.",
+      "visual": "phone screen dark message",
+      "emotion": "intense"
+    },
+    {
+      "caption": "\"You have to decide now.\" That's it. Pressure plus a deadline. The moment you feel rushed, your brain stops thinking.",
+      "caption_roman": "\"You have to decide now.\" That's it. Pressure plus a deadline. The moment you feel rushed, your brain stops thinking.",
+      "visual": "clock ticking close up dark",
+      "emotion": "intense"
+    },
+    {
+      "caption": "Scammers can't let you pause, because a calm mind asks questions. A rushed mind just obeys.",
+      "caption_roman": "Scammers can't let you pause, because a calm mind asks questions. A rushed mind just obeys.",
+      "visual": "anxious person phone night",
+      "emotion": "intense"
+    },
+    {
+      "caption": "So they stack urgency. The offer expires. The warrant is issued. The account closes in ten minutes.",
+      "caption_roman": "So they stack urgency. The offer expires. The warrant is issued. The account closes in ten minutes.",
+      "visual": "red alert warning screen",
+      "emotion": "intense"
+    },
+    {
+      "caption": "Notice: legitimate institutions — your bank, the government, real companies — never demand secrecy or instant payment.",
+      "caption_roman": "Notice: legitimate institutions — your bank, the government, real companies — never demand secrecy or instant payment.",
+      "visual": "bank building night",
+      "emotion": "intense"
+    },
+    {
+      "caption": "Here's your defense. The second anyone pressures you to act now, you stop. You hang up. You wait a full day.",
+      "caption_roman": "Here's your defense. The second anyone pressures you to act now, you stop. You hang up. You wait a full day.",
+      "visual": "hand pressing stop button",
+      "emotion": "intense"
+    },
+    {
+      "caption": "Tell a friend before you send a dollar. Real opportunities survive one night of sleep. Scams don't. Follow Coercion Files for the psychology they don't teach you in school.",
+      "caption_roman": "Tell a friend before you send a dollar. Real opportunities survive one night of sleep. Scams don't. Follow Coercion Files for the psychology they don't teach you in school.",
+      "visual": "dark city night cinematic",
+      "emotion": "intense"
+    }
+  ],
+  "tags": [
+    "scam psychology",
+    "con artist",
+    "social engineering",
+    "romance scam",
+    "manipulation",
+    "psychology facts",
+    "fraud prevention"
+  ],
+  "description": "The Sentence Every Con Artist Uses. Every con artist uses this sentence.\nCon Artists & Scam Psychology: how coercion really works, why it works on you, and exactly how to protect yourself.\n\nWHAT YOU'LL LEARN:\n• The one line that creates urgency\n• Why urgency kills your judgment\n• The 3-second rule to stay safe\n\nFor educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.\n\n#psychology #truecrime #con_artists",
+  "key_points": "• The one line that creates urgency\n• Why urgency kills your judgment\n• The 3-second rule to stay safe",
+  "pillar": "con_artists",
+  "pillar_name": "Con Artists & Scam Psychology",
+  "hook_style": "pattern_interrupt",
+  "source": "manual_launch_week"
+}

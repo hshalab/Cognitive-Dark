@@ -13,6 +13,7 @@ USA-STYLE package:
   • Memory-safe — one scene rendered at a time, ffmpeg concat at the end.
 """
 
+import contextlib
 import glob
 import logging
 import math
@@ -24,6 +25,7 @@ import textwrap
 from pathlib import Path
 
 import compat  # patch PIL before moviepy import (Image.ANTIALIAS)
+
 assert compat  # keep module loaded for its side-effect patch
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -34,8 +36,7 @@ WIDTH, HEIGHT = 1080, 1920
 FPS = 30
 MUSIC_VOLUME = float(os.environ.get("MUSIC_VOLUME", "0.05"))
 
-from config.settings import (USA_STYLE, VIDEO_THREADS, OUTPUT_DIR, TMP_DIR,
-                             MUSIC_DIR)
+from config.settings import MUSIC_DIR, OUTPUT_DIR, TMP_DIR, USA_STYLE, VIDEO_THREADS
 
 # V2.1: anchor all working paths to config (V2 hardcoded "output/..." and
 # "assets/music" relative to the CWD → broke when run from another folder).
@@ -181,12 +182,12 @@ def _caption_strip_usa(full_text: str, chunks: list, current_idx: int,
     line_h = size + 30
     y = (CAP_H - line_h * len(lines)) // 2 + 4
 
-    for li, line in enumerate(lines):
+    for line in lines:
         w = draw.textlength(line, font=font)
         x = (WIDTH - w) / 2
         # drop shadow (offset black) + heavy stroke + color fill
         draw.text((x + 5, y + 6), line, font=font, fill=(0, 0, 0, 200))
-        draw.text((x, y), line, font=font, fill=color + (255,),
+        draw.text((x, y), line, font=font, fill=(*color, 255),
                   stroke_width=5, stroke_fill=(0, 0, 0))
         y += line_h
 
@@ -205,7 +206,7 @@ def _hook_overlay_usa(hook: str) -> Image.Image:
     draw = ImageDraw.Draw(ov)
     lines = textwrap.wrap(hook.upper(), width=18) or [hook.upper()]
     if len(lines) > 3:
-        lines = lines[:3] + ["..."]
+        lines = [*lines[:3], "..."]
     box_h = 122 * len(lines) + 80
     # layered badge: black offset + red main (depth effect)
     draw.rounded_rectangle([46, 128, WIDTH - 34, 128 + box_h], radius=26,
@@ -243,10 +244,8 @@ def _build_scene_clip(clip_path: str, duration: float, punch: bool = False) -> o
     out = cropped.subclip(0, min(duration, cropped.duration - 0.05)
                           if cropped.duration else duration)
     out = out.set_duration(duration)
-    try:
+    with contextlib.suppress(Exception):
         out = out.without_audio()
-    except Exception:
-        pass
     if punch:
         out = out.resize(lambda t: 1.0 + PUNCH * min(1.0, t / max(PUNCH_DUR, 0.01)))
     return out
@@ -304,7 +303,7 @@ def _build_audio(audio_segments: list, total_duration: float,
     #  pad each → captions drifted ~0.4s later per scene; by scene 6 the
     #  voice led captions by ~2.4s.)
     if scene_starts:
-        for seg, start in zip(audio_segments, scene_starts):
+        for seg, start in zip(audio_segments, scene_starts, strict=False):
             if seg.get("path") and os.path.exists(seg["path"]):
                 tracks.append(AudioFileClip(seg["path"]).set_start(start))
     else:
@@ -331,10 +330,8 @@ def _build_audio(audio_segments: list, total_duration: float,
     track_path = os.path.join(TMP, "narration.m4a")
     CompositeAudioClip(tracks).write_audiofile(track_path, fps=44100, codec="aac", logger=None)
     for t in tracks:
-        try:
+        with contextlib.suppress(Exception):
             t.close()
-        except Exception:
-            pass
     return track_path
 
 
@@ -342,6 +339,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
                 out_path: str = None, hook: str = None) -> str:
     """scene_visuals: list (per scene) of lists (cuts) of clip paths."""
     import gc
+
     from moviepy.editor import CompositeVideoClip, ImageClip
 
     if out_path is None:
@@ -362,7 +360,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
     scene_files = []
     scene_starts = []
     running = 0.0
-    for i, (visuals, seg, scene) in enumerate(zip(scene_visuals, audio_segments, scenes)):
+    for i, (visuals, seg, scene) in enumerate(zip(scene_visuals, audio_segments, scenes, strict=True)):
         duration = float(seg.get("duration", 4.0)) + 0.4
         scene_starts.append(running)
         running += duration
@@ -387,7 +385,7 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
         # ── USA WORD CAPTIONS ──
         chunks = _word_chunks(caption_text)
         times = _chunk_timing(caption_text, narration_dur)
-        for idx, (grp, (t0, t1)) in enumerate(zip(chunks, times)):
+        for idx, (_grp, (t0, t1)) in enumerate(zip(chunks, times, strict=True)):
             if t1 - t0 < 0.15:
                 continue
             img = _caption_strip_usa(caption_text, chunks, idx, emotion)
@@ -440,27 +438,30 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
         scene_files.append(scene_file)
         scene_clip.close()
         for lyr in layers:
-            try:
+            with contextlib.suppress(Exception):
                 lyr.close()
-            except Exception:
-                pass
         gc.collect()
 
     # 2) concat with ffmpeg demuxer
     list_file = os.path.join(TMP, "concat.txt")
     with open(list_file, "w") as fh:
-        for f in scene_files:
-            fh.write(f"file '{Path(f).resolve()}'\n")
+        fh.writelines(f"file '{Path(f).resolve()}'\n" for f in scene_files)
     silent_video = os.path.join(TMP, "silent.mp4")
+    # V2.6.2 FIX: re-encode at concat instead of `-c copy`. MoviePy/libx264 can
+    # emit slightly differing SPS/PPS per scene (different cut counts / punch
+    # zooms); stream-copy concat then produced frozen/corrupt output on some
+    # ffmpeg builds. A single re-encode here guarantees uniform params.
     subprocess.run(
         ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", list_file,
-         "-c", "copy", silent_video], check=True, capture_output=True)
+         "-c:v", "libx264", "-preset", "medium", "-r", str(FPS),
+         "-pix_fmt", "yuv420p", "-b:v", "4000k", "-an", silent_video],
+        check=True, capture_output=True)
 
     # 3) audio
     dur = float(subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=nw=1:nk=1", silent_video],
-        capture_output=True, text=True).stdout.strip())
+        capture_output=True, text=True, check=True).stdout.strip())
     track = _build_audio(audio_segments, total_duration=dur,
                          scene_starts=scene_starts)
 
@@ -514,7 +515,9 @@ def generate_thumbnail(first_visual: str, hook: str = "") -> str:
             d.text(((WIDTH - w) / 2, y), line, font=font, fill=(255, 255, 255, 255),
                    stroke_width=2, stroke_fill=(0, 0, 0))
             y += 78
-        img = img.convert("RGBA"); img.alpha_composite(ov); img = img.convert("RGB")
+        img = img.convert("RGBA")
+        img.alpha_composite(ov)
+        img = img.convert("RGB")
 
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, "thumbnail.jpg")

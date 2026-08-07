@@ -39,7 +39,8 @@ def now_iso() -> str:
 def run_cmd(cmd: list, timeout: int = 120) -> tuple:
     """Run a shell command; return (ok, stdout)."""
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout,
+                           check=False)
         return (r.returncode == 0, (r.stdout or r.stderr).strip())
     except Exception as exc:
         return False, str(exc)
@@ -174,7 +175,7 @@ class StageRunner:
 
     def run(self, fn, name: str, fallbacks: list = None, *args, **kwargs):
         """Run `fn`; on failure try each fallback; finally raise/report."""
-        chain = [fn] + list(fallbacks or [])
+        chain = [fn, *list(fallbacks or [])]
         last_exc = None
         for attempt, call in enumerate(chain):
             for retry in range(self.max_retries if attempt == 0 else 1):

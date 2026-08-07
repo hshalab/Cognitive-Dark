@@ -11,7 +11,6 @@ Fixed in V2.1:
 
 import logging
 import random
-from typing import Dict, List
 
 try:
     from .ml_engine import LearningSystem
@@ -28,7 +27,7 @@ class AutonomousBrain:
         self.ls = LearningSystem()
         self.state = self.ls.data
 
-    def decide_next_video(self, exclude_titles: List[str] = None) -> Dict:
+    def decide_next_video(self, exclude_titles: list[str] = None) -> dict:
         """
         Decision Matrix:
         1. Choose the best arm (pillar/style/timing) via UCB1.
@@ -49,7 +48,7 @@ class AutonomousBrain:
             "arm_key": strategy["arm_key"],
         }
 
-    def _get_smart_topic(self, pillar: str, exclude: List[str] = None) -> str:
+    def _get_smart_topic(self, pillar: str, exclude: list[str] = None) -> str:
         exclude = [e.lower() for e in (exclude or [])]
         # Prefer the winning pillar's own topic bank
         bank = [t for t in topics_for_pillar(pillar) if t.lower() not in exclude]

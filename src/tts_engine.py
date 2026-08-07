@@ -42,9 +42,8 @@ def _download(url: str, dest: Path, min_bytes: int = 100_000) -> Path:
     tmp = dest.with_suffix(".part")
     logger.info("⬇️  Downloading %s → %s", url.split("/")[-1], dest)
     req = urllib.request.Request(url, headers={"User-Agent": "CognitiveDarkV2/1.0"})
-    with urllib.request.urlopen(req, timeout=600) as resp:
-        with open(tmp, "wb") as fh:
-            shutil.copyfileobj(resp, fh)
+    with urllib.request.urlopen(req, timeout=600) as resp, open(tmp, "wb") as fh:
+        shutil.copyfileobj(resp, fh)
     os.replace(tmp, dest)
     return dest
 
@@ -67,8 +66,8 @@ def _kokoro_onnx_tts(text: str, out_path: str) -> float:
     # bound onnxruntime memory on small runners (OMP threads)
     os.environ.setdefault("OMP_NUM_THREADS", "2")
     os.environ.setdefault("OMP_WAIT_POLICY", "PASSIVE")
-    from kokoro_onnx import Kokoro
     import soundfile as sf
+    from kokoro_onnx import Kokoro
 
     if _kokoro_pipe is None:
         model, voices = _ensure_kokoro_files()
@@ -96,7 +95,7 @@ def _kokoro_torch_tts(text: str, out_path: str) -> float:
     if _kokoro_torch_pipe is None:
         _kokoro_torch_pipe = KPipeline(lang_code="a")
     parts = []
-    for gs, ps, audio in _kokoro_torch_pipe(text, voice=KOKORO_VOICE,
+    for _gs, _ps, audio in _kokoro_torch_pipe(text, voice=KOKORO_VOICE,
                                             speed=KOKORO_SPEED):
         parts.append(audio)
     import numpy as np

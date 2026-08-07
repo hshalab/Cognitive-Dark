@@ -160,13 +160,15 @@ def _tags(script: dict, platform: str) -> list:
     for t in base:
         k = t.lower()
         if k not in seen:
-            seen.add(k); out.append(t)
+            seen.add(k)
+            out.append(t)
     # ≤500 chars total
     final, total = [], 0
     for t in out:
         if total + len(t) + 1 > 500:
             break
-        final.append(t); total += len(t) + 1
+        final.append(t)
+        total += len(t) + 1
     return final
 
 

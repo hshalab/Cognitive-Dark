@@ -3,11 +3,13 @@
 Cognitive Dark V2 — Compact Dark Ambient Music Generator.
 
 Generates 2 short dark-ambient beds (~90s, mono 22.05kHz → ~4MB each) so the
-repo stays small. Run once during setup; CI regenerates if missing.
+repo stays small. Run once during setup
+CI regenerates if missing.
 """
 
 import os
 import wave
+
 import numpy as np
 
 SR = 22050
@@ -25,7 +27,9 @@ def _write(name, sig):
     pcm = (sig / peak * 0.72 * 32767).astype(np.int16)
     path = os.path.join(OUT, name)
     with wave.open(path, "wb") as w:
-        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(SR)
         w.writeframes(pcm.tobytes())
     print(f"  ✅ {name} ({os.path.getsize(path)//1024}KB)")
 
@@ -64,7 +68,8 @@ def build(name, root=36, bpm=55, pad_chords=(36, 39, 43), seed=7):
 
     # noise texture
     noise = rng.standard_normal(n) * 0.004
-    k = np.hanning(101); k /= k.sum()
+    k = np.hanning(101)
+    k /= k.sum()
     noise = np.convolve(noise, k, mode="same")
 
     mix = drone + hb + pad + noise
