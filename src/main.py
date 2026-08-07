@@ -74,6 +74,34 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     # ── ML engine ──
     ml = LearningSystem()
 
+    # Warm-start the bandit with market intelligence once (idempotent: real
+    # per-video evidence is never overwritten). Falls back to curated patterns.
+    try:
+        from market_intel import analyze, priors_for_bandit
+        _analysis = analyze()
+        _priors = priors_for_bandit(_analysis)
+        existing = sum(1 for a in ml.data["arms"].values() if a.get("n", 0) > 0)
+        if existing < len(_priors) * 3:
+            ml.apply_seed_priors(priors=_priors, source=_analysis["source"])
+            logger.info("🌡 Market intel: %d patterns from %s",
+                        len(_priors), _analysis["source"])
+    except Exception as exc:
+        logger.warning("Market intel warm-start skipped: %s", exc)
+
+    # Strategy director — auto-tune epsilon, voice speed, cadence from results
+    try:
+        from strategy_director import StrategyDirector
+        director = StrategyDirector(ml=ml)
+        director.decide()
+        director.apply_to_env()
+        # Reload cfg overrides (epsilon may have changed from env)
+        env_eps = os.environ.get("CD_EPSILON")
+        if env_eps:
+            ml.cfg["epsilon"] = float(env_eps)
+    except Exception as exc:
+        logger.warning("Strategy director skipped: %s", exc)
+        director = None
+
     # ── BRAIN ADAPTATION (War Mode) ──
     if os.environ.get("WAR_MODE", "false").lower() == "true" and not pillar and not topic:
         try:

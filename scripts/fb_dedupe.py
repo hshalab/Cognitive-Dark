@@ -71,7 +71,7 @@ def main():
 
     to_delete = []
     print("=" * 70)
-    for key, copies in groups.items():
+    for _key, copies in groups.items():
         if len(copies) < 2:
             continue
         copies.sort(key=lambda x: int(x.get("views", 0) or 0), reverse=True)

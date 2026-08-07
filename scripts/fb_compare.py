@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compare 0-view vs high-view videos: length, type (Reel vs video), title style."""
-import os, sys
+import os
+import sys
 import requests
 
 V = "v25.0"
@@ -33,4 +34,4 @@ print("-" * 75)
 for v in sorted(out, key=lambda x: int(x.get("views",0) or 0)):
     title = (v.get("title") or v.get("description") or "(no title)")[:50].replace("\n"," ")
     length = v.get("length", "?")
-    print(f"{v.get('created_time','')[:10]:<11} {int(v.get('views',0) or 0):>6} {str(length):>6}  {title}")
+    print(f"{v.get('created_time','')[:10]:<11} {int(v.get('views',0) or 0):>6} {length!s:>6}  {title}")

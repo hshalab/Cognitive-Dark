@@ -25,6 +25,7 @@ CI workflow so learning survives across GitHub Actions runs. Every mutating
 operation auto-saves (V2 lost end-of-run rewards because save() was skipped).
 """
 
+import contextlib
 import hashlib
 import json
 import logging
@@ -80,7 +81,14 @@ class LearningSystem:
 
     def __init__(self, store_path: Path = None, cfg: dict = None):
         self.store_path = Path(store_path or ML_STORE_PATH)
-        self.cfg = cfg or LEARNING
+        self.cfg = dict(LEARNING)
+        if cfg:
+            self.cfg.update(cfg)
+        # Live overrides from the Strategy Director (env-driven, auto-tuned)
+        env_eps = os.environ.get("CD_EPSILON")
+        if env_eps:
+            with contextlib.suppress(ValueError):
+                self.cfg["epsilon"] = float(env_eps)
         self.data = self._load()
         self._ensure_schema()
 
@@ -130,6 +138,42 @@ class LearningSystem:
             if k:
                 keys.append(k)
         return keys
+
+    def apply_seed_priors(self, priors: dict | None = None,
+                          source: str = "seeded_priors") -> dict:
+        """Warm-start the bandit with prior (pillar, hook) mean rewards.
+
+        Priors are laid across ALL three day-parts for each (pillar, hook)
+        pair so the UCB index has evidence everywhere on day one. Existing
+        REAL evidence is never overwritten — priors only fill arms whose n==0.
+
+        priors: {(pillar, hook): (mean, n_samples)}. Defaults to the
+        curated set in seed_priors.SEED_PRIORS (documented, NOT fake
+        "500 channel" data — see that module's docstring for the source).
+        """
+        if priors is None:
+            from seed_priors import PRIOR_VERSION, SEED_PRIORS
+            priors = SEED_PRIORS
+            self.data["prior_version"] = PRIOR_VERSION
+        seeded = 0
+        for (pillar, hook), (mean, n) in priors.items():
+            for day_part in ("morning", "afternoon", "evening"):
+                key = self.arm_key(pillar, hook, day_part)
+                arm = self._arm(key)
+                if arm["n"] > 0:
+                    continue  # never overwrite real evidence
+                arm["rewards"] = round(float(mean) * int(n), 4)
+                arm["sum_sq"] = round((float(mean) ** 2) * int(n), 4)
+                arm["n"] = int(n)
+                arm["plays"] = arm.get("plays", 0)
+                arm["updated"] = _now_iso()
+                arm["seeded"] = True
+                seeded += 1
+        self.data.setdefault("prior_log", []).append({
+            "ts": _now_iso(), "source": source, "arms_seeded": seeded})
+        self.save()
+        logger.info("🌱 Seeded %d arms with warm-start priors (source=%s)", seeded, source)
+        return {"arms_seeded": seeded, "source": source}
 
     # ── UCB1 selection ──
     def choose_strategy(self, recent_keys: list = None) -> dict:
@@ -240,26 +284,20 @@ class LearningSystem:
     # ── derived reward from platform metrics ──
     @staticmethod
     def reward_from_metrics(m: dict, cfg: dict = None) -> float:
-        """Map raw platform metrics into a single reward scalar (0..~5)."""
-        cfg = cfg or LEARNING
-        retention = m.get("retention", 0.0)         # 0..1 avg view duration
-        views = float(m.get("views", 0) or 0)
-        likes = float(m.get("likes", 0) or 0)
-        comments = float(m.get("comments", 0) or 0)
-        shares = float(m.get("shares", 0) or 0)
-        subs = float(m.get("subs_gained", 0) or 0)
+        """Map raw platform metrics into a single reward scalar (0..~5).
 
-        eng = likes + 2 * comments + 3 * shares + 5 * subs
-        view_score = min(1.0, math.log10(views + 1) / 6.0)
-        ret_score = min(1.0, retention / 0.55)      # >55% avg retention = excellent
-        eng_score = min(1.0, eng / 200.0)
-
-        r = (cfg["reward_retention"] * ret_score +
-             cfg["reward_engagement"] * eng_score +
-             cfg["reward_views"] * view_score)
-        if retention >= 0.55 and views >= 1000:
-            r += cfg["bonus_viral"] / 3.0
-        return round(min(5.0, r * 3.0), 3)
+        Delegates to reward.reward_from_dict so retention, completion,
+        engagement, views, CTR and voice quality are ALL considered — not
+        just views+likes. Kept here for backward compatibility.
+        """
+        try:
+            from reward import reward_from_dict
+            reward, _ = reward_from_dict(m)
+            return reward
+        except Exception:
+            # Fallback (should not happen) — minimal legacy path
+            views = float(m.get("views", 0) or 0)
+            return round(min(5.0, math.log10(views + 1) / 6.0 * 3.0), 3)
 
     # ── per-video attribution (closes the learning loop) ──
     def record_video_id(self, platform: str, video_id: str, arm_key: str,
