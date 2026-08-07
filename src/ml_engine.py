@@ -160,11 +160,16 @@ class LearningSystem:
             for day_part in ("morning", "afternoon", "evening"):
                 key = self.arm_key(pillar, hook, day_part)
                 arm = self._arm(key)
-                if arm["n"] > 0:
-                    continue  # never overwrite real evidence
+                # Seed only if not already seeded and no real evidence exists.
+                # prior_n>0 means a prior is already written; n>prior_n means
+                # real outcomes were added on top of the prior. Either way skip.
+                if arm.get("n", 0) > 0:
+                    continue
                 arm["rewards"] = round(float(mean) * int(n), 4)
                 arm["sum_sq"] = round((float(mean) ** 2) * int(n), 4)
                 arm["n"] = int(n)
+                arm["prior_n"] = int(n)
+                arm["prior_mean"] = round(float(mean), 4)
                 arm["plays"] = arm.get("plays", 0)
                 arm["updated"] = _now_iso()
                 arm["seeded"] = True
@@ -176,44 +181,87 @@ class LearningSystem:
         return {"arms_seeded": seeded, "source": source}
 
     # ── UCB1 selection ──
-    def choose_strategy(self, recent_keys: list = None) -> dict:
-        """Pick (pillar, hook_style, day_part) via UCB1 with epsilon exploration.
+    def choose_strategy(self, recent_keys: list = None,
+                        platform: str | None = None) -> dict:
+        """Pick (pillar, hook_style, day_part) using a mature bandit policy.
 
-        Arms with no evidence are explored first; ties broken randomly;
-        recently-used arms are down-weighted to keep the feed varied.
+        Default is Thompson sampling (Bayesian posterior sampling), which
+        naturally balances explore/exploit using each arm's uncertainty.
+        UCB1 is available as fallback (cfg['policy']='ucb'). A small residual
+        epsilon still picks a fully random arm to guarantee coverage.
+
+        If cfg['per_platform'] is on and `platform` is given, the score is
+        blended with that platform's specific arm history so YouTube vs Reels
+        learn separately.
         """
+        from bandit import posterior_from_arm, score_arms, should_force_exploration
         if recent_keys is None:
             recent_keys = self.recent_arm_keys()
         recent_keys = set(recent_keys)
         day_part = current_day_part()
+        policy = os.environ.get("CD_POLICY", self.cfg.get("policy", "thompson"))
+        epsilon = self.cfg.get("epsilon", 0.10)
 
         total_plays = sum(a["plays"] for a in self.data["arms"].values()) or 1
-        epsilon = self.cfg["epsilon"]
+        c = self.cfg.get("ucb_c", 2.0)
 
         candidates = []
         for pillar in PILLARS:
             for style in HOOK_STYLES:
                 key = self.arm_key(pillar["key"], style, day_part)
                 arm = self._arm(key)
-                score = self._ucb_score(arm, total_plays)
-                if key in recent_keys:
-                    score *= 0.5  # avoid instant repeat of same formula
-                candidates.append((score, key, arm, pillar["key"], style, day_part))
+                # baseline score (0.0 placeholder; real score added below)
+                candidates.append((0.0, key, arm, pillar["key"], style, day_part))
 
-        # Explore random arm with prob epsilon
-        chosen = (random.choice(candidates) if random.random() < epsilon
-                  else max(candidates, key=lambda c: c[0]))
+        candidates = score_arms(candidates, policy=policy,
+                                total_plays=total_plays, c=c)
 
+        # Cold-start guarantee: with some probability, force a genuinely
+        # under-observed arm (UCB's "infinite bonus" generalized).
+        force = [c for c in candidates if should_force_exploration(c[2])]
+        if force and random.random() < 0.25:
+            chosen = random.choice(force)
+        # Residual epsilon-random over all candidates
+        elif random.random() < epsilon:
+            chosen = random.choice(candidates)
+        else:
+            chosen = max(candidates, key=lambda c: c[0])
+
+        # Recency / variety penalty (don't instantly repeat same formula),
+        # plus pillar-weight adjustment from the Strategy Director.
         score, key, arm, pillar, style, dp = chosen
+        if key in recent_keys:
+            score *= 0.5
+        weight = float(self.data.get("pillar_weights", {}).get(pillar, 1.0))
+        score *= weight
+
+        # Per-platform blend (optional)
+        if platform and self.cfg.get("per_platform", True):
+            plat = self._platform_arm(platform, key)
+            if plat.get("n", 0) >= 3:
+                p_post = posterior_from_arm(plat)
+                score = 0.6 * score + 0.4 * p_post.mean
+
         arm["plays"] += 1
         arm["updated"] = _now_iso()
         self.save()
 
+        post = posterior_from_arm(arm)
+        ci_lo, ci_hi = post.confidence_interval()
         return {
             "arm_key": key, "pillar": pillar, "hook_style": style,
-            "day_part": dp, "ucb_score": round(score, 4),
+            "day_part": dp, "policy": policy,
+            "score": round(score, 4),
+            "posterior_mean": round(post.mean, 3),
+            "posterior_std": round(post.std, 3),
+            "ci_95": [round(ci_lo, 3), round(ci_hi, 3)],
             "arm_evidence": arm["n"],
         }
+
+    def _platform_arm(self, platform: str, base_key: str) -> dict:
+        """Per-platform arm stats bucket (separate learning per platform)."""
+        d = self.data.setdefault("platform_arms", {}).setdefault(platform, {})
+        return d.setdefault(base_key, {"n": 0, "rewards": 0.0, "sum_sq": 0.0})
 
     @staticmethod
     def _ucb_score(arm: dict, total_plays: int) -> float:
@@ -233,47 +281,65 @@ class LearningSystem:
         return (mean + explore) * decay
 
     # ── reward / penalty (auto-persisted since V2.1) ──
-    def record_outcome(self, arm_key: str, reward: float) -> None:
-        """Push a real outcome into the arm's distribution (UCB update)."""
+    def _update_arm(self, arm_key: str, reward: float) -> None:
+        """Store a signed reward observation (allows negative penalties)."""
         arm = self._arm(arm_key)
-        arm["rewards"] += max(0.0, reward)
-        arm["sum_sq"] += max(0.0, reward) ** 2
+        arm["rewards"] += float(reward)
+        arm["sum_sq"] += float(reward) * float(reward)
         arm["n"] += 1
         arm["updated"] = _now_iso()
+
+    def _record_platform(self, arm_key: str, platform: str | None, reward: float) -> None:
+        if not (platform and self.cfg.get("per_platform", True)):
+            return
+        pa = self._platform_arm(platform, arm_key)
+        pa["rewards"] += float(reward)
+        pa["sum_sq"] += float(reward) * float(reward)
+        pa["n"] += 1
+
+    def record_outcome(self, arm_key: str, reward: float,
+                        platform: str | None = None) -> None:
+        """Push a real outcome into the arm's distribution."""
+        reward = float(reward)
+        self._update_arm(arm_key, reward)
+        self._record_platform(arm_key, platform, reward)
         self.data["reward_log"].append({
             "ts": _now_iso(), "arm": arm_key, "reward": round(reward, 4),
+            "platform": platform,
         })
         self._trim("reward_log")
         self.save()
 
-    def apply_penalty(self, arm_key: str, reason: str, weight: float = None) -> float:
-        """Penalize the arm behind a mistake (failure / low retention / spam flag)."""
-        w = weight if weight is not None else self.cfg["penalty_failure"]
-        arm = self._arm(arm_key)
-        arm["rewards"] = max(0.0, arm["rewards"] - abs(w))
-        arm["n"] += 1  # counts as evidence (negative signal)
-        arm["updated"] = _now_iso()
+    def apply_penalty(self, arm_key: str, reason: str, weight: float = None,
+                       platform: str | None = None) -> float:
+        """Penalize the arm behind a mistake (failure / low retention / spam)."""
+        w = float(weight if weight is not None else self.cfg["penalty_failure"])
+        self._update_arm(arm_key, -abs(w))
+        self._record_platform(arm_key, platform, -abs(w))
         self.data["penalty_log"].append({
             "ts": _now_iso(), "arm": arm_key, "reason": reason, "penalty": w,
+            "platform": platform,
         })
         self._trim("penalty_log")
         self.save()
-        logger.info("PENALTY applied %s → %s (%.1f)", reason, arm_key, w)
+        logger.info("PENALTY applied %s → %s (%.1f) platform=%s",
+                    reason, arm_key, w, platform or "-")
         return w
 
-    def apply_reward(self, arm_key: str, reason: str, weight: float = None) -> float:
+    def apply_reward(self, arm_key: str, reason: str, weight: float = None,
+                      platform: str | None = None) -> float:
         """Reward the arm behind a strong output."""
-        w = weight if weight is not None else self.cfg["bonus_viral"]
-        arm = self._arm(arm_key)
-        arm["rewards"] += abs(w)
-        arm["n"] += 1
-        arm["updated"] = _now_iso()
+        w = float(weight if weight is not None else self.cfg["bonus_viral"])
+        self._update_arm(arm_key, abs(w))
+        self._record_platform(arm_key, platform, abs(w))
         self.data["reward_log"].append({
             "ts": _now_iso(), "arm": arm_key, "reason": reason, "reward": w,
+            "platform": platform,
         })
         self._trim("reward_log")
         self.save()
-        logger.info("REWARD applied %s → %s (%.1f)", reason, arm_key, w)
+        logger.info("REWARD applied %s → %s (%.1f) platform=%s",
+                    reason, arm_key, w, platform or "-")
         return w
 
     @staticmethod
@@ -283,21 +349,20 @@ class LearningSystem:
 
     # ── derived reward from platform metrics ──
     @staticmethod
-    def reward_from_metrics(m: dict, cfg: dict = None) -> float:
-        """Map raw platform metrics into a single reward scalar (0..~5).
+    def reward_from_metrics(m: dict, cfg: dict = None) -> tuple[float, dict]:
+        """Map raw platform metrics into (reward, breakdown).
 
         Delegates to reward.reward_from_dict so retention, completion,
         engagement, views, CTR and voice quality are ALL considered — not
-        just views+likes. Kept here for backward compatibility.
+        just views+likes.
         """
         try:
             from reward import reward_from_dict
-            reward, _ = reward_from_dict(m)
-            return reward
+            return reward_from_dict(m)
         except Exception:
-            # Fallback (should not happen) — minimal legacy path
             views = float(m.get("views", 0) or 0)
-            return round(min(5.0, math.log10(views + 1) / 6.0 * 3.0), 3)
+            r = round(min(5.0, math.log10(views + 1) / 6.0 * 3.0), 3)
+            return r, {"fallback": True, "reward": r}
 
     # ── per-video attribution (closes the learning loop) ──
     def record_video_id(self, platform: str, video_id: str, arm_key: str,
@@ -329,15 +394,18 @@ class LearningSystem:
         a = self.data["attribution"].get(vid)
         if not a or a.get("credited"):
             return 0.0
-        reward = self.reward_from_metrics(metrics)
+        reward, breakdown = self.reward_from_metrics(metrics)
+        platform = a.get("platform")
         a["credited"] = True
         a["metrics"] = metrics
+        a["reward"] = reward
+        a["breakdown"] = breakdown
         a["credited_at"] = _now_iso()
-        if reward > 0:
-            self.apply_reward(a["arm_key"], f"metrics:{vid[:12]}", reward)
+        if reward > 0.5:
+            self.apply_reward(a["arm_key"], f"metrics:{vid[:12]}", reward, platform=platform)
         else:
             self.apply_penalty(a["arm_key"], f"low_metrics:{vid[:12]}",
-                               self.cfg["penalty_low_retention"])
+                               self.cfg["penalty_low_retention"], platform=platform)
         return reward
 
     # ── post-volume guards (2026: consistency > bursts) ──

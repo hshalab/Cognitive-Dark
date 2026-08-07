@@ -361,7 +361,9 @@ MIN_CLIP_BYTES = 100_000
 # ─────────────────────────────────────────────────────────────
 ML_STORE_PATH = DATA_DIR / "learning_store.json"
 LEARNING = {
-    "epsilon": 0.15,          # exploration rate
+    "epsilon": 0.10,          # residual random exploration (Thompson is primary)
+    "policy": "thompson",     # thompson | ucb — mature bandit policy
+    "ucb_c": 2.0,             # UCB1 exploration constant
     "min_plays_before_greedy": 6,
     "dedup_window": 60,       # videos to compare against for variation
     "min_variation": 0.35,    # min 1 - token-overlap vs recent posts
@@ -372,4 +374,5 @@ LEARNING = {
     "penalty_low_retention": -1.0,
     "bonus_viral": 3.0,       # reward for strong output
     "bonus_consistent": 1.0,
+    "per_platform": True,     # track arm performance per platform
 }

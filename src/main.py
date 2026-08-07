@@ -220,12 +220,14 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
             else:
                 ml.report_failure(p, res.get("error") or res.get("reason", "unknown"))
                 if arm:
-                    ml.apply_penalty(arm, f"{p}_upload_failed", ml.cfg["penalty_failure"])
+                    ml.apply_penalty(arm, f"{p}_upload_failed",
+                                     ml.cfg["penalty_failure"], platform=p)
         except Exception as exc:
             logger.error("Platform %s raised: %s", p, exc)
             ml.report_failure(p, str(exc))
             if arm:
-                ml.apply_penalty(arm, f"{p}_raised", ml.cfg["penalty_failure"])
+                ml.apply_penalty(arm, f"{p}_raised",
+                                 ml.cfg["penalty_failure"], platform=p)
             results[p] = uploaders[p].result(False, error=str(exc))
 
     # ── 5b. Content pack for manual posting (CI artifact) ──
@@ -244,7 +246,8 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     # ── 6. ML feedback for strong output (rewards on the EXACT arm) ──
     for p, res in results.items():
         if res.get("ok") and not res.get("dry_run") and arm:
-            ml.apply_reward(arm, f"{p}_published", ml.cfg["bonus_consistent"])
+            ml.apply_reward(arm, f"{p}_published",
+                            ml.cfg["bonus_consistent"], platform=p)
             # Real performance metrics arrive via scripts/fetch_metrics.py,
             # which credits this video's arm through the attribution map.
     ml.save()

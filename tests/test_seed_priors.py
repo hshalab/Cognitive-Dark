@@ -32,7 +32,7 @@ def test_seed_sets_mean_consistent(ml: LearningSystem):
 def test_seed_is_idempotent(ml: LearningSystem):
     r1 = ml.apply_seed_priors()
     assert r1["arms_seeded"] > 0
-    # After seeding, every arm has n>0, so a second run seeds nothing new.
+    # Second run: every arm's n already equals its prior_n, so nothing new seeded.
     r2 = ml.apply_seed_priors()
     assert r2["arms_seeded"] == 0
 

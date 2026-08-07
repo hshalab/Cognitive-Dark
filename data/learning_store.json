@@ -5,7 +5,9 @@
       "rewards": 8.1,
       "sum_sq": 10.935,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576643+00:00",
+      "updated": "2026-08-07T20:03:07.200563+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.35,
       "seeded": true
     },
     "coercive_control::warning::afternoon": {
@@ -13,7 +15,9 @@
       "rewards": 8.1,
       "sum_sq": 10.935,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576652+00:00",
+      "updated": "2026-08-07T20:03:07.200573+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.35,
       "seeded": true
     },
     "coercive_control::warning::evening": {
@@ -21,7 +25,9 @@
       "rewards": 8.1,
       "sum_sq": 10.935,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576659+00:00",
+      "updated": "2026-08-07T20:03:07.200581+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.35,
       "seeded": true
     },
     "coercive_control::red_flag::morning": {
@@ -29,7 +35,9 @@
       "rewards": 7.8,
       "sum_sq": 10.14,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576665+00:00",
+      "updated": "2026-08-07T20:03:07.200588+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.3,
       "seeded": true
     },
     "coercive_control::red_flag::afternoon": {
@@ -37,7 +45,9 @@
       "rewards": 7.8,
       "sum_sq": 10.14,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576670+00:00",
+      "updated": "2026-08-07T20:03:07.200593+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.3,
       "seeded": true
     },
     "coercive_control::red_flag::evening": {
@@ -45,7 +55,9 @@
       "rewards": 7.8,
       "sum_sq": 10.14,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576677+00:00",
+      "updated": "2026-08-07T20:03:07.200598+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.3,
       "seeded": true
     },
     "coercive_control::chilling_fact::morning": {
@@ -53,7 +65,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576683+00:00",
+      "updated": "2026-08-07T20:03:07.200604+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "coercive_control::chilling_fact::afternoon": {
@@ -61,7 +75,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576688+00:00",
+      "updated": "2026-08-07T20:03:07.200610+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "coercive_control::chilling_fact::evening": {
@@ -69,7 +85,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576693+00:00",
+      "updated": "2026-08-07T20:03:07.200618+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "coercive_control::question_hook::morning": {
@@ -77,7 +95,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576698+00:00",
+      "updated": "2026-08-07T20:03:07.200624+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "coercive_control::question_hook::afternoon": {
@@ -85,7 +105,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576703+00:00",
+      "updated": "2026-08-07T20:03:07.200630+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "coercive_control::question_hook::evening": {
@@ -93,7 +115,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576708+00:00",
+      "updated": "2026-08-07T20:03:07.200635+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "coercive_control::plot_twist::morning": {
@@ -101,7 +125,9 @@
       "rewards": 3.4,
       "sum_sq": 2.89,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576713+00:00",
+      "updated": "2026-08-07T20:03:07.200643+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "coercive_control::plot_twist::afternoon": {
@@ -109,7 +135,9 @@
       "rewards": 3.4,
       "sum_sq": 2.89,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576719+00:00",
+      "updated": "2026-08-07T20:03:07.200649+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "coercive_control::plot_twist::evening": {
@@ -117,7 +145,9 @@
       "rewards": 3.4,
       "sum_sq": 2.89,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576724+00:00",
+      "updated": "2026-08-07T20:03:07.200654+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "coercive_control::timeline::morning": {
@@ -125,7 +155,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576729+00:00",
+      "updated": "2026-08-07T20:03:07.200659+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "coercive_control::timeline::afternoon": {
@@ -133,7 +165,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576734+00:00",
+      "updated": "2026-08-07T20:03:07.200664+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "coercive_control::timeline::evening": {
@@ -141,7 +175,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576739+00:00",
+      "updated": "2026-08-07T20:03:07.200669+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "coercive_control::confession::morning": {
@@ -149,7 +185,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576744+00:00",
+      "updated": "2026-08-07T20:03:07.200675+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "coercive_control::confession::afternoon": {
@@ -157,7 +195,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576751+00:00",
+      "updated": "2026-08-07T20:03:07.200680+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "coercive_control::confession::evening": {
@@ -165,7 +205,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576756+00:00",
+      "updated": "2026-08-07T20:03:07.200685+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "coercive_control::case_file::morning": {
@@ -173,7 +215,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576762+00:00",
+      "updated": "2026-08-07T20:03:07.200691+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "coercive_control::case_file::afternoon": {
@@ -181,7 +225,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576766+00:00",
+      "updated": "2026-08-07T20:03:07.200696+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "coercive_control::case_file::evening": {
@@ -189,7 +235,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576771+00:00",
+      "updated": "2026-08-07T20:03:07.200702+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "con_artists::warning::morning": {
@@ -197,7 +245,9 @@
       "rewards": 7.8,
       "sum_sq": 10.14,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576776+00:00",
+      "updated": "2026-08-07T20:03:07.200707+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.3,
       "seeded": true
     },
     "con_artists::warning::afternoon": {
@@ -205,7 +255,9 @@
       "rewards": 7.8,
       "sum_sq": 10.14,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576780+00:00",
+      "updated": "2026-08-07T20:03:07.200712+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.3,
       "seeded": true
     },
     "con_artists::warning::evening": {
@@ -213,7 +265,9 @@
       "rewards": 7.8,
       "sum_sq": 10.14,
       "n": 6,
-      "updated": "2026-08-07T19:21:20.576785+00:00",
+      "updated": "2026-08-07T20:03:07.200717+00:00",
+      "prior_n": 6,
+      "prior_mean": 1.3,
       "seeded": true
     },
     "con_artists::chilling_fact::morning": {
@@ -221,7 +275,9 @@
       "rewards": 5.75,
       "sum_sq": 6.6125,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576790+00:00",
+      "updated": "2026-08-07T20:03:07.200723+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.15,
       "seeded": true
     },
     "con_artists::chilling_fact::afternoon": {
@@ -229,7 +285,9 @@
       "rewards": 5.75,
       "sum_sq": 6.6125,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576796+00:00",
+      "updated": "2026-08-07T20:03:07.200728+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.15,
       "seeded": true
     },
     "con_artists::chilling_fact::evening": {
@@ -237,7 +295,9 @@
       "rewards": 5.75,
       "sum_sq": 6.6125,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576801+00:00",
+      "updated": "2026-08-07T20:03:07.200733+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.15,
       "seeded": true
     },
     "con_artists::red_flag::morning": {
@@ -245,7 +305,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576805+00:00",
+      "updated": "2026-08-07T20:03:07.200739+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "con_artists::red_flag::afternoon": {
@@ -253,7 +315,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576810+00:00",
+      "updated": "2026-08-07T20:03:07.200746+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "con_artists::red_flag::evening": {
@@ -261,7 +325,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576816+00:00",
+      "updated": "2026-08-07T20:03:07.200751+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "con_artists::question_hook::morning": {
@@ -269,7 +335,9 @@
       "rewards": 4.0,
       "sum_sq": 4.0,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576821+00:00",
+      "updated": "2026-08-07T20:03:07.200757+00:00",
+      "prior_n": 4,
+      "prior_mean": 1.0,
       "seeded": true
     },
     "con_artists::question_hook::afternoon": {
@@ -277,7 +345,9 @@
       "rewards": 4.0,
       "sum_sq": 4.0,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576826+00:00",
+      "updated": "2026-08-07T20:03:07.200765+00:00",
+      "prior_n": 4,
+      "prior_mean": 1.0,
       "seeded": true
     },
     "con_artists::question_hook::evening": {
@@ -285,7 +355,9 @@
       "rewards": 4.0,
       "sum_sq": 4.0,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576830+00:00",
+      "updated": "2026-08-07T20:03:07.200773+00:00",
+      "prior_n": 4,
+      "prior_mean": 1.0,
       "seeded": true
     },
     "con_artists::plot_twist::morning": {
@@ -293,7 +365,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576836+00:00",
+      "updated": "2026-08-07T20:03:07.200779+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "con_artists::plot_twist::afternoon": {
@@ -301,7 +375,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576840+00:00",
+      "updated": "2026-08-07T20:03:07.200784+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "con_artists::plot_twist::evening": {
@@ -309,7 +385,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576845+00:00",
+      "updated": "2026-08-07T20:03:07.200789+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "con_artists::case_file::morning": {
@@ -317,7 +395,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576849+00:00",
+      "updated": "2026-08-07T20:03:07.200794+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "con_artists::case_file::afternoon": {
@@ -325,7 +405,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576854+00:00",
+      "updated": "2026-08-07T20:03:07.200800+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "con_artists::case_file::evening": {
@@ -333,7 +415,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576859+00:00",
+      "updated": "2026-08-07T20:03:07.200805+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "con_artists::confession::morning": {
@@ -341,7 +425,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576864+00:00",
+      "updated": "2026-08-07T20:03:07.200811+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "con_artists::confession::afternoon": {
@@ -349,7 +435,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576869+00:00",
+      "updated": "2026-08-07T20:03:07.200816+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "con_artists::confession::evening": {
@@ -357,7 +445,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576876+00:00",
+      "updated": "2026-08-07T20:03:07.200822+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "con_artists::timeline::morning": {
@@ -365,7 +455,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576881+00:00",
+      "updated": "2026-08-07T20:03:07.200827+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "con_artists::timeline::afternoon": {
@@ -373,7 +465,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576886+00:00",
+      "updated": "2026-08-07T20:03:07.200832+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "con_artists::timeline::evening": {
@@ -381,7 +475,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576891+00:00",
+      "updated": "2026-08-07T20:03:07.200837+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mass_psychology::chilling_fact::morning": {
@@ -389,7 +485,9 @@
       "rewards": 6.0,
       "sum_sq": 7.2,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576896+00:00",
+      "updated": "2026-08-07T20:03:07.200843+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.2,
       "seeded": true
     },
     "mass_psychology::chilling_fact::afternoon": {
@@ -397,7 +495,9 @@
       "rewards": 6.0,
       "sum_sq": 7.2,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576900+00:00",
+      "updated": "2026-08-07T20:03:07.200848+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.2,
       "seeded": true
     },
     "mass_psychology::chilling_fact::evening": {
@@ -405,7 +505,9 @@
       "rewards": 6.0,
       "sum_sq": 7.2,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576906+00:00",
+      "updated": "2026-08-07T20:03:07.200853+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.2,
       "seeded": true
     },
     "mass_psychology::warning::morning": {
@@ -413,7 +515,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576912+00:00",
+      "updated": "2026-08-07T20:03:07.200860+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "mass_psychology::warning::afternoon": {
@@ -421,7 +525,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576919+00:00",
+      "updated": "2026-08-07T20:03:07.200865+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "mass_psychology::warning::evening": {
@@ -429,7 +535,9 @@
       "rewards": 5.5,
       "sum_sq": 6.05,
       "n": 5,
-      "updated": "2026-08-07T19:21:20.576923+00:00",
+      "updated": "2026-08-07T20:03:07.200870+00:00",
+      "prior_n": 5,
+      "prior_mean": 1.1,
       "seeded": true
     },
     "mass_psychology::question_hook::morning": {
@@ -437,7 +545,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576928+00:00",
+      "updated": "2026-08-07T20:03:07.200875+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "mass_psychology::question_hook::afternoon": {
@@ -445,7 +555,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576933+00:00",
+      "updated": "2026-08-07T20:03:07.200882+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "mass_psychology::question_hook::evening": {
@@ -453,7 +565,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.576938+00:00",
+      "updated": "2026-08-07T20:03:07.200886+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "mass_psychology::plot_twist::morning": {
@@ -461,7 +575,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576943+00:00",
+      "updated": "2026-08-07T20:03:07.200892+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "mass_psychology::plot_twist::afternoon": {
@@ -469,7 +585,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576947+00:00",
+      "updated": "2026-08-07T20:03:07.200897+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "mass_psychology::plot_twist::evening": {
@@ -477,7 +595,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576951+00:00",
+      "updated": "2026-08-07T20:03:07.200902+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "mass_psychology::red_flag::morning": {
@@ -485,7 +605,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576957+00:00",
+      "updated": "2026-08-07T20:03:07.200907+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "mass_psychology::red_flag::afternoon": {
@@ -493,7 +615,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576961+00:00",
+      "updated": "2026-08-07T20:03:07.200914+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "mass_psychology::red_flag::evening": {
@@ -501,7 +625,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576965+00:00",
+      "updated": "2026-08-07T20:03:07.200919+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "mass_psychology::timeline::morning": {
@@ -509,7 +635,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576970+00:00",
+      "updated": "2026-08-07T20:03:07.200924+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mass_psychology::timeline::afternoon": {
@@ -517,7 +645,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576975+00:00",
+      "updated": "2026-08-07T20:03:07.200928+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mass_psychology::timeline::evening": {
@@ -525,7 +655,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576980+00:00",
+      "updated": "2026-08-07T20:03:07.200933+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mass_psychology::confession::morning": {
@@ -533,7 +665,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576984+00:00",
+      "updated": "2026-08-07T20:03:07.200938+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mass_psychology::confession::afternoon": {
@@ -541,7 +675,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.576996+00:00",
+      "updated": "2026-08-07T20:03:07.200944+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mass_psychology::confession::evening": {
@@ -549,7 +685,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577001+00:00",
+      "updated": "2026-08-07T20:03:07.200949+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mass_psychology::case_file::morning": {
@@ -557,7 +695,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577038+00:00",
+      "updated": "2026-08-07T20:03:07.200954+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "mass_psychology::case_file::afternoon": {
@@ -565,7 +705,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577046+00:00",
+      "updated": "2026-08-07T20:03:07.200960+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "mass_psychology::case_file::evening": {
@@ -573,7 +715,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577054+00:00",
+      "updated": "2026-08-07T20:03:07.200965+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "brainwashing_myths::chilling_fact::morning": {
@@ -581,7 +725,9 @@
       "rewards": 4.2,
       "sum_sq": 4.41,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577059+00:00",
+      "updated": "2026-08-07T20:03:07.200971+00:00",
+      "prior_n": 4,
+      "prior_mean": 1.05,
       "seeded": true
     },
     "brainwashing_myths::chilling_fact::afternoon": {
@@ -589,7 +735,9 @@
       "rewards": 4.2,
       "sum_sq": 4.41,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577064+00:00",
+      "updated": "2026-08-07T20:03:07.200976+00:00",
+      "prior_n": 4,
+      "prior_mean": 1.05,
       "seeded": true
     },
     "brainwashing_myths::chilling_fact::evening": {
@@ -597,7 +745,9 @@
       "rewards": 4.2,
       "sum_sq": 4.41,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577069+00:00",
+      "updated": "2026-08-07T20:03:07.200983+00:00",
+      "prior_n": 4,
+      "prior_mean": 1.05,
       "seeded": true
     },
     "brainwashing_myths::question_hook::morning": {
@@ -605,7 +755,9 @@
       "rewards": 3.6,
       "sum_sq": 3.24,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577074+00:00",
+      "updated": "2026-08-07T20:03:07.200994+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.9,
       "seeded": true
     },
     "brainwashing_myths::question_hook::afternoon": {
@@ -613,7 +765,9 @@
       "rewards": 3.6,
       "sum_sq": 3.24,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577078+00:00",
+      "updated": "2026-08-07T20:03:07.201004+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.9,
       "seeded": true
     },
     "brainwashing_myths::question_hook::evening": {
@@ -621,7 +775,9 @@
       "rewards": 3.6,
       "sum_sq": 3.24,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577083+00:00",
+      "updated": "2026-08-07T20:03:07.201011+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.9,
       "seeded": true
     },
     "brainwashing_myths::warning::morning": {
@@ -629,7 +785,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577089+00:00",
+      "updated": "2026-08-07T20:03:07.201016+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "brainwashing_myths::warning::afternoon": {
@@ -637,7 +795,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577093+00:00",
+      "updated": "2026-08-07T20:03:07.201021+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "brainwashing_myths::warning::evening": {
@@ -645,7 +805,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577098+00:00",
+      "updated": "2026-08-07T20:03:07.201027+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "brainwashing_myths::plot_twist::morning": {
@@ -653,7 +815,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577103+00:00",
+      "updated": "2026-08-07T20:03:07.201032+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "brainwashing_myths::plot_twist::afternoon": {
@@ -661,7 +825,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577108+00:00",
+      "updated": "2026-08-07T20:03:07.201037+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "brainwashing_myths::plot_twist::evening": {
@@ -669,7 +835,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577112+00:00",
+      "updated": "2026-08-07T20:03:07.201042+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "brainwashing_myths::red_flag::morning": {
@@ -677,7 +845,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577117+00:00",
+      "updated": "2026-08-07T20:03:07.201047+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "brainwashing_myths::red_flag::afternoon": {
@@ -685,7 +855,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577124+00:00",
+      "updated": "2026-08-07T20:03:07.201053+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "brainwashing_myths::red_flag::evening": {
@@ -693,7 +865,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577128+00:00",
+      "updated": "2026-08-07T20:03:07.201058+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "brainwashing_myths::case_file::morning": {
@@ -701,7 +875,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577133+00:00",
+      "updated": "2026-08-07T20:03:07.201064+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "brainwashing_myths::case_file::afternoon": {
@@ -709,7 +885,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577138+00:00",
+      "updated": "2026-08-07T20:03:07.201069+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "brainwashing_myths::case_file::evening": {
@@ -717,7 +895,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577143+00:00",
+      "updated": "2026-08-07T20:03:07.201074+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "brainwashing_myths::confession::morning": {
@@ -725,7 +905,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577148+00:00",
+      "updated": "2026-08-07T20:03:07.201080+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "brainwashing_myths::confession::afternoon": {
@@ -733,7 +915,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577154+00:00",
+      "updated": "2026-08-07T20:03:07.201087+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "brainwashing_myths::confession::evening": {
@@ -741,7 +925,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577158+00:00",
+      "updated": "2026-08-07T20:03:07.201125+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "brainwashing_myths::timeline::morning": {
@@ -749,7 +935,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577165+00:00",
+      "updated": "2026-08-07T20:03:07.201132+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "brainwashing_myths::timeline::afternoon": {
@@ -757,7 +945,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577170+00:00",
+      "updated": "2026-08-07T20:03:07.201137+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "brainwashing_myths::timeline::evening": {
@@ -765,7 +955,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577174+00:00",
+      "updated": "2026-08-07T20:03:07.201143+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "mind_control_history::chilling_fact::morning": {
@@ -773,7 +965,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577179+00:00",
+      "updated": "2026-08-07T20:03:07.201149+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "mind_control_history::chilling_fact::afternoon": {
@@ -781,7 +975,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577185+00:00",
+      "updated": "2026-08-07T20:03:07.201154+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "mind_control_history::chilling_fact::evening": {
@@ -789,7 +985,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577190+00:00",
+      "updated": "2026-08-07T20:03:07.201159+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "mind_control_history::case_file::morning": {
@@ -797,7 +995,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577194+00:00",
+      "updated": "2026-08-07T20:03:07.201167+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "mind_control_history::case_file::afternoon": {
@@ -805,7 +1005,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577199+00:00",
+      "updated": "2026-08-07T20:03:07.201172+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "mind_control_history::case_file::evening": {
@@ -813,7 +1015,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577203+00:00",
+      "updated": "2026-08-07T20:03:07.201177+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "mind_control_history::confession::morning": {
@@ -821,7 +1025,9 @@
       "rewards": 1.95,
       "sum_sq": 1.2675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577208+00:00",
+      "updated": "2026-08-07T20:03:07.201182+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.65,
       "seeded": true
     },
     "mind_control_history::confession::afternoon": {
@@ -829,7 +1035,9 @@
       "rewards": 1.95,
       "sum_sq": 1.2675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577213+00:00",
+      "updated": "2026-08-07T20:03:07.201187+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.65,
       "seeded": true
     },
     "mind_control_history::confession::evening": {
@@ -837,7 +1045,9 @@
       "rewards": 1.95,
       "sum_sq": 1.2675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577217+00:00",
+      "updated": "2026-08-07T20:03:07.201192+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.65,
       "seeded": true
     },
     "mind_control_history::plot_twist::morning": {
@@ -845,7 +1055,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577224+00:00",
+      "updated": "2026-08-07T20:03:07.201198+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "mind_control_history::plot_twist::afternoon": {
@@ -853,7 +1065,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577229+00:00",
+      "updated": "2026-08-07T20:03:07.201203+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "mind_control_history::plot_twist::evening": {
@@ -861,7 +1075,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577233+00:00",
+      "updated": "2026-08-07T20:03:07.201208+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "mind_control_history::timeline::morning": {
@@ -869,7 +1085,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577238+00:00",
+      "updated": "2026-08-07T20:03:07.201213+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mind_control_history::timeline::afternoon": {
@@ -877,7 +1095,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577242+00:00",
+      "updated": "2026-08-07T20:03:07.201220+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mind_control_history::timeline::evening": {
@@ -885,7 +1105,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577248+00:00",
+      "updated": "2026-08-07T20:03:07.201225+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mind_control_history::warning::morning": {
@@ -893,7 +1115,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577253+00:00",
+      "updated": "2026-08-07T20:03:07.201230+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mind_control_history::warning::afternoon": {
@@ -901,7 +1125,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577257+00:00",
+      "updated": "2026-08-07T20:03:07.201235+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mind_control_history::warning::evening": {
@@ -909,7 +1135,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577262+00:00",
+      "updated": "2026-08-07T20:03:07.201240+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "mind_control_history::question_hook::morning": {
@@ -917,7 +1145,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577268+00:00",
+      "updated": "2026-08-07T20:03:07.201246+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mind_control_history::question_hook::afternoon": {
@@ -925,7 +1155,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577274+00:00",
+      "updated": "2026-08-07T20:03:07.201251+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mind_control_history::question_hook::evening": {
@@ -933,7 +1165,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577279+00:00",
+      "updated": "2026-08-07T20:03:07.201256+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "mind_control_history::red_flag::morning": {
@@ -941,7 +1175,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577284+00:00",
+      "updated": "2026-08-07T20:03:07.201261+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "mind_control_history::red_flag::afternoon": {
@@ -949,7 +1185,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577288+00:00",
+      "updated": "2026-08-07T20:03:07.201266+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "mind_control_history::red_flag::evening": {
@@ -957,7 +1195,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577293+00:00",
+      "updated": "2026-08-07T20:03:07.201273+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "cults::chilling_fact::morning": {
@@ -965,7 +1205,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577298+00:00",
+      "updated": "2026-08-07T20:03:07.201281+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "cults::chilling_fact::afternoon": {
@@ -973,7 +1215,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577302+00:00",
+      "updated": "2026-08-07T20:03:07.201286+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "cults::chilling_fact::evening": {
@@ -981,7 +1225,9 @@
       "rewards": 3.8,
       "sum_sq": 3.61,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577307+00:00",
+      "updated": "2026-08-07T20:03:07.201291+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.95,
       "seeded": true
     },
     "cults::warning::morning": {
@@ -989,7 +1235,9 @@
       "rewards": 3.6,
       "sum_sq": 3.24,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577312+00:00",
+      "updated": "2026-08-07T20:03:07.201297+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.9,
       "seeded": true
     },
     "cults::warning::afternoon": {
@@ -997,7 +1245,9 @@
       "rewards": 3.6,
       "sum_sq": 3.24,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577317+00:00",
+      "updated": "2026-08-07T20:03:07.201302+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.9,
       "seeded": true
     },
     "cults::warning::evening": {
@@ -1005,7 +1255,9 @@
       "rewards": 3.6,
       "sum_sq": 3.24,
       "n": 4,
-      "updated": "2026-08-07T19:21:20.577321+00:00",
+      "updated": "2026-08-07T20:03:07.201312+00:00",
+      "prior_n": 4,
+      "prior_mean": 0.9,
       "seeded": true
     },
     "cults::red_flag::morning": {
@@ -1013,7 +1265,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577326+00:00",
+      "updated": "2026-08-07T20:03:07.201318+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "cults::red_flag::afternoon": {
@@ -1021,7 +1275,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577330+00:00",
+      "updated": "2026-08-07T20:03:07.201326+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "cults::red_flag::evening": {
@@ -1029,7 +1285,9 @@
       "rewards": 2.55,
       "sum_sq": 2.1675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577335+00:00",
+      "updated": "2026-08-07T20:03:07.201331+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.85,
       "seeded": true
     },
     "cults::plot_twist::morning": {
@@ -1037,7 +1295,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577340+00:00",
+      "updated": "2026-08-07T20:03:07.201339+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "cults::plot_twist::afternoon": {
@@ -1045,7 +1305,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577346+00:00",
+      "updated": "2026-08-07T20:03:07.201344+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "cults::plot_twist::evening": {
@@ -1053,7 +1315,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577351+00:00",
+      "updated": "2026-08-07T20:03:07.201349+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "cults::question_hook::morning": {
@@ -1061,7 +1325,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577355+00:00",
+      "updated": "2026-08-07T20:03:07.201354+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "cults::question_hook::afternoon": {
@@ -1069,7 +1335,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577360+00:00",
+      "updated": "2026-08-07T20:03:07.201359+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "cults::question_hook::evening": {
@@ -1077,7 +1345,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577365+00:00",
+      "updated": "2026-08-07T20:03:07.201364+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "cults::case_file::morning": {
@@ -1085,7 +1355,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577370+00:00",
+      "updated": "2026-08-07T20:03:07.201370+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "cults::case_file::afternoon": {
@@ -1093,7 +1365,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577380+00:00",
+      "updated": "2026-08-07T20:03:07.201375+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "cults::case_file::evening": {
@@ -1101,7 +1375,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577384+00:00",
+      "updated": "2026-08-07T20:03:07.201380+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "cults::confession::morning": {
@@ -1109,7 +1385,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577389+00:00",
+      "updated": "2026-08-07T20:03:07.201385+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "cults::confession::afternoon": {
@@ -1117,7 +1395,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577394+00:00",
+      "updated": "2026-08-07T20:03:07.201390+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "cults::confession::evening": {
@@ -1125,7 +1405,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577398+00:00",
+      "updated": "2026-08-07T20:03:07.201395+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "cults::timeline::morning": {
@@ -1133,7 +1415,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577403+00:00",
+      "updated": "2026-08-07T20:03:07.201400+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "cults::timeline::afternoon": {
@@ -1141,7 +1425,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577407+00:00",
+      "updated": "2026-08-07T20:03:07.201406+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "cults::timeline::evening": {
@@ -1149,7 +1435,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577412+00:00",
+      "updated": "2026-08-07T20:03:07.201411+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "interrogation::question_hook::morning": {
@@ -1157,7 +1445,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577417+00:00",
+      "updated": "2026-08-07T20:03:07.201416+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "interrogation::question_hook::afternoon": {
@@ -1165,7 +1455,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577421+00:00",
+      "updated": "2026-08-07T20:03:07.201422+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "interrogation::question_hook::evening": {
@@ -1173,7 +1465,9 @@
       "rewards": 2.4,
       "sum_sq": 1.92,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577426+00:00",
+      "updated": "2026-08-07T20:03:07.201427+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.8,
       "seeded": true
     },
     "interrogation::chilling_fact::morning": {
@@ -1181,7 +1475,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577430+00:00",
+      "updated": "2026-08-07T20:03:07.201432+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "interrogation::chilling_fact::afternoon": {
@@ -1189,7 +1485,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577435+00:00",
+      "updated": "2026-08-07T20:03:07.201438+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "interrogation::chilling_fact::evening": {
@@ -1197,7 +1495,9 @@
       "rewards": 2.25,
       "sum_sq": 1.6875,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577441+00:00",
+      "updated": "2026-08-07T20:03:07.201443+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.75,
       "seeded": true
     },
     "interrogation::red_flag::morning": {
@@ -1205,7 +1505,9 @@
       "rewards": 1.95,
       "sum_sq": 1.2675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577446+00:00",
+      "updated": "2026-08-07T20:03:07.201449+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.65,
       "seeded": true
     },
     "interrogation::red_flag::afternoon": {
@@ -1213,7 +1515,9 @@
       "rewards": 1.95,
       "sum_sq": 1.2675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577450+00:00",
+      "updated": "2026-08-07T20:03:07.201454+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.65,
       "seeded": true
     },
     "interrogation::red_flag::evening": {
@@ -1221,7 +1525,9 @@
       "rewards": 1.95,
       "sum_sq": 1.2675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577455+00:00",
+      "updated": "2026-08-07T20:03:07.201460+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.65,
       "seeded": true
     },
     "interrogation::warning::morning": {
@@ -1229,7 +1535,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577460+00:00",
+      "updated": "2026-08-07T20:03:07.201465+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "interrogation::warning::afternoon": {
@@ -1237,7 +1545,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577465+00:00",
+      "updated": "2026-08-07T20:03:07.201470+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "interrogation::warning::evening": {
@@ -1245,7 +1555,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577469+00:00",
+      "updated": "2026-08-07T20:03:07.201475+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "interrogation::case_file::morning": {
@@ -1253,7 +1565,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577474+00:00",
+      "updated": "2026-08-07T20:03:07.201480+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "interrogation::case_file::afternoon": {
@@ -1261,7 +1575,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577478+00:00",
+      "updated": "2026-08-07T20:03:07.201485+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "interrogation::case_file::evening": {
@@ -1269,7 +1585,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577484+00:00",
+      "updated": "2026-08-07T20:03:07.201490+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "interrogation::plot_twist::morning": {
@@ -1277,7 +1595,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577489+00:00",
+      "updated": "2026-08-07T20:03:07.201495+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "interrogation::plot_twist::afternoon": {
@@ -1285,7 +1605,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577493+00:00",
+      "updated": "2026-08-07T20:03:07.201500+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "interrogation::plot_twist::evening": {
@@ -1293,7 +1615,9 @@
       "rewards": 1.5,
       "sum_sq": 0.75,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577499+00:00",
+      "updated": "2026-08-07T20:03:07.201507+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.5,
       "seeded": true
     },
     "interrogation::confession::morning": {
@@ -1301,7 +1625,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577504+00:00",
+      "updated": "2026-08-07T20:03:07.201512+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "interrogation::confession::afternoon": {
@@ -1309,7 +1635,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577509+00:00",
+      "updated": "2026-08-07T20:03:07.201518+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "interrogation::confession::evening": {
@@ -1317,7 +1645,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577513+00:00",
+      "updated": "2026-08-07T20:03:07.201523+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "interrogation::timeline::morning": {
@@ -1325,7 +1655,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577518+00:00",
+      "updated": "2026-08-07T20:03:07.201529+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "interrogation::timeline::afternoon": {
@@ -1333,7 +1665,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577522+00:00",
+      "updated": "2026-08-07T20:03:07.201534+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "interrogation::timeline::evening": {
@@ -1341,7 +1675,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577527+00:00",
+      "updated": "2026-08-07T20:03:07.201539+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "stoic_defense::chilling_fact::morning": {
@@ -1349,7 +1685,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577531+00:00",
+      "updated": "2026-08-07T20:03:07.201546+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "stoic_defense::chilling_fact::afternoon": {
@@ -1357,7 +1695,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577538+00:00",
+      "updated": "2026-08-07T20:03:07.201551+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "stoic_defense::chilling_fact::evening": {
@@ -1365,7 +1705,9 @@
       "rewards": 2.1,
       "sum_sq": 1.47,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577544+00:00",
+      "updated": "2026-08-07T20:03:07.201557+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.7,
       "seeded": true
     },
     "stoic_defense::question_hook::morning": {
@@ -1373,7 +1715,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577548+00:00",
+      "updated": "2026-08-07T20:03:07.201563+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "stoic_defense::question_hook::afternoon": {
@@ -1381,7 +1725,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577553+00:00",
+      "updated": "2026-08-07T20:03:07.201568+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "stoic_defense::question_hook::evening": {
@@ -1389,7 +1735,9 @@
       "rewards": 1.8,
       "sum_sq": 1.08,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577557+00:00",
+      "updated": "2026-08-07T20:03:07.201573+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.6,
       "seeded": true
     },
     "stoic_defense::warning::morning": {
@@ -1397,7 +1745,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577562+00:00",
+      "updated": "2026-08-07T20:03:07.201578+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "stoic_defense::warning::afternoon": {
@@ -1405,7 +1755,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577567+00:00",
+      "updated": "2026-08-07T20:03:07.201583+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "stoic_defense::warning::evening": {
@@ -1413,7 +1765,9 @@
       "rewards": 1.65,
       "sum_sq": 0.9075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577571+00:00",
+      "updated": "2026-08-07T20:03:07.201588+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.55,
       "seeded": true
     },
     "stoic_defense::plot_twist::morning": {
@@ -1421,7 +1775,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577576+00:00",
+      "updated": "2026-08-07T20:03:07.201593+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "stoic_defense::plot_twist::afternoon": {
@@ -1429,7 +1785,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577580+00:00",
+      "updated": "2026-08-07T20:03:07.201600+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "stoic_defense::plot_twist::evening": {
@@ -1437,7 +1795,9 @@
       "rewards": 1.35,
       "sum_sq": 0.6075,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577586+00:00",
+      "updated": "2026-08-07T20:03:07.201605+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.45,
       "seeded": true
     },
     "stoic_defense::red_flag::morning": {
@@ -1445,7 +1805,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577591+00:00",
+      "updated": "2026-08-07T20:03:07.201610+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "stoic_defense::red_flag::afternoon": {
@@ -1453,7 +1815,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577595+00:00",
+      "updated": "2026-08-07T20:03:07.201615+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "stoic_defense::red_flag::evening": {
@@ -1461,7 +1825,9 @@
       "rewards": 1.2,
       "sum_sq": 0.48,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577600+00:00",
+      "updated": "2026-08-07T20:03:07.201620+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.4,
       "seeded": true
     },
     "stoic_defense::timeline::morning": {
@@ -1469,7 +1835,9 @@
       "rewards": 1.05,
       "sum_sq": 0.3675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577604+00:00",
+      "updated": "2026-08-07T20:03:07.201625+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.35,
       "seeded": true
     },
     "stoic_defense::timeline::afternoon": {
@@ -1477,7 +1845,9 @@
       "rewards": 1.05,
       "sum_sq": 0.3675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577609+00:00",
+      "updated": "2026-08-07T20:03:07.201630+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.35,
       "seeded": true
     },
     "stoic_defense::timeline::evening": {
@@ -1485,7 +1855,9 @@
       "rewards": 1.05,
       "sum_sq": 0.3675,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577613+00:00",
+      "updated": "2026-08-07T20:03:07.201635+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.35,
       "seeded": true
     },
     "stoic_defense::confession::morning": {
@@ -1493,7 +1865,9 @@
       "rewards": 0.9,
       "sum_sq": 0.27,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577618+00:00",
+      "updated": "2026-08-07T20:03:07.201640+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.3,
       "seeded": true
     },
     "stoic_defense::confession::afternoon": {
@@ -1501,7 +1875,9 @@
       "rewards": 0.9,
       "sum_sq": 0.27,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577624+00:00",
+      "updated": "2026-08-07T20:03:07.201647+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.3,
       "seeded": true
     },
     "stoic_defense::confession::evening": {
@@ -1509,7 +1885,9 @@
       "rewards": 0.9,
       "sum_sq": 0.27,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577630+00:00",
+      "updated": "2026-08-07T20:03:07.201652+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.3,
       "seeded": true
     },
     "stoic_defense::case_file::morning": {
@@ -1517,7 +1895,9 @@
       "rewards": 0.9,
       "sum_sq": 0.27,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577635+00:00",
+      "updated": "2026-08-07T20:03:07.201657+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.3,
       "seeded": true
     },
     "stoic_defense::case_file::afternoon": {
@@ -1525,7 +1905,9 @@
       "rewards": 0.9,
       "sum_sq": 0.27,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577639+00:00",
+      "updated": "2026-08-07T20:03:07.201662+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.3,
       "seeded": true
     },
     "stoic_defense::case_file::evening": {
@@ -1533,7 +1915,9 @@
       "rewards": 0.9,
       "sum_sq": 0.27,
       "n": 3,
-      "updated": "2026-08-07T19:21:20.577644+00:00",
+      "updated": "2026-08-07T20:03:07.201667+00:00",
+      "prior_n": 3,
+      "prior_mean": 0.3,
       "seeded": true
     }
   },
@@ -1556,6 +1940,16 @@
       "ts": "2026-08-07T19:36:17.537627+00:00",
       "source": "seeded_priors",
       "arms_seeded": 0
+    },
+    {
+      "ts": "2026-08-07T20:02:54.884392+00:00",
+      "source": "seeded_priors",
+      "arms_seeded": 9
+    },
+    {
+      "ts": "2026-08-07T20:03:07.201670+00:00",
+      "source": "seeded_priors",
+      "arms_seeded": 192
     }
   ]
 }
