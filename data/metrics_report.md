@@ -1,44 +1,32 @@
 # 📊 Cognitive Dark — Metrics Report
 
-*Updated: 2026-08-08T11:32:37.288955+00:00*
+*Updated: 2026-08-08T16:33:34.374572+00:00*
 
-**ML:** 60 arms · 2 videos · 4 attributed · 4 rewards · 3 penalties
+**ML:** 0 arms · 0 videos · 0 attributed · 0 rewards · 0 penalties
 
-**Best formulas:** cults/question_hook (0.698), cults/question_hook (0.698), cults/question_hook (0.698), cults/chilling_fact (0.614), cults/chilling_fact (0.614)
+**Best formulas:** none yet
 
-**Videos credited this run:** 1
+**Videos credited this run:** 0
 
 ```json
 {
   "youtube": {
-    "subs": 0,
+    "subs": 3,
     "watch_hours": 0,
     "shorts_views_90d": 0,
-    "last_growth": -7,
+    "views": 135,
+    "videos": 9,
+    "last_growth": 0,
     "pct": {
-      "subs": 0.0,
+      "subs": 0.3,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
     "daily_targets": {
       "subs": 33,
       "shorts_views": 333333
-    },
-    "views": 0,
-    "videos": 7
-  },
-  "instagram": {
-    "followers": 1,
-    "plays_60d": 0,
-    "days_active": 0,
-    "pct": {
-      "followers": 0.2
-    },
-    "daily_targets": {
-      "followers": 16
     }
   },
-  "last_updated": "2026-08-08T11:32:36.965607+00:00",
   "facebook": {
     "followers": 513,
     "minutes_60d": 0,
@@ -52,6 +40,18 @@
       "followers": 149,
       "minutes": 2000
     }
-  }
+  },
+  "instagram": {
+    "followers": 1,
+    "plays_60d": 0,
+    "days_active": 0,
+    "pct": {
+      "followers": 0.2
+    },
+    "daily_targets": {
+      "followers": 16
+    }
+  },
+  "last_updated": "2026-08-08T16:33:34.373530+00:00"
 }
 ```
