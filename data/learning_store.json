@@ -451,11 +451,11 @@
       "seeded": true
     },
     "brainwashing_myths::chilling_fact::morning": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.496,
-      "sum_sq": 0.246,
-      "n": 1,
-      "updated": "2026-08-08T10:45:13.043847+00:00",
+      "sum_sq": 6.246,
+      "n": 4,
+      "updated": "2026-08-08T11:31:58.872598+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -599,6 +599,314 @@
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
+    },
+    "cults::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196457+00:00"
+    },
+    "cults::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196472+00:00"
+    },
+    "cults::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196477+00:00"
+    },
+    "cults::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196480+00:00"
+    },
+    "con_artists::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196492+00:00"
+    },
+    "con_artists::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196500+00:00"
+    },
+    "con_artists::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196502+00:00"
+    },
+    "con_artists::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196505+00:00"
+    },
+    "con_artists::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196507+00:00"
+    },
+    "mind_control_history::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196512+00:00"
+    },
+    "mind_control_history::question_hook::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196518+00:00"
+    },
+    "mind_control_history::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196520+00:00"
+    },
+    "mind_control_history::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196522+00:00"
+    },
+    "mind_control_history::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196525+00:00"
+    },
+    "mind_control_history::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196527+00:00"
+    },
+    "mind_control_history::red_flag::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196529+00:00"
+    },
+    "interrogation::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196532+00:00"
+    },
+    "interrogation::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196539+00:00"
+    },
+    "interrogation::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196542+00:00"
+    },
+    "interrogation::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196544+00:00"
+    },
+    "interrogation::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196546+00:00"
+    },
+    "interrogation::red_flag::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196549+00:00"
+    },
+    "coercive_control::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196551+00:00"
+    },
+    "coercive_control::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196561+00:00"
+    },
+    "coercive_control::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196563+00:00"
+    },
+    "coercive_control::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196565+00:00"
+    },
+    "mass_psychology::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196571+00:00"
+    },
+    "mass_psychology::chilling_fact::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196574+00:00"
+    },
+    "mass_psychology::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196579+00:00"
+    },
+    "mass_psychology::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196581+00:00"
+    },
+    "mass_psychology::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196583+00:00"
+    },
+    "mass_psychology::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196585+00:00"
+    },
+    "brainwashing_myths::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196590+00:00"
+    },
+    "brainwashing_myths::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196597+00:00"
+    },
+    "brainwashing_myths::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196599+00:00"
+    },
+    "brainwashing_myths::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196602+00:00"
+    },
+    "brainwashing_myths::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196604+00:00"
+    },
+    "brainwashing_myths::red_flag::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196606+00:00"
+    },
+    "stoic_defense::case_file::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196609+00:00"
+    },
+    "stoic_defense::warning::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196616+00:00"
+    },
+    "stoic_defense::plot_twist::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196618+00:00"
+    },
+    "stoic_defense::timeline::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196621+00:00"
+    },
+    "stoic_defense::confession::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196624+00:00"
+    },
+    "stoic_defense::red_flag::morning": {
+      "plays": 0,
+      "rewards": 0.0,
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-08T11:27:05.196626+00:00"
     }
   },
   "videos": [
@@ -625,6 +933,18 @@
       "source": "template",
       "run_id": "20260808T005427",
       "ts": "2026-08-08T00:59:25.397483+00:00"
+    },
+    {
+      "title": "What Real Coercive Persuasion Requires | Coercion Files",
+      "hook": "What Real Coercive Persuasion Requires",
+      "pillar": "brainwashing_myths",
+      "hook_style": "chilling_fact",
+      "arm_key": "brainwashing_myths::chilling_fact::morning",
+      "text_sha": "035c82cd4afacae5dbb311fe209bdcc4a11b8e5c3c2e255032992f0e46828339",
+      "text": "What Real Coercive Persuasion Requires The detail nobody noticed was the warning. Here's how it actually works. Your brain takes a mental shortcut every single time — and that shortcut is exactly what gets exploited. Cognitive research shows your brain prefers the easy answer — and that preference is exactly what gets used against you. What makes it dangerous is how ordinary it looks. But now that you've seen it, you'll start noticing it everywhere. Follow Coercion Files — coercion decoded, daily.",
+      "source": "template",
+      "run_id": "20260808T112705",
+      "ts": "2026-08-08T11:31:38.925907+00:00"
     }
   ],
   "attribution": {
@@ -672,6 +992,20 @@
       "title": "Why Leaving Is the Most Dangerous Time | Coercion Files",
       "ts": "2026-08-08T00:59:38.690931+00:00",
       "credited": false
+    },
+    "_KPU_xyezCc": {
+      "arm_key": "brainwashing_myths::chilling_fact::morning",
+      "platform": "youtube",
+      "title": "What Real Coercive Persuasion Requires | Coercion Files",
+      "ts": "2026-08-08T11:31:46.551782+00:00",
+      "credited": false
+    },
+    "1042706025044090": {
+      "arm_key": "brainwashing_myths::chilling_fact::morning",
+      "platform": "facebook",
+      "title": "What Real Coercive Persuasion Requires | Coercion Files",
+      "ts": "2026-08-08T11:31:58.444841+00:00",
+      "credited": false
     }
   },
   "post_log": {
@@ -687,12 +1021,12 @@
     },
     "2026-08-08": {
       "youtube": {
-        "count": 1,
-        "last_ts": "2026-08-08T00:59:29.808874+00:00"
+        "count": 2,
+        "last_ts": "2026-08-08T11:31:46.550497+00:00"
       },
       "facebook": {
-        "count": 1,
-        "last_ts": "2026-08-08T00:59:38.688700+00:00"
+        "count": 2,
+        "last_ts": "2026-08-08T11:31:58.443569+00:00"
       }
     }
   },
@@ -710,6 +1044,13 @@
       "reason": "low_metrics:XHpTdP16eJE",
       "penalty": -1.0,
       "platform": "youtube"
+    },
+    {
+      "ts": "2026-08-08T11:31:58.869688+00:00",
+      "arm": "brainwashing_myths::chilling_fact::morning",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0,
+      "platform": "instagram"
     }
   ],
   "reward_log": [
@@ -740,24 +1081,38 @@
       "reason": "facebook_published",
       "reward": 1.0,
       "platform": "facebook"
+    },
+    {
+      "ts": "2026-08-08T11:31:58.871254+00:00",
+      "arm": "brainwashing_myths::chilling_fact::morning",
+      "reason": "youtube_published",
+      "reward": 1.0,
+      "platform": "youtube"
+    },
+    {
+      "ts": "2026-08-08T11:31:58.872603+00:00",
+      "arm": "brainwashing_myths::chilling_fact::morning",
+      "reason": "facebook_published",
+      "reward": 1.0,
+      "platform": "facebook"
     }
   ],
   "health": {
     "youtube": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-08T00:59:29.806300+00:00"
+      "last_check": "2026-08-08T11:31:46.548053+00:00"
     },
     "facebook": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-08T00:59:38.686017+00:00"
+      "last_check": "2026-08-08T11:31:58.442029+00:00"
     },
     "instagram": {
-      "failures": 2,
-      "healthy": true,
-      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"AxyETLWk704gN8QtLH04M7P\"}}",
-      "last_check": "2026-08-08T00:59:39.293938+00:00"
+      "failures": 3,
+      "healthy": false,
+      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"AXzuFe2mSFMQSdAwPe--CLK\"}}",
+      "last_check": "2026-08-08T11:31:58.868128+00:00"
     }
   },
   "model_version": 3,
@@ -795,5 +1150,27 @@
       "arms_seeded": 60
     }
   ],
-  "platform_arms": {}
+  "platform_arms": {
+    "instagram": {
+      "brainwashing_myths::chilling_fact::morning": {
+        "n": 1,
+        "rewards": -2.0,
+        "sum_sq": 4.0
+      }
+    },
+    "youtube": {
+      "brainwashing_myths::chilling_fact::morning": {
+        "n": 1,
+        "rewards": 1.0,
+        "sum_sq": 1.0
+      }
+    },
+    "facebook": {
+      "brainwashing_myths::chilling_fact::morning": {
+        "n": 1,
+        "rewards": 1.0,
+        "sum_sq": 1.0
+      }
+    }
+  }
 }
