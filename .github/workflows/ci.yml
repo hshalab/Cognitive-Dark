@@ -47,3 +47,8 @@ jobs:
         env:
           PYTHONPATH: src
         run: pytest -q tests
+
+      - name: Pipeline selftest (renders a real video)
+        env:
+          PYTHONPATH: src
+        run: python src/main.py --selftest

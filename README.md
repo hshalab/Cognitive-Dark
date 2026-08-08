@@ -1,9 +1,25 @@
-# 🧠 Cognitive Dark V2.1 — ML Multi-Platform Growth Engine
+# 🧠 Cognitive Dark V3 — Mature ML Multi-Platform Growth Engine
 
-**YouTube + Facebook + Instagram** automation system for the Cognitive Dark channel.
-**Machine-learning-driven, multi-platform, self-repairing** — V2 was a complete rebuild
-of V1, and V2.1 is a full audit-driven hardening pass: every critical bug fixed and the
-ML loop upgraded so the system *genuinely* learns from real analytics.
+**YouTube + Facebook + Instagram** automation system for the Cognitive Dark / Coercion
+Files channel. **Machine-learning-driven, multi-platform, self-repairing** — V3 upgrades
+the bandit to production-grade Bayesian online learning that also learns from real
+top-channel competitor patterns (not just your own videos).
+
+## 🆕 V3 — Mature ML (2026-08-08)
+
+- **Bayesian Thompson sampling** (`src/bandit.py`) — posterior per arm, explore/exploit
+  via uncertainty; UCB1 still available as fallback
+- **Market intelligence** (`src/market_intel.py`) — learns pillar/hook priors from real
+  top-channel competitor titles in `data/competitor_seed.txt` (67 viral patterns);
+  live YouTube search when `YOUTUBE_API_KEY` is set
+- **Multi-signal reward** (`src/reward.py`) — retention 34% + completion 16% +
+  engagement 22% + views 14% + CTR 9% + voice quality 5%
+- **Per-platform learning** — YouTube/FB/Instagram now learn separately
+- **Strategy director** (`src/strategy_director.py`) — auto-tunes epsilon, voice
+  speed, pillar weights, posting gap from rolling results
+- **ML diagnostics** (`src/ml_diagnostics.py`) — maturity stage
+  (EXPLORING → LEARNING → CONVERGING → MATURE) + posterior confidence intervals
+- 78 tests, Ruff clean, CI green, full selftest renders a real MP4
 
 ## 🆕 V2.1 — Audit Fix Pass (2026-08-04)
 
