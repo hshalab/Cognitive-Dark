@@ -1,18 +1,28 @@
 {
   "youtube": {
-    "subs": 7,
+    "subs": 0,
     "watch_hours": 0,
     "shorts_views_90d": 0,
-    "last_growth": 0,
+    "last_growth": -7,
     "pct": {
+<<<<<<< Updated upstream
       "subs": 0.7,
+=======
+      "subs": 0.0,
+>>>>>>> Stashed changes
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
     "daily_targets": {
       "subs": 33,
       "shorts_views": 333333
+<<<<<<< Updated upstream
     }
+=======
+    },
+    "views": 0,
+    "videos": 7
+>>>>>>> Stashed changes
   },
   "instagram": {
     "followers": 1,
@@ -25,6 +35,7 @@
       "followers": 16
     }
   },
+<<<<<<< Updated upstream
   "last_updated": "2026-08-08T11:31:58.878800+00:00",
   "facebook": {
     "followers": 523,
@@ -32,6 +43,16 @@
     "uploads_30d": 0,
     "pct": {
       "followers": 10.5,
+=======
+  "last_updated": "2026-08-08T11:32:36.965607+00:00",
+  "facebook": {
+    "followers": 513,
+    "minutes_60d": 0,
+    "uploads_30d": 0,
+    "last_growth": 0,
+    "pct": {
+      "followers": 10.3,
+>>>>>>> Stashed changes
       "minutes": 0.0
     },
     "daily_targets": {

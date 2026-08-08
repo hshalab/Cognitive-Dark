@@ -152,10 +152,10 @@
     },
     "coercive_control::red_flag::morning": {
       "plays": 0,
-      "rewards": 2.188,
-      "sum_sq": 1.1968,
-      "n": 4,
-      "updated": "2026-08-08T10:45:13.043589+00:00",
+      "rewards": 1.1880000000000002,
+      "sum_sq": 2.1968,
+      "n": 5,
+      "updated": "2026-08-08T11:32:37.286449+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -984,7 +984,24 @@
       "platform": "youtube",
       "title": "Why Leaving Is the Most Dangerous Time | Coercion Files",
       "ts": "2026-08-08T00:59:29.811080+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 112,
+        "likes": 2,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "reward": 0.49,
+      "breakdown": {
+        "retention": 0.0,
+        "completion": 0.0,
+        "engagement_rate": 0.0179,
+        "view_score": 0.342,
+        "ctr": 0.0,
+        "voice_rating": 1.0,
+        "reward": 0.49
+      },
+      "credited_at": "2026-08-08T11:32:37.286428+00:00"
     },
     "4488530891436375": {
       "arm_key": "coercive_control::red_flag::morning",
@@ -1046,11 +1063,19 @@
       "platform": "youtube"
     },
     {
+<<<<<<< Updated upstream
       "ts": "2026-08-08T11:31:58.869688+00:00",
       "arm": "brainwashing_myths::chilling_fact::morning",
       "reason": "instagram_upload_failed",
       "penalty": -2.0,
       "platform": "instagram"
+=======
+      "ts": "2026-08-08T11:32:37.286455+00:00",
+      "arm": "coercive_control::red_flag::morning",
+      "reason": "low_metrics:ZSmz-V3NUhA",
+      "penalty": -1.0,
+      "platform": "youtube"
+>>>>>>> Stashed changes
     }
   ],
   "reward_log": [
@@ -1151,6 +1176,7 @@
     }
   ],
   "platform_arms": {
+<<<<<<< Updated upstream
     "instagram": {
       "brainwashing_myths::chilling_fact::morning": {
         "n": 1,
@@ -1169,6 +1195,12 @@
       "brainwashing_myths::chilling_fact::morning": {
         "n": 1,
         "rewards": 1.0,
+=======
+    "youtube": {
+      "coercive_control::red_flag::morning": {
+        "n": 1,
+        "rewards": -1.0,
+>>>>>>> Stashed changes
         "sum_sq": 1.0
       }
     }
