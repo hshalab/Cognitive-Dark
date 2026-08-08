@@ -31,11 +31,11 @@
       "seeded": true
     },
     "coercive_control::red_flag::morning": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 7.8,
-      "sum_sq": 10.14,
-      "n": 6,
-      "updated": "2026-08-07T20:03:07.200588+00:00",
+      "sum_sq": 16.14,
+      "n": 9,
+      "updated": "2026-08-08T00:59:39.301392+00:00",
       "prior_n": 6,
       "prior_mean": 1.3,
       "seeded": true
@@ -1933,6 +1933,18 @@
       "source": "template",
       "run_id": "20260807T213351",
       "ts": "2026-08-07T21:38:29.233559+00:00"
+    },
+    {
+      "title": "Why Leaving Is the Most Dangerous Time | Coercion Files",
+      "hook": "Why Leaving Is the Most Dangerous Time",
+      "pillar": "coercive_control",
+      "hook_style": "red_flag",
+      "arm_key": "coercive_control::red_flag::morning",
+      "text_sha": "498c8e710d09423a417ca681003966499b4873ed655351dac1120dc57a67d1dc",
+      "text": "Why Leaving Is the Most Dangerous Time Three signs. In order. Every single time. Here's how it actually works. Your brain takes a mental shortcut every single time — and that shortcut is exactly what gets exploited. Research into human behavior confirms it: familiarity breeds acceptance. The more you hear something, the more true it feels. The scariest part? It works silently. No raised voice, no threats — just a pattern repeated until it feels normal. That's the real danger. Follow Coercion Files for the psychology they don't teach you in school.",
+      "source": "template",
+      "run_id": "20260808T005427",
+      "ts": "2026-08-08T00:59:25.397483+00:00"
     }
   ],
   "attribution": {
@@ -1949,6 +1961,20 @@
       "title": "Financial Abuse: Control Through Money | Coercion Files",
       "ts": "2026-08-07T21:38:45.248253+00:00",
       "credited": false
+    },
+    "ZSmz-V3NUhA": {
+      "arm_key": "coercive_control::red_flag::morning",
+      "platform": "youtube",
+      "title": "Why Leaving Is the Most Dangerous Time | Coercion Files",
+      "ts": "2026-08-08T00:59:29.811080+00:00",
+      "credited": false
+    },
+    "4488530891436375": {
+      "arm_key": "coercive_control::red_flag::morning",
+      "platform": "facebook",
+      "title": "Why Leaving Is the Most Dangerous Time | Coercion Files",
+      "ts": "2026-08-08T00:59:38.690931+00:00",
+      "credited": false
     }
   },
   "post_log": {
@@ -1961,12 +1987,29 @@
         "count": 1,
         "last_ts": "2026-08-07T21:38:45.246089+00:00"
       }
+    },
+    "2026-08-08": {
+      "youtube": {
+        "count": 1,
+        "last_ts": "2026-08-08T00:59:29.808874+00:00"
+      },
+      "facebook": {
+        "count": 1,
+        "last_ts": "2026-08-08T00:59:38.688700+00:00"
+      }
     }
   },
   "penalty_log": [
     {
       "ts": "2026-08-07T21:38:45.894187+00:00",
       "arm": "coercive_control::warning::evening",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0,
+      "platform": "instagram"
+    },
+    {
+      "ts": "2026-08-08T00:59:39.296463+00:00",
+      "arm": "coercive_control::red_flag::morning",
       "reason": "instagram_upload_failed",
       "penalty": -2.0,
       "platform": "instagram"
@@ -1986,24 +2029,38 @@
       "reason": "facebook_published",
       "reward": 1.0,
       "platform": "facebook"
+    },
+    {
+      "ts": "2026-08-08T00:59:39.298982+00:00",
+      "arm": "coercive_control::red_flag::morning",
+      "reason": "youtube_published",
+      "reward": 1.0,
+      "platform": "youtube"
+    },
+    {
+      "ts": "2026-08-08T00:59:39.301398+00:00",
+      "arm": "coercive_control::red_flag::morning",
+      "reason": "facebook_published",
+      "reward": 1.0,
+      "platform": "facebook"
     }
   ],
   "health": {
     "youtube": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-07T21:38:33.897150+00:00"
+      "last_check": "2026-08-08T00:59:29.806300+00:00"
     },
     "facebook": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-07T21:38:45.243782+00:00"
+      "last_check": "2026-08-08T00:59:38.686017+00:00"
     },
     "instagram": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"A4X5YGrYv3ThQIE7CCfuj4V\"}}",
-      "last_check": "2026-08-07T21:38:45.891906+00:00"
+      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"AxyETLWk704gN8QtLH04M7P\"}}",
+      "last_check": "2026-08-08T00:59:39.293938+00:00"
     }
   },
   "model_version": 3,
@@ -2037,6 +2094,11 @@
         "n": 1,
         "rewards": -2.0,
         "sum_sq": 4.0
+      },
+      "coercive_control::red_flag::morning": {
+        "n": 1,
+        "rewards": -2.0,
+        "sum_sq": 4.0
       }
     },
     "youtube": {
@@ -2044,10 +2106,20 @@
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
+      },
+      "coercive_control::red_flag::morning": {
+        "n": 1,
+        "rewards": 1.0,
+        "sum_sq": 1.0
       }
     },
     "facebook": {
       "coercive_control::warning::evening": {
+        "n": 1,
+        "rewards": 1.0,
+        "sum_sq": 1.0
+      },
+      "coercive_control::red_flag::morning": {
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
