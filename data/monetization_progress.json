@@ -3,30 +3,7 @@
     "subs": 7,
     "watch_hours": 0,
     "shorts_views_90d": 0,
-<<<<<<< Updated upstream
-=======
-    "views": 0,
-    "videos": 6,
     "last_growth": 0,
->>>>>>> Stashed changes
-    "pct": {
-      "subs": 0.7,
-      "watch_hours": 0.0,
-      "shorts_views": 0.0
-    },
-    "daily_targets": {
-      "subs": 33,
-      "shorts_views": 333333
-    }
-  },
-  "facebook": {
-    "followers": 523,
-    "minutes_60d": 0,
-    "uploads_30d": 0,
-<<<<<<< Updated upstream
-=======
-    "last_growth": 0,
->>>>>>> Stashed changes
     "pct": {
       "followers": 10.5,
       "minutes": 0.0
@@ -47,9 +24,5 @@
       "followers": 16
     }
   },
-<<<<<<< Updated upstream
-  "last_updated": "2026-08-08T00:59:39.309793+00:00"
-=======
   "last_updated": "2026-08-08T01:00:13.126104+00:00"
->>>>>>> Stashed changes
 }
