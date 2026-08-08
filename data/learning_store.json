@@ -22,10 +22,10 @@
     },
     "coercive_control::warning::evening": {
       "plays": 1,
-      "rewards": 8.1,
-      "sum_sq": 16.935000000000002,
-      "n": 9,
-      "updated": "2026-08-07T21:38:45.898676+00:00",
+      "rewards": 7.1,
+      "sum_sq": 17.935000000000002,
+      "n": 10,
+      "updated": "2026-08-08T01:00:13.510923+00:00",
       "prior_n": 6,
       "prior_mean": 1.35,
       "seeded": true
@@ -1953,7 +1953,24 @@
       "platform": "youtube",
       "title": "Financial Abuse: Control Through Money | Coercion Files",
       "ts": "2026-08-07T21:38:33.901661+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "reward": 0.15,
+      "breakdown": {
+        "retention": 0.0,
+        "completion": 0.0,
+        "engagement_rate": 0.0,
+        "view_score": 0.0,
+        "ctr": 0.0,
+        "voice_rating": 1.0,
+        "reward": 0.15
+      },
+      "credited_at": "2026-08-08T01:00:13.510902+00:00"
     },
     "1362174678744068": {
       "arm_key": "coercive_control::warning::evening",
@@ -2008,11 +2025,19 @@
       "platform": "instagram"
     },
     {
+<<<<<<< Updated upstream
       "ts": "2026-08-08T00:59:39.296463+00:00",
       "arm": "coercive_control::red_flag::morning",
       "reason": "instagram_upload_failed",
       "penalty": -2.0,
       "platform": "instagram"
+=======
+      "ts": "2026-08-08T01:00:13.510930+00:00",
+      "arm": "coercive_control::warning::evening",
+      "reason": "low_metrics:XHpTdP16eJE",
+      "penalty": -1.0,
+      "platform": "youtube"
+>>>>>>> Stashed changes
     }
   ],
   "reward_log": [
@@ -2103,6 +2128,7 @@
     },
     "youtube": {
       "coercive_control::warning::evening": {
+<<<<<<< Updated upstream
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
@@ -2111,6 +2137,11 @@
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
+=======
+        "n": 2,
+        "rewards": 0.0,
+        "sum_sq": 2.0
+>>>>>>> Stashed changes
       }
     },
     "facebook": {
