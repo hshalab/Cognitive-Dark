@@ -86,6 +86,38 @@ def save_competitor_videos(videos: list[dict]) -> None:
         json.dumps(videos, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+def load_competitor_titles(path: Path | str | None = None) -> list[str]:
+    """Load real competitor titles from data/competitor_seed.txt.
+
+    One title per line; lines starting with # and blank lines are ignored.
+    These are ACTUAL top-channel / viral-shorts titles from the niche used
+    to derive hook/pillar frequencies — NOT fabricated view counts.
+    """
+    seed = Path(path) if path else DATA_DIR / "competitor_seed.txt"
+    if not seed.exists():
+        return []
+    titles = []
+    for line in seed.read_text(encoding="utf-8").splitlines():
+        t = line.strip()
+        if t and not t.startswith("#"):
+            titles.append(t)
+    return titles
+
+
+def titles_to_videos(titles: list[str]) -> list[dict]:
+    """Convert bare competitor titles to pseudo-video dicts for analysis.
+
+    We don't fabricate view counts; instead every title carries equal unit
+    weight and the analysis learns from PATTERN FREQUENCY — how often each
+    pillar/hook/style appears across top-channel titles. Buckets with more
+    titles get higher confidence (higher n) and a frequency-derived score.
+    """
+    return [{"video_id": f"seed-{i}", "title": t, "view_count": 1,
+             "like_count": 0, "comment_count": 0, "duration_seconds": 45,
+             "published_at": "", "query": "competitor_seed"}
+            for i, t in enumerate(titles)]
+
+
 def fetch_youtube_search(queries: list[str], max_per_query: int = 25) -> list[dict]:
     """YouTube Data API search → top videos with stats (public data only)."""
     api_key = os.environ.get("YOUTUBE_API_KEY", "")
@@ -232,9 +264,33 @@ def _composite_score(v: dict, view_norm: float) -> float:
 # Analysis
 # ─────────────────────────────────────────────────────────────
 def analyze(videos: list[dict] | None = None) -> dict:
-    videos = videos if videos is not None else load_competitor_videos()
-    if not videos:
-        # Fall back to curated patterns so the system has a sane starting point.
+    # Priority: explicit videos > competitor_videos.json (with real stats) >
+    # competitor_seed.txt (real top-channel titles, frequency learning) >
+    # hard-coded curated fallback.
+    if videos is None:
+        videos = load_competitor_videos()
+        source = "competitor_videos"
+        if not videos:
+            titles = load_competitor_titles()
+            if titles:
+                videos = titles_to_videos(titles)
+                source = "competitor_titles"
+        if not videos:
+            return {
+                "source": "curated_patterns",
+                "video_count": 0,
+                "pair_means": [
+                    {"pillar": p, "hook": h, "mean": m, "n": 4}
+                    for (p, h), m in CURATED_PATTERN_PRIORS.items()
+                ],
+                "title_patterns": _curated_title_patterns(),
+                "duration_best_s": 42,
+                "publish_window": {"weekday": "mon-fri", "hour_utc": [11, 16, 21]},
+            }
+    elif videos:
+        source = "provided"
+    else:
+        # Caller passed an explicit empty list — use curated fallback.
         return {
             "source": "curated_patterns",
             "video_count": 0,
@@ -252,12 +308,23 @@ def analyze(videos: list[dict] | None = None) -> dict:
     for f, n in zip(feats, norms, strict=True):
         f["score"] = _composite_score(f, n)
 
-    # Aggregate by (pillar, hook)
+    # When learning from competitor titles (no real view counts), score each
+    # pattern by its FREQUENCY among top-channel titles — the more often a
+    # pillar/hook shows up in winners, the stronger the prior. With real
+    # view stats, the composite score dominates instead.
+    use_views = any(f["views"] > 1 for f in feats)
+    n_total = len(feats) or 1
+    counts: dict[tuple, int] = defaultdict(int)
+    for f in feats:
+        counts[(f["pillar"], f["hook"])] += 1
     bucket: dict[tuple, list[float]] = defaultdict(list)
     for f in feats:
         bucket[(f["pillar"], f["hook"])].append(f["score"])
     pair_means = sorted(
-        ({"pillar": p, "hook": h, "mean": round(sum(s) / len(s), 3), "n": len(s)}
+        ({"pillar": p, "hook": h,
+          "mean": round((sum(s) / len(s)) if use_views
+                        else (0.3 + 0.7 * counts[(p, h)] / n_total), 3),
+          "n": len(s), "count": counts[(p, h)]}
          for (p, h), s in bucket.items()),
         key=lambda x: x["mean"], reverse=True)
 
@@ -272,7 +339,7 @@ def analyze(videos: list[dict] | None = None) -> dict:
     pub = _best_publish_window(videos)
 
     return {
-        "source": "youtube_public_data",
+        "source": source,
         "video_count": len(videos),
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "pair_means": pair_means,
@@ -294,6 +361,8 @@ def _best_len(feats):
     for f in feats:
         b = max(20, min(100, (f["title_len"] // 20) * 20))
         bins[b].append(f["score"])
+    if not bins:
+        return 40
     best = max(bins, key=lambda b: sum(bins[b]) / len(bins[b]))
     return best
 

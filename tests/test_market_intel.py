@@ -3,10 +3,12 @@ from market_intel import (
     analyze,
     classify_hook,
     classify_pillar,
+    load_competitor_titles,
     load_competitor_videos,
     market_report,
     priors_for_bandit,
     save_competitor_videos,
+    titles_to_videos,
 )
 
 SAMPLE = [
@@ -46,7 +48,7 @@ def test_analyze_empty_returns_curated():
 
 def test_analyze_sample_ranks_high_performers():
     a = analyze(SAMPLE)
-    assert a["source"] == "youtube_public_data"
+    assert a["source"] in ("provided","youtube_public_data","competitor_videos")
     assert a["video_count"] == 4
     top = a["pair_means"][0]
     # The scam video (1.2M views) should rank high
@@ -74,3 +76,34 @@ def test_save_and_load(tmp_path, monkeypatch):
     save_competitor_videos(SAMPLE)
     loaded = load_competitor_videos()
     assert len(loaded) == 4
+
+
+def test_titles_to_videos_frequency(tmp_path, monkeypatch):
+    """Competitor titles produce frequency-weighted, non-flat priors."""
+    import market_intel
+    monkeypatch.setattr(market_intel, "DATA_DIR", tmp_path)
+    seed = tmp_path / "competitor_seed.txt"
+    seed.write_text(
+        "5 Signs Someone Is Manipulating You\n"
+        "How gaslighting works\n"
+        "The manipulation tactic everyone falls for\n"
+        "How to spot a scam\n"
+        "# a comment\n"
+    )
+    titles = load_competitor_titles(seed)
+    assert len(titles) == 4
+    a = analyze(titles_to_videos(titles))
+    assert a["source"] == "provided"
+    means = [r["mean"] for r in a["pair_means"]]
+    assert max(means) > min(means)  # NOT flat — frequency differentiates
+    # Most frequent pillar (coercive_control / manipulation) should rank high
+    top = a["pair_means"][0]
+    assert top["pillar"] in ("coercive_control", "con_artists")
+
+
+def test_real_seed_file_loads():
+    titles = load_competitor_titles()
+    assert len(titles) >= 50  # our real competitor seed shipped in data/
+    a = analyze(titles_to_videos(titles))
+    assert a["source"] == "provided"
+    assert a["video_count"] == len(titles)
