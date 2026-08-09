@@ -86,6 +86,13 @@ jobs:
           USER_TOKEN: ${{ inputs.user_token }}
         run: python scripts/find_ig_link.py || true
 
+      - name: IG publish capability probe (real API test)
+        if: ${{ inputs.action == 'ig_diagnose' }}
+        env:
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/test_ig_upload.py || true
+
       - name: Run 3-platform audit
         if: ${{ inputs.action == 'audit' }}
         env:
