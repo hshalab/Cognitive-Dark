@@ -162,7 +162,7 @@ def _parse_script(text: str) -> dict:
 def _template_script(pillar: dict, hook_style: str) -> dict:
     """Offline template bank — randomized forensic human storytelling per pillar."""
     hook = random.choice(pillar["hooks"])
-    
+
     # Forensic narrative setups (Concrete human case anchors)
     narrative_setups = {
         "cults": [
@@ -243,7 +243,7 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "financial chart red drop",
         "cyber security glitch screen dark",
     ]
-    emotions = ["dark", "intense", "chilling", "mysterious", "revelatory"]
+
 
     scenes = [
         {

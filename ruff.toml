@@ -38,6 +38,12 @@ ignore = [
 # Resolution text (1080×1920) uses the multiplication sign on purpose.
 "src/visuals.py" = ["RUF001", "RUF002"]
 "src/auto_repair.py" = ["RUF001"]
+# Long single-line rules inside the LLM SYSTEM_PROMPT are intentional prose
+# (split lines would change what the model receives).
+"src/script_generator.py" = ["E501"]
+# Branding/asset builders: keep readable if/else over ternary for the bg fill,
+# and unused locals from layout scaffolding are harmless.
+"scripts/build_branding_assets.py" = ["SIM108", "F841"]
 
 [lint.isort]
 known-first-party = ["config", "compat", "ml_engine", "seo", "scheduler",

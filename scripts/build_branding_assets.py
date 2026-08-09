@@ -9,9 +9,8 @@ Generates pixel-perfect branding graphics:
   4. Video Watermark / Corner Seal (400x400 transparent PNG)
 """
 
-import math
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
 ROOT = Path(__file__).resolve().parent.parent
 BRAND_DIR = ROOT / "assets" / "branding"
@@ -39,7 +38,7 @@ def load_font(size: int, font_idx: int = 0):
 def build_profile_avatar():
     size = (1024, 1024)
     raw_logo_path = BRAND_DIR / "coercion_files_logo_raw.png"
-    
+
     if raw_logo_path.exists():
         base = Image.open(raw_logo_path).convert("RGBA").resize(size, Image.LANCZOS)
     else:
@@ -50,25 +49,25 @@ def build_profile_avatar():
     # Enhance contrast and add subtle dark vignette
     enhancer = ImageEnhance.Contrast(base)
     base = enhancer.enhance(1.15)
-    
+
     # Overlay outer luxury circular border
     overlay = Image.new("RGBA", size, (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
-    
+
     # Subtle outer ring
     d.ellipse([24, 24, 1000, 1000], outline=(190, 25, 25, 200), width=6)
     d.ellipse([36, 36, 988, 988], outline=(50, 50, 60, 150), width=2)
-    
+
     # Bottom Badge Text "COERCION FILES"
     font_bold = load_font(72, 0)
     text = "COERCION FILES"
     tw = d.textlength(text, font=font_bold)
-    
+
     badge_w = tw + 80
     badge_h = 96
     bx = (1024 - badge_w) / 2
     by = 840
-    
+
     # Badge backdrop
     d.rounded_rectangle([bx, by, bx + badge_w, by + badge_h], radius=18, fill=(10, 10, 14, 235), outline=(190, 25, 25, 255), width=3)
     d.text(((1024 - tw) / 2, by + 12), text, font=font_bold, fill=(255, 255, 255, 255))
@@ -86,7 +85,7 @@ def build_profile_avatar():
 def build_youtube_banner():
     width, height = 2560, 1440
     bg_path = BRAND_DIR / "banner_bg.png"
-    
+
     if bg_path.exists():
         bg = Image.open(bg_path).convert("RGBA").resize((width, height), Image.LANCZOS)
     else:
@@ -95,19 +94,19 @@ def build_youtube_banner():
     # Darken for safe-zone readability
     dim = Image.new("RGBA", (width, height), (0, 0, 0, 160))
     bg = Image.alpha_composite(bg, dim)
-    
+
     overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    
+
     # Safe zone is Y: 508 to 931 (height 423) in center
     cy = 720
-    
+
     # Header classified badge
     badge_font = load_font(42, 1)
     tag_font = load_font(46, 1)
     title_font = load_font(148, 0)
     sub_font = load_font(52, 1)
-    
+
     badge_text = "CLASSIFIED // FORENSIC CASE ARCHIVE"
     bw = draw.textlength(badge_text, font=badge_font)
     draw.rounded_rectangle([(width - bw) / 2 - 30, cy - 180, (width + bw) / 2 + 30, cy - 130],
@@ -145,7 +144,7 @@ def build_youtube_banner():
 def build_facebook_cover():
     width, height = 1640, 624
     bg_path = BRAND_DIR / "banner_bg.png"
-    
+
     if bg_path.exists():
         bg = Image.open(bg_path).convert("RGBA").resize((width, height), Image.LANCZOS)
     else:
@@ -153,18 +152,18 @@ def build_facebook_cover():
 
     dim = Image.new("RGBA", (width, height), (0, 0, 0, 150))
     bg = Image.alpha_composite(bg, dim)
-    
+
     overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    
+
     title_font = load_font(110, 0)
     sub_font = load_font(42, 1)
     tag_font = load_font(34, 1)
-    
+
     # Left aligned layout for Facebook (Profile picture is on left or center on mobile)
     cx = width / 2
     cy = height / 2 - 10
-    
+
     title = "COERCION FILES"
     tw = draw.textlength(title, font=title_font)
     draw.text(((width - tw) / 2 + 4, cy - 80 + 4), title, font=title_font, fill=(0, 0, 0, 230))
@@ -192,18 +191,18 @@ def build_watermark_seal():
     size = (400, 400)
     seal = Image.new("RGBA", size, (0, 0, 0, 0))
     d = ImageDraw.Draw(seal)
-    
+
     # Circular emblem
     d.ellipse([20, 20, 380, 380], outline=(220, 30, 30, 220), width=6)
     d.ellipse([32, 32, 368, 368], outline=(255, 255, 255, 140), width=2)
-    
+
     font = load_font(42, 0)
     t1 = "COERCION"
     t2 = "FILES"
-    
+
     w1 = d.textlength(t1, font=font)
     w2 = d.textlength(t2, font=font)
-    
+
     d.text(((400 - w1) / 2, 135), t1, font=font, fill=(255, 255, 255, 240))
     d.text(((400 - w2) / 2, 195), t2, font=font, fill=(255, 210, 60, 240))
 

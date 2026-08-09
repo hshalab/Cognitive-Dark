@@ -19,7 +19,6 @@ Usage:
 import argparse
 import json
 import logging
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,7 +33,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("master_engine")
 
-from auto_repair import Preflight, RepairJournal, cleanup, selftest
+from auto_repair import Preflight, RepairJournal, cleanup
 from ml_engine import LearningSystem
 from ml_diagnostics import report as ml_report
 from monetization_tracker import update_progress, print_plan
