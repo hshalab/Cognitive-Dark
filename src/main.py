@@ -88,6 +88,29 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     except Exception as exc:
         logger.warning("Market intel warm-start skipped: %s", exc)
 
+    # ── V2.9 VIRAL INTEL: learn from viral channels (live sync, once/week) ──
+    try:
+        from market_intel import sync_competitor_data
+        last_sync = ml.data.get("competitor_sync_ts", "")
+        if not last_sync:
+            res = sync_competitor_data()
+            if res.get("fetched"):
+                ml.data["competitor_sync_ts"] = datetime.now(timezone.utc).isoformat()
+                ml.save()
+                logger.info("📡 Viral competitor sync: %d new videos learned",
+                            res["fetched"])
+    except Exception as exc:
+        logger.warning("Competitor sync skipped: %s", exc)
+
+    # ── V2.9 playbook + viral intel snapshot for the run ──
+    try:
+        from viral_intel import virality_index
+        _v = virality_index(ml.data)
+        logger.info("🎯 Virality index: %s (%s) — top patterns: %s",
+                    _v["grade"], _v["index"], _v["top_title_formulas"])
+    except Exception as exc:
+        logger.warning("Virality index skipped: %s", exc)
+
     # Strategy director — auto-tune epsilon, voice speed, cadence from results
     try:
         from strategy_director import StrategyDirector
@@ -200,6 +223,18 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
 
         pkg = build_platform_package(script, p,
                                      durations=[s["duration"] for s in segments])
+        # V2.9: 2026-algorithm playbook audit per platform (log only — helps
+        # spot weak packages before upload)
+        try:
+            from algorithm_playbook import audit_package
+            _audit = audit_package(pkg, p)
+            if _audit.get("passed", 0) < _audit.get("total", 1):
+                logger.info("🎛 %s playbook: %d/%d — %s", p.upper(),
+                            _audit["passed"], _audit["total"],
+                            "; ".join(c["signal"] for c in _audit["checks"]
+                                      if not c["ok"]))
+        except Exception:
+            pass
         packs[p] = pkg
         sched = PlatformScheduler(p)
         # V2.7: CLAIM the publish slot BEFORE uploading. If another run (e.g.

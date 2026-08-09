@@ -37,5 +37,43 @@
       "followers": 16
     }
   },
-  "last_updated": "2026-08-09T16:33:34.875495+00:00"
+  "last_updated": "2026-08-09T19:49:04.273438+00:00",
+  "milestones": {
+    "youtube": {
+      "milestone": "YT Tier-1 (fan funding)",
+      "pct": 1.4,
+      "needs": {
+        "subs": 500
+      },
+      "have": {
+        "subs": 7
+      }
+    },
+    "facebook": {
+      "milestone": "FB CMP (in-stream ads)",
+      "pct": 0.0,
+      "needs": {
+        "followers": 5000,
+        "minutes_60d": 60000,
+        "uploads_30d": 5
+      },
+      "have": {
+        "followers": 523,
+        "minutes_60d": 0,
+        "uploads_30d": 0
+      }
+    },
+    "instagram": {
+      "milestone": "IG Partner (invite-track)",
+      "pct": 0.0,
+      "needs": {
+        "followers": 500,
+        "plays_60d": 3000000
+      },
+      "have": {
+        "followers": 1,
+        "plays_60d": 0
+      }
+    }
+  }
 }

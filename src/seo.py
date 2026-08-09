@@ -89,24 +89,33 @@ def _power_title(hook: str, max_len: int = 70) -> str:
 
 def _title(script: dict, platform: str) -> str:
     hook = script.get("hook", "") or script.get("title", "")
+    candidates = []
     if platform == "youtube":
         # V2.1.5: SEARCH-INTENT titles. On dormant/legacy channels the feed
         # test-batch is weak, but SEARCH views don't depend on channel history.
         # Always pair the hook with the pillar's top searched query.
-        t = _power_title(hook, 58)
         kw = "psychology facts"
         for p in PILLARS:
             if p["key"] == script.get("pillar"):
                 kw = p["search_terms"][0]
                 break
+        t = _power_title(hook, 58)
+        candidates.append(t[:100])
         if kw.lower() not in t.lower():
-            t = f"{t} | {kw.title()}"
-        return t[:100]
-    if platform == "facebook":
+            candidates.append(f"{t} | {kw.title()}"[:100])
+        # 2-3 variants for the viral scorer to choose between
+        candidates.append(_power_title(f"{hook}: {kw}", 58)[:100])
+        candidates.append(f"{t}: {random.choice(POWER_WORDS)}"[:100])
+    elif platform == "facebook":
         return hook[:58]  # FB feed shows ~58 chars fully
-    if platform == "instagram":
+    elif platform == "instagram":
         return hook[:55]
-    return _power_title(hook, 70)[:100]
+    # V2.9: let the viral-pattern scorer pick the strongest variant
+    try:
+        from viral_intel import pick_title_variant
+        return pick_title_variant(hook, [c for c in candidates if c])
+    except Exception:
+        return (candidates[0] if candidates else _power_title(hook, 70))[:100]
 
 
 def _description(script: dict, platform: str, durations: list = None) -> str:

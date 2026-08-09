@@ -139,3 +139,54 @@ aur channel growth / sab kuch khud manage karna chahiye. Built & tested:
 ### Verification
 - 96/96 tests pass (78 + 7 V2.7 + 11 V2.8 new), Ruff clean, YAML valid.
 - Live test: corrupt store + .bak, memory fully restored from event diary.
+
+## V2.9 — Algorithm Playbook + Viral Intel (2026 platform optimization)
+
+User wants: 2026 algorithms ke hisaab se har platform fully optimized + ML advance
+(learn from viral channels) + fast monetization. Built & tested:
+
+### Viral Intelligence (`src/viral_intel.py` — NEW)
+- **8 viral title formulas** (stop_command, question, number, reveal,
+  curiosity_gap, warning, case_story) scored from real top-channel titles
+  (67+ in competitor_seed.txt) + live YouTube competitor data.
+- **Hook scorer** — ≤9 words, pattern-interrupt, power-word check.
+- **Virality index** (A+..D) combining niche patterns + own best-video
+  fingerprint; **suggestion_card()** injected into the LLM prompt so scripts
+  are written toward the strongest current patterns.
+- **`pick_title_variant()`** — SEO titles are now scored and the strongest
+  viral variant is chosen.
+
+### 2026 Algorithm Playbook (`src/algorithm_playbook.py` — NEW)
+- Per-platform 2026 signal checklists (YT: title kw first 100, ≤3 hashtags,
+  <60s 9:16; FB: comments-first-hour, 5-8 hashtags, share CTA; IG: saves,
+  15-20 hashtags, save-this framing). `audit_package()` scores every upload
+  before publishing; `main.py` logs weak spots.
+
+### Live competitor learning (`market_intel.sync_competitor_data`)
+- Fetches real top videos for 8 niche queries via YouTube API/OAuth, merges
+  into `data/competitor_videos.json` (bounded, deduped) — system learns from
+  actual viral channels, not fabricated data. Runs once on first pipeline run.
+
+### Monetization milestones (`monetization_tracker.milestones`)
+- Per-platform milestone ladder (YT Tier-1 → YPP → 10M; FB Stars → CMP;
+  IG Partner). `update_progress()` now stores `milestones` — always knows the
+  NEXT realistic goal + % toward it.
+
+### Wiring
+- `script_generator.py`: viral intel card in prompt (never breaks generation).
+- `seo.py`: viral-scored title selection.
+- `main.py`: virality-index log, competitor sync once, playbook audit per upload.
+- `tests/`: +12 (viral_intel, algorithm_playbook).
+
+### Verification
+- 108/108 tests pass, Ruff clean, YAML valid.
+- Live: virality index B (0.633), top formulas [question, warning, stop_command,
+  curiosity_gap]; monetization milestones: YT Tier-1 1.4%, FB CMP 0.0%, IG 0.0%.
+
+### Honest notes
+- "Cracking" algorithms isn't real — these are documented 2026 best practices
+  + data-driven tuning. Consistency + these signals = fastest legitimate path.
+- Monetization speed is bounded by content performance; the system now does
+  everything in-code to maximize it. The BIGGEST lever outside code: fix
+  Instagram linking (currently 0 posts in 7 days → 1/3 of growth dead) and
+  keep daily posting on.

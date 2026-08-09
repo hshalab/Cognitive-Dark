@@ -280,11 +280,27 @@ def generate_script(pillar_key: str = None, hook_style: str = None,
                                         f"(score {b['mean']})" for b in best)
                             + ". Weight your choice toward these when relevant.")
 
+    # ── V2.9 VIRAL INTEL: niche ke top title formulas abhi inject karo ──
+    viral_hint = ""
+    try:
+        from viral_intel import suggestion_card
+        card = suggestion_card(ml.data if ml is not None else None)
+        if card.get("title_formulas_to_use"):
+            viral_hint = ("\n\nVIRAL PATTERN INTEL (2026, from top-channel titles): "
+                          "write the TITLE using these formulas — "
+                          + ", ".join(card["title_formulas_to_use"])
+                          + ". Hook rule: " + card["hook_rule"])
+            if card.get("recommendations"):
+                viral_hint += " Advice: " + "; ".join(card["recommendations"][:2])
+    except Exception as exc:  # never break script generation for intel
+        logger.warning("viral intel hint skipped: %s", exc)
+
     prompt = f"""Create a YouTube Short script (45-58 seconds) for the pillar "{pillar['name']}".
 Hook style: {hook_style}.
 Topic: {topic or pillar['name']}.
 Pillar hooks for inspiration: {', '.join(pillar['hooks'][:5])}.
 {learned_hint}
+{viral_hint}
 Write it now — valid JSON only."""
 
     # ── LLM chain ──

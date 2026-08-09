@@ -96,9 +96,53 @@ def update_progress(overrides: dict = None) -> dict:
     with contextlib.suppress(OSError):
         shutil.copy2(PROGRESS_PATH,
                      PROGRESS_PATH.with_suffix(PROGRESS_PATH.suffix + ".bak"))
+    # V2.9: milestone roadmap — the NEXT realistic goal per platform, so the
+    # system always has a near-term target (not just the far 30-day one).
+    prog["milestones"] = milestones(prog)
     with open(PROGRESS_PATH, "w", encoding="utf-8") as fh:
         json.dump(prog, fh, ensure_ascii=False, indent=2)
     return prog
+
+
+# ── V2.9: milestone roadmap (next achievable target per platform) ──
+MILESTONE_LADDER = {
+    "youtube": [
+        ("YT Tier-1 (fan funding)", {"subs": 500}),
+        ("YT YPP (full)", {"subs": 1000, "watch_hours": 4000}),
+        ("YT 10M Shorts views (90d)", {"shorts_views_90d": 10_000_000}),
+    ],
+    "facebook": [
+        ("FB Stars (first money)", {"followers": 500}),
+        ("FB CMP (in-stream ads)", {"followers": 5000, "minutes_60d": 60_000,
+                                    "uploads_30d": 5}),
+    ],
+    "instagram": [
+        ("IG Partner (invite-track)", {"followers": 500, "plays_60d": 3_000_000}),
+    ],
+}
+
+
+def milestones(prog: dict) -> dict:
+    """Pick the next incomplete milestone per platform + % toward it."""
+    out = {}
+    for plat, ladder in MILESTONE_LADDER.items():
+        bucket = prog.get(plat, {})
+        for name, target in ladder:
+            # % = min over the required metrics
+            pcts = []
+            for k, need in target.items():
+                have = float(bucket.get(k, 0) or 0)
+                pcts.append(min(100.0, have / need * 100))
+            pct = round(min(pcts), 1)
+            if pct < 100.0:
+                out[plat] = {"milestone": name, "pct": pct,
+                             "needs": target, "have": {k: bucket.get(k, 0)
+                                                       for k in target}}
+                break
+        else:
+            out[plat] = {"milestone": "COMPLETE 🎉", "pct": 100.0, "needs": {},
+                         "have": {}}
+    return out
 
 
 def print_plan(prog: dict) -> str:

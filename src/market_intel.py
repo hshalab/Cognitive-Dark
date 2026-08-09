@@ -178,6 +178,44 @@ def _iso8601(s: str) -> int:
 
 
 # ─────────────────────────────────────────────────────────────
+def sync_competitor_data(queries: list[str] = None, max_per_query: int = 10,
+                         keep_newest: int = 200) -> dict:
+    """Fetch LIVE top videos from YouTube for the niche and merge them into
+    data/competitor_videos.json (bounded, deduped by video_id).
+
+    V2.9: this is how the system learns "viral channels ke hisaab se" —
+    real, public, current data — without any fabricated stats.
+
+    Returns {"fetched": n, "total_stored": n, "queries": [...]}.
+    """
+    if queries is None:
+        queries = [
+            "cult psychology shorts", "coercive control signs",
+            "con artist psychology", "gaslighting red flags",
+            "mind control history", "how scams work psychology",
+            "stoicism manipulation", "body language lies",
+        ]
+    fetched = fetch_youtube_search(queries, max_per_query=max_per_query)
+    if not fetched:
+        return {"fetched": 0, "total_stored": 0, "queries": queries,
+                "note": "no YouTube key/OAuth — live sync skipped (seed data used)"}
+
+    existing = load_competitor_videos()
+    by_id = {v["video_id"]: v for v in existing if v.get("video_id")}
+    for v in fetched:
+        by_id[v["video_id"]] = v      # newest wins
+    merged = list(by_id.values())
+    # keep the highest-engagement slice (not just newest) when over budget
+    if len(merged) > keep_newest:
+        merged.sort(key=lambda v: (float(v.get("view_count", 0) or 0) +
+                                   10 * float(v.get("like_count", 0) or 0)),
+                    reverse=True)
+        merged = merged[:keep_newest]
+    save_competitor_videos(merged)
+    logger.info("Competitor sync: %d new, %d total stored", len(fetched), len(merged))
+    return {"fetched": len(fetched), "total_stored": len(merged), "queries": queries}
+
+
 # Feature extraction
 # ─────────────────────────────────────────────────────────────
 def _norm_log(values: list[float]) -> list[float]:
