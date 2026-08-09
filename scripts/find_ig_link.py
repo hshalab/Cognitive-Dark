@@ -57,54 +57,74 @@ def main():
         return 1
 
     print("=" * 72)
-    print("🔎 FIND THE IG LINK — saare pages scan")
+    print("🔎 FIND THE IG LINK")
     print("=" * 72)
     print(f"Token: {mask(fb_tok)}\n")
 
-    # 1) All pages under this token
-    code, d = get(f"{GRAPH}/{V}/me/accounts",
-                  {"access_token": fb_tok, "fields": "id,name,category",
-                   "limit": 100})
-    if code != 200:
-        err = d.get("error", {})
-        print(f"❌ /me/accounts failed: {err.get('message', d)}")
-        return 1
-    pages = d.get("data", [])
-    if not pages:
-        print("❌ Token ke under koi page nahi mila.")
-        print("   (token page-token hai? /me/accounts sirf user-token se chalta hai)")
-        return 1
-
-    print(f"✅ {len(pages)} page(s) token ke under mile:\n")
     found = []
-    for p in pages:
-        pid = p["id"]
-        pcode, pd = get(f"{GRAPH}/{V}/{pid}",
+
+    # 1) Try /me/accounts first (user token → lists ALL pages)
+    code, d = get(f"{GRAPH}/{V}/me/accounts",
+                  {"access_token": fb_tok, "fields": "id,name,category", "limit": 100})
+    if code == 200:
+        pages = d.get("data", [])
+        print(f"✅ User-token style: {len(pages)} page(s) under this token:\n")
+        for p in pages:
+            pid = p["id"]
+            pcode, pd = get(f"{GRAPH}/{V}/{pid}",
+                            {"access_token": fb_tok,
+                             "fields": "id,name,instagram_business_account,category"})
+            ig = (pd.get("instagram_business_account") or {}) if pcode == 200 else {}
+            ig_linked = ig.get("id")
+            ig_name = ig.get("username", "")
+            status = (f"✅ IG LINKED → id={ig_linked} (@{ig_name})"
+                      if ig_linked else "❌ koi IG linked nahi")
+            print(f"  Page {pid} — {pd.get('name') if pcode == 200 else '?'}  {status}")
+            if ig_linked:
+                found.append({"page_id": pid, "page_name": pd.get("name"),
+                              "ig_id": ig_linked, "ig_username": ig_name})
+    else:
+        # 2) Page token → /me returns the page itself. Check IT directly.
+        print("ℹ️ /me/accounts user-token style nahi chala (shayad page token hai).")
+        print("   Page token se /me = wohi page. Check kar rahe hain:\n")
+        code2, me = get(f"{GRAPH}/{V}/me",
                         {"access_token": fb_tok,
                          "fields": "id,name,instagram_business_account,category"})
-        ig_linked = (pd.get("instagram_business_account") or {}).get("id") if pcode == 200 else None
-        ig_name = (pd.get("instagram_business_account") or {}).get("username", "") if pcode == 200 else ""
-        status = f"✅ IG LINKED → id={ig_linked} (@{ig_name})" if ig_linked else "❌ koi IG linked nahi"
-        print(f"  Page {pid}")
-        print(f"    name     : {pd.get('name') if pcode == 200 else '?'}  (category: {pd.get('category') if pcode == 200 else '?'})")
-        print(f"    IG link  : {status}")
-        print()
-        if ig_linked:
-            found.append({"page_id": pid, "page_name": pd.get("name"),
-                          "ig_id": ig_linked, "ig_username": ig_name})
+        if code2 == 200:
+            ig = me.get("instagram_business_account") or {}
+            ig_linked = ig.get("id")
+            ig_name = ig.get("username", "")
+            print(f"  Page {me.get('id')} — {me.get('name')}  "
+                  f"(category: {me.get('category', '?')})")
+            if ig_linked:
+                print(f"  ✅ IG LINKED → id={ig_linked} (@{ig_name})")
+                found.append({"page_id": me.get("id"), "page_name": me.get("name"),
+                              "ig_id": ig_linked, "ig_username": ig_name})
+            else:
+                print("  ❌ is page par koi Instagram account linked NAHI.")
+                print("     (agar aapko linkage dikhti hai to token ki permission")
+                print("     ya doosre page ka masla ho sakta hai — FACEBOOK_APP_ID/SECRET")
+                print("     secrets mein daalne se token scopes bhi check ho sakte hain)")
+        else:
+            err = me.get("error", {})
+            print(f"  ❌ /me failed: {err.get('message', me)}")
 
     print("=" * 72)
     if found:
-        print("✅ ✅ LINKED PAGES MILIYE — ye values GitHub secrets mein honi chahiyein:")
+        print("✅ LINKED PAGE MIL GAYI — ye values GitHub secrets mein daalo:")
         for f in found:
             print(f"\n  FACEBOOK_PAGE_ID={f['page_id']}     # {f['page_name']}")
             print(f"  INSTAGRAM_USER_ID={f['ig_id']}        # @{f['ig_username']}")
-            print(f"  FACEBOOK_ACCESS_TOKEN=<yahan token>   # jo abhi use ho raha hai")
+            print(f"  FACEBOOK_ACCESS_TOKEN=<jo token abhi hai>")
             print(f"  INSTAGRAM_ACCESS_TOKEN=<wahi token>")
     else:
-        print("❌ KISI bhi page par Instagram linked NAHI mila.")
-        print("   Asal linking abhi karni hai: Instagram app → Settings →")
-        print("   Account type and tools → Linked accounts → Facebook Page")
+        print("❌ Kisi bhi page par Instagram linked NAHI mila (API ke hisaab se).")
+        print("   Options:")
+        print("   1. Linking ke baad 10-15 min intezar karo — Meta delay karta hai.")
+        print("   2. Instagram app → Settings → Account type and tools →")
+        print("      Linked accounts → Facebook → 'Coercion Files' page select karo.")
+        print("   3. FACEBOOK_APP_ID + FACEBOOK_APP_SECRET secrets mein daalo")
+        print("      taake token scopes inspect ho saken.")
     print("=" * 72)
     return 0 if found else 1
 
