@@ -28,6 +28,11 @@ on:
         required: false
         type: boolean
         default: false
+      user_token:
+        description: "OPTIONAL: USER token (pages_show_list+instagram_basic) — se saare pages scan honge aur pata chalega kis page se IG linked hai. Graph API Explorer se banao."
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -76,6 +81,7 @@ jobs:
         env:
           FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+          USER_TOKEN: ${{ inputs.user_token }}
         run: python scripts/find_ig_link.py || true
 
       - name: Run 3-platform audit
