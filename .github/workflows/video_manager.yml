@@ -62,6 +62,15 @@ jobs:
         run: |
           python scripts/youtube_shorts_repair.py ${{ inputs.fix_public && '--fix-public' || '' }}
 
+      - name: Instagram / Facebook diagnostic (linkage, token, scopes, app mode)
+        if: ${{ inputs.action == 'ig_diagnose' }}
+        env:
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/instagram_diagnose.py
+
       - name: Run 3-platform audit
         if: ${{ inputs.action == 'audit' }}
         env:
