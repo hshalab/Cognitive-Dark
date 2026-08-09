@@ -66,7 +66,7 @@ def main():
         print(f"ℹ️ GET failed: {exc}")
 
     # 2) THE REAL PROBE — POST /{ig_id}/media (no actual media, just a container req)
-    print("\n--- POST /{ig_id}/media probe (koi media publish nahi hota) ---")
+    print("\n--- PROBE A: video_url path ---")
     try:
         r = requests.post(f"{GRAPH}/{V}/{ig_id}/media",
                           data={"access_token": tok, "media_type": "REELS",
@@ -76,41 +76,67 @@ def main():
         if r.status_code == 200:
             d = r.json()
             print(f"✅✅ CONTAINER CREATED! id={d.get('id')} — IG ID PERFECT hai!")
-            print("   (probe container ab expire ho jayega — koi post nahi hua)")
-            # cleanup: delete the container so nothing lingers
-            try:
-                requests.delete(f"{GRAPH}/{V}/{d['id']}",
-                                params={"access_token": tok}, timeout=30)
-                print("   (probe container delete kar diya ✓)")
-            except Exception:
-                pass
+            _cleanup(tok, d.get("id"))
             print("\n🎉 VERDICT: IG ID sahi hai + token publish kar sakta hai!")
+            return 0
+        err = r.json().get("error", {})
+        print(f"❌ POST video_url failed: code={err.get('code')} subcode={err.get('error_subcode','-')}")
+        print(f"   message: {err.get('message','')[:300]}")
+    except Exception as exc:
+        print(f"❌ POST exception: {exc}")
+
+    # 3) PROBE B — RESUMABLE path (pipeline isi use karta hai!)
+    print("\n--- PROBE B: resumable path (pipeline ka asal flow) ---")
+    try:
+        r = requests.post(f"{GRAPH}/{V}/{ig_id}/media",
+                          data={"access_token": tok, "media_type": "REELS",
+                                "upload_type": "resumable",
+                                "caption": "probe"},
+                          timeout=30)
+        if r.status_code == 200:
+            d = r.json()
+            sid = d.get("upload_session_id") or d.get("id")
+            print(f"✅✅ RESUMABLE CONTAINER CREATED! session={sid}")
+            print("   → PIPELINE CHAL JAYEGA! (rupload ke saath)")
+            _cleanup(tok, d.get("id"))
+            print("\n🎉 VERDICT: RESUMABLE PATH WORKS — Instagram publish ready!")
             return 0
         err = r.json().get("error", {})
         msg = err.get("message", "")
         code = err.get("code", "?")
-        print(f"❌ POST failed: code={code} subcode={err.get('error_subcode','-')}")
+        print(f"❌ POST resumable failed: code={code} subcode={err.get('error_subcode','-')}")
         print(f"   message: {msg[:300]}")
         msg_l = msg.lower()
         print("\n--- VERDICT ---")
         if "cannot find ig user" in msg_l or "does not exist" in msg_l:
             print("❌ IG ID GALAT hai (ya is page/token ke under nahi).")
-            print("   → IG app → profile → View Page Source → search 178414")
-            print("   → ya Business Suite se sahi IG ID lo")
         elif "not linked" in msg_l or "link" in msg_l:
             print("❌ IG account is page se linked nahi ya token ka page alag hai.")
         elif "permission" in msg_l or "scopes" in msg_l or code == 10:
-            print("⚠️ Token mein instagram_content_publish ka masla — naya token chahiye.")
-        elif "url" in msg_l or "video_url" in msg_l:
-            print("✅ IG ID SAHI hai! (error sirf dummy url ki wajah se hai —")
-            print("   asli video se publish ho jayegi)")
-            return 0
+            print("⚠️ APP-LEVEL #10 — app ko Instagram API ki permission nahi.")
+            print("   App dashboard (developers.facebook.com) mein yeh check karo:")
+            print("   1. App mode = Live (Settings → Basic → App Mode)")
+            print("   2. Products mein 'Instagram API' (naya naam) add ho")
+            print("   3. Instagram Graph API product setup — app ko IG account")
+            print("      se link karna hai (App Review → Permissions →")
+            print("      instagram_business_content_publish → Advanced access)")
+            print("   4. Page/IG app roles mein add ho (App Roles → Pages)")
         else:
-            print(f"ℹ️ Unclear error — code {code}. Google kar ke dekho ya screen bhejo.")
+            print(f"ℹ️ Unclear error — code {code}.")
         return 1
     except Exception as exc:
-        print(f"❌ POST exception: {exc}")
+        print(f"❌ POST resumable exception: {exc}")
         return 1
+
+
+def _cleanup(tok, cid):
+    if not cid:
+        return
+    try:
+        requests.delete(f"{GRAPH}/{V}/{cid}", params={"access_token": tok}, timeout=30)
+        print("   (probe container delete kar diya ✓)")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
