@@ -1,404 +1,207 @@
-# 🎬 Coercion Files — Launch Week (Days 1-7)
-_Ready-to-record scripts · USA English · 40-58s Shorts_
+# 🛡️ Coercion Files — Master Forensic Launch Series (Days 1-7)
+_High-RPM ($14-$32) · 70%+ Retention Architecture · USA Target Audience_
 
-| Day | Pillar | Title | Hook | Words |
+| Day | Pillar | Title | Hook (First 2s) | Search Keyword |
 |---|---|---|---|---|
-| 1 | Cult Psychology Decoded | Why Smart People Join Dangerous Cults | "Why smart people join cults." | 142 |
-| 2 | Con Artists & Scam Psychology | The Sentence Every Con Artist Uses | "Every con artist uses this sentence." | 140 |
-| 3 | Coercive Control Awareness | Love Bombing Is Not Love | "This isn't love. It's a tactic." | 152 |
-| 4 | Cult Psychology Decoded | The 3 Questions Cults Refuse to Answer | "Cults hate these 3 questions." | 149 |
-| 5 | Coercive Control Awareness | If They Say You're Overreacting, Watch This | ""You're overreacting" is a trap." | 154 |
-| 6 | Con Artists & Scam Psychology | How a Romance Scam Starts (The First Message) | "This is how a romance scam starts." | 153 |
-| 7 | Cult Psychology Decoded | How Cults Isolate You From Everyone You Love | "This is how cults isolate you." | 161 |
+| 1 | Con Artists & Scam Psychology | How a 3-Word Text Stole $420,000 | Scam Anatomy | "A 3-word text stole $420,000." | `bank fraud scam` |
+| 2 | Coercive Control Awareness | Quiet Firing: 3 Signs Your Boss Wants You Out | "Quiet firing: 3 signs you're being pushed out." | `quiet firing signs` |
+| 3 | Interrogation & Lie Detection | The 3-Second Silence FBI Interrogators Use | "FBI interrogators use a 3-second silence." | `interrogation psychology lie detection` |
+| 4 | Con Artists & Scam Psychology | The $100M Pig-Butchering Scam Decoded | "Inside the $100M pig-butchering scam." | `pig butchering scam explained` |
+| 5 | Cult Psychology Decoded | The 3 Questions Cult Leaders Forbid | "Cult leaders forbid these 3 questions." | `how cults recruit brainwash` |
+| 6 | Coercive Control Awareness | The Salary Negotiation Trap Costing $30,000 | "Never say this in a salary negotiation." | `salary negotiation psychology power dynamics` |
+| 7 | Con Artists & Scam Psychology | The AI Voice-Clone Scam Draining Bank Accounts | "They cloned her daughter's voice in 3 seconds." | `ai voice clone scam warning` |
 
-## How to use
-- Each `.json` file is pipeline-compatible (same shape as `script_generator.py` output).
-- Feed it to the pipeline with `--pillar` / manual load, or read the Markdown to record by hand.
-- Captions are spoken English; `visual` is the stock-video search query per scene.
-
-## Per-video scripts
+## 🎬 7-Day Content Schedule
 
 ---
 
-### Day 1 — Why Smart People Join Dangerous Cults
-**Pillar:** Cult Psychology Decoded  
-**Hook (first 2s):** "Why smart people join cults."  
-**YT search keyword:** how cults brainwash  
-**Word count:** ~142 words
-
-**Scene-by-scene (caption → visual query):**
-
-1. "Doctors, lawyers, teachers — smart, educated people join cults every year. And they don't join because they're stupid."
-   _visual: `crowd of people city night` · emotion: dark_
-
-2. "They join because they're in pain. A breakup, a death, a lost job — the exact moment their guard is down."
-   _visual: `person alone window rain` · emotion: dark_
-
-3. "Step one: love bombing. Strangers flood them with acceptance, purpose, and a family they never had."
-   _visual: `hands together circle candle` · emotion: dark_
-
-4. "Step two: isolation. Old friends become 'toxic'. Family becomes 'the enemy'. Soon there is only the group."
-   _visual: `lone figure corridor shadow` · emotion: dark_
-
-5. "Step three: small commitments. A weekend, then money, then a confession. Each yes makes the next one easier."
-   _visual: `contract signing dark desk` · emotion: dark_
-
-6. "Step four: black-and-white thinking. The leader is always right. Doubt becomes betrayal. That's how free will quietly disappears."
-   _visual: `dark city night cinematic` · emotion: dark_
-
-7. "Intelligence doesn't protect you. Awareness does. If a new group is moving too fast and pulling you from family — slow down. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: dark_
-
-**Tags:** cult psychology, brainwashing, how cults work, social psychology, manipulation tactics, coercive control, psychology facts, mind control
-
-**Description:**
-```
-Why Smart People Join Dangerous Cults. Why smart people join cults.
-Cult Psychology Decoded: how coercion really works, why it works on you, and exactly how to protect yourself.
-
-WHAT YOU'LL LEARN:
-• Why intelligence doesn't protect you
-• The 4-step recruitment pattern
-• How to spot it early
-
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
-
-#psychology #truecrime #cults
-```
-
-**Key points:**
-```
-• Why intelligence doesn't protect you
-• The 4-step recruitment pattern
-• How to spot it early
-```
-
----
-
-### Day 2 — The Sentence Every Con Artist Uses
+### Day 1: How a 3-Word Text Stole $420,000 | Scam Anatomy
 **Pillar:** Con Artists & Scam Psychology  
-**Hook (first 2s):** "Every con artist uses this sentence."  
-**YT search keyword:** spot a scammer  
-**Word count:** ~140 words
+**Hook (first 2s):** "A 3-word text stole $420,000."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~126 words
 
-**Scene-by-scene (caption → visual query):**
+**Scenes (Forensic Arc):**
 
-1. "There is one sentence behind almost every con, every scam, every fraud you've ever heard of. It has four words."
-   _visual: `phone screen dark message` · emotion: intense_
+1. "In 2024, an American surgeon wired $420,000 in under eight minutes. He was not stupid — his brain was hijacked."
+   _B-Roll Query: `hospital corridor dark night` | Emotion: `intense`_
 
-2. ""You have to decide now." That's it. Pressure plus a deadline. The moment you feel rushed, your brain stops thinking."
-   _visual: `clock ticking close up dark` · emotion: intense_
+2. "It started with a fake bank alert: 'Fraud detected. Call now.' Just three words designed to trigger an immediate fear spike."
+   _B-Roll Query: `smartphone notification screen dark` | Emotion: `chilling`_
 
-3. "Scammers can't let you pause, because a calm mind asks questions. A rushed mind just obeys."
-   _visual: `anxious person phone night` · emotion: intense_
+3. "When he called, a calm voice impersonated his fraud department, claiming his account was compromised from an overseas IP."
+   _B-Roll Query: `call center dark silhouette` | Emotion: `mysterious`_
 
-4. "So they stack urgency. The offer expires. The warrant is issued. The account closes in ten minutes."
-   _visual: `red alert warning screen` · emotion: intense_
+4. "Neuroscientists call this the amygdala hijack: manufactured urgency shuts down analytical risk evaluation in seconds."
+   _B-Roll Query: `abstract neural brain glow dark` | Emotion: `dark`_
 
-5. "Notice: legitimate institutions — your bank, the government, real companies — never demand secrecy or instant payment."
-   _visual: `bank building night` · emotion: intense_
+5. "They walked him through moving funds to a 'safe federal vault' — which was an offshore crypto wallet."
+   _B-Roll Query: `bank transfer loading screen dark` | Emotion: `intense`_
 
-6. "Here's your defense. The second anyone pressures you to act now, you stop. You hang up. You wait a full day."
-   _visual: `hand pressing stop button` · emotion: intense_
-
-7. "Tell a friend before you send a dollar. Real opportunities survive one night of sleep. Scams don't. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: intense_
-
-**Tags:** scam psychology, con artist, social engineering, romance scam, manipulation, psychology facts, fraud prevention
-
-**Description:**
-```
-The Sentence Every Con Artist Uses. Every con artist uses this sentence.
-Con Artists & Scam Psychology: how coercion really works, why it works on you, and exactly how to protect yourself.
-
-WHAT YOU'LL LEARN:
-• The one line that creates urgency
-• Why urgency kills your judgment
-• The 3-second rule to stay safe
-
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
-
-#psychology #truecrime #con_artists
-```
-
-**Key points:**
-```
-• The one line that creates urgency
-• Why urgency kills your judgment
-• The 3-second rule to stay safe
-```
+6. "Your defense: banks NEVER ask you to wire money to protect it. Hang up, pause, and call the number on your card. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `credit card security chip macro dark` | Emotion: `revelatory`_
 
 ---
 
-### Day 3 — Love Bombing Is Not Love
+### Day 2: Quiet Firing: 3 Signs Your Boss Wants You Out
 **Pillar:** Coercive Control Awareness  
-**Hook (first 2s):** "This isn't love. It's a tactic."  
-**YT search keyword:** love bombing signs  
-**Word count:** ~152 words
+**Hook (first 2s):** "Quiet firing: 3 signs you're being pushed out."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~120 words
 
-**Scene-by-scene (caption → visual query):**
+**Scenes (Forensic Arc):**
 
-1. "On the second date they said you were their soulmate. By the first week, future, kids, forever. It felt like a movie. It isn't."
-   _visual: `romantic dinner candle dark` · emotion: chilling_
+1. "If your boss does these three things in your weekly meetings, you are not being overlooked — you are being quietly managed out."
+   _B-Roll Query: `modern dark office empty desk` | Emotion: `intense`_
 
-2. "It's called love bombing: overwhelming affection, gifts, and promises used to rush past your judgment."
-   _visual: `flood of messages phone` · emotion: chilling_
+2. "Sign one: information starvation. Key emails, client updates, and strategic meeting invites quietly stop reaching your inbox."
+   _B-Roll Query: `laptop screen dark notification inbox` | Emotion: `mysterious`_
 
-3. "Real love grows with time. Love bombing is fast because fast doesn't give you space to see the pattern."
-   _visual: `two silhouettes sunset sped` · emotion: chilling_
+3. "Sign two: shifting goalposts. Deliverables you executed perfectly are suddenly graded against vague, impossible metrics."
+   _B-Roll Query: `red pen marking documents desk` | Emotion: `dark`_
 
-4. "Then comes the switch. The same intensity turns to anger if you want space, if you see friends, if you say no."
-   _visual: `argument shadow silhouette` · emotion: chilling_
+4. "Sign three: calendar isolation. Your 1-on-1s get repeatedly canceled, and high-visibility projects are reassigned to peers."
+   _B-Roll Query: `calendar schedule meeting cancel screen` | Emotion: `chilling`_
 
-5. "The affection was never about you. It was a hook. Once you're invested, the reward gets taken away to control you."
-   _visual: `fishing hook dark water` · emotion: chilling_
+5. "Corporate psychologists call this constructive dismissal: they pressure you to quit so they avoid severance and unemployment claims."
+   _B-Roll Query: `shadowed boardroom table empty` | Emotion: `intense`_
 
-6. "Healthy people respect pace. They can wait. They don't need a lifetime commitment on day three."
-   _visual: `calm person breathing window` · emotion: chilling_
-
-7. "So set one boundary: tell them you want to slow down. A safe person stays calm. A controller gets angry. Watch that reaction. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: chilling_
-
-**Tags:** love bombing, narcissist, coercive control, red flags, toxic relationships, manipulation, psychology facts
-
-**Description:**
-```
-Love Bombing Is Not Love. This isn't love. It's a tactic.
-Coercive Control Awareness: how coercion really works, why it works on you, and exactly how to protect yourself.
-
-WHAT YOU'LL LEARN:
-• What love bombing actually is
-• The pace that should scare you
-• The one boundary that exposes it
-
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
-
-#psychology #truecrime #coercive_control
-```
-
-**Key points:**
-```
-• What love bombing actually is
-• The pace that should scare you
-• The one boundary that exposes it
-```
+6. "Your defense: document every assignment in writing, forward receipts to a personal drive, and never resign without consulting legal counsel. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `document signature fountain pen dark` | Emotion: `revelatory`_
 
 ---
 
-### Day 4 — The 3 Questions Cults Refuse to Answer
-**Pillar:** Cult Psychology Decoded  
-**Hook (first 2s):** "Cults hate these 3 questions."  
-**YT search keyword:** signs of a cult  
-**Word count:** ~149 words
+### Day 3: The 3-Second Silence FBI Interrogators Use
+**Pillar:** Interrogation & Lie Detection  
+**Hook (first 2s):** "FBI interrogators use a 3-second silence."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~107 words
 
-**Scene-by-scene (caption → visual query):**
+**Scenes (Forensic Arc):**
 
-1. "There are three questions that separate a healthy community from a controlling one. Ask them, and watch how the leader reacts."
-   _visual: `speaker on stage dark` · emotion: mysterious_
+1. "FBI behavioral interrogators know that suspects rarely break from aggressive shouting — they break from deliberate, unbroken silence."
+   _B-Roll Query: `interrogation room mirror dark` | Emotion: `intense`_
 
-2. "Question one: "What exactly would make you ask me to leave?" Healthy groups have clear rules. Cults get defensive."
-   _visual: `person raising hand crowd` · emotion: mysterious_
+2. "When an agent maintains eye contact and stays silent for three full seconds after an answer, social anxiety spikes exponentially."
+   _B-Roll Query: `close up intense eyes shadow` | Emotion: `mysterious`_
 
-3. "Question two: "Can I speak to someone who left and was happy?" A real community says yes. A cult attacks their character."
-   _visual: `two people talking doorway` · emotion: mysterious_
+3. "Behavioral scientists call this verbal leakage. The human brain interprets silence as suspicion and feels compelled to fill the void."
+   _B-Roll Query: `tape recorder audio waveform dark` | Emotion: `chilling`_
 
-4. "Question three: "What happens if I disagree with you in public?" Watch closely. Anger is the answer they didn't want to say."
-   _visual: `tense meeting table` · emotion: mysterious_
+4. "Statement analysis proves: innocent people give short, direct answers. Deceptive suspects add unnecessary justifications and alibi padding."
+   _B-Roll Query: `redacted police report desk` | Emotion: `dark`_
 
-5. "Cults survive on uncertainty. The rules are never written, the goalposts always move, so you keep guessing to stay safe."
-   _visual: `foggy path forest` · emotion: mysterious_
-
-6. "Healthy groups want you to think for yourself. Controlling groups want you to stop thinking and just obey."
-   _visual: `open book candle light` · emotion: mysterious_
-
-7. "Ask the questions. If a group punishes you for asking, that isn't family. That's evidence. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: mysterious_
-
-**Tags:** cults, cult signs, manipulation, coercive control, mind control, critical thinking, psychology facts
-
-**Description:**
-```
-The 3 Questions Cults Refuse to Answer. Cults hate these 3 questions.
-Cult Psychology Decoded: how coercion really works, why it works on you, and exactly how to protect yourself.
-
-WHAT YOU'LL LEARN:
-• 3 questions that test any group
-• Why anger is the real answer
-• The difference between community and control
-
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
-
-#psychology #truecrime #cults
-```
-
-**Key points:**
-```
-• 3 questions that test any group
-• Why anger is the real answer
-• The difference between community and control
-```
+5. "When questioned under pressure: answer in five words or less, and comfortably embrace the silence. Let the other person speak next. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `shadowed figure walking dark corridor` | Emotion: `revelatory`_
 
 ---
 
-### Day 5 — If They Say You're Overreacting, Watch This
-**Pillar:** Coercive Control Awareness  
-**Hook (first 2s):** ""You're overreacting" is a trap."  
-**YT search keyword:** gaslighting examples  
-**Word count:** ~154 words
-
-**Scene-by-scene (caption → visual query):**
-
-1. "You saw the flirty text. You heard the lie. And when you brought it up, they looked at you and said, "You're overreacting.""
-   _visual: `argument couple silhouette` · emotion: intense_
-
-2. "In that moment two things happen. You start doubting yourself, and they walk away unchallenged. That's the point."
-   _visual: `confused person mirror` · emotion: intense_
-
-3. "This is gaslighting: making you distrust your own memory and perception so that only their version of reality counts."
-   _visual: `distorted mirror reflection` · emotion: intense_
-
-4. "A person who cares about you asks, "Why do you feel that way?" A controller tells you how you're allowed to feel."
-   _visual: `two people tense couch` · emotion: intense_
-
-5. "Notice the pattern. It's never the issue. It's always your tone, your memory, your reaction. The target keeps moving."
-   _visual: `spinning compass dark` · emotion: intense_
-
-6. "Your feelings are evidence about you, not proof you're crazy. Repeated denial of what you saw is a documented tactic."
-   _visual: `notebook evidence desk` · emotion: intense_
-
-7. "Try one line: "I'm not asking if I'm overreacting. I'm telling you how this affected me." Then watch what they do. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: intense_
-
-**Tags:** gaslighting, emotional abuse, manipulation, coercive control, narcissist, psychology facts, red flags
-
-**Description:**
-```
-If They Say You're Overreacting, Watch This. "You're overreacting" is a trap.
-Coercive Control Awareness: how coercion really works, why it works on you, and exactly how to protect yourself.
-
-WHAT YOU'LL LEARN:
-• Why 'overreacting' is a control move
-• The real name for it: gaslighting
-• A sentence that ends the game
-
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
-
-#psychology #truecrime #coercive_control
-```
-
-**Key points:**
-```
-• Why 'overreacting' is a control move
-• The real name for it: gaslighting
-• A sentence that ends the game
-```
-
----
-
-### Day 6 — How a Romance Scam Starts (The First Message)
+### Day 4: The $100M Pig-Butchering Scam Decoded
 **Pillar:** Con Artists & Scam Psychology  
-**Hook (first 2s):** "This is how a romance scam starts."  
-**YT search keyword:** romance scam signs  
-**Word count:** ~153 words
+**Hook (first 2s):** "Inside the $100M pig-butchering scam."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~137 words
 
-**Scene-by-scene (caption → visual query):**
+**Scenes (Forensic Arc):**
 
-1. "It starts with a message. Polite, flattering, almost too perfect. They seem successful, kind, and genuinely interested in you."
-   _visual: `dating app phone dark` · emotion: chilling_
+1. "Federal fraud investigators call it pig-butchering: an industrial-scale con that stole over $3 billion from Americans last year."
+   _B-Roll Query: `cyber data financial numbers screen dark` | Emotion: `intense`_
 
-2. "Within days they're saying things you've always wanted to hear. It feels like finally being understood. That feeling is engineered."
-   _visual: `text messages floating phone` · emotion: chilling_
+2. "Stage one: the wrong number text. Polite, glamorous, and patient. They build rapport over weeks without mentioning money."
+   _B-Roll Query: `luxury lifestyle blurred phone screen` | Emotion: `mysterious`_
 
-3. "Then come the three red flags. First, they can never video chat. Bad signal, broken camera, always an emergency."
-   _visual: `video call failed screen` · emotion: chilling_
+3. "Stage two: the fattening. They introduce an exclusive trading platform, letting you deposit $1,000 and successfully withdraw $1,200."
+   _B-Roll Query: `crypto wallet trading graph green` | Emotion: `dark`_
 
-4. "Second, they push you off the app to WhatsApp or text. Away from the platform's scam filters and any record that can be reported."
-   _visual: `chat moving between apps` · emotion: chilling_
+4. "Your brain registers proof and drops its guard. You invest your life savings — and the account suddenly shows $500,000 in fake profit."
+   _B-Roll Query: `money transfer high numbers screen` | Emotion: `chilling`_
 
-5. "Third comes the crisis. Stuck overseas. Customs hold. Emergency surgery. They need money, gift cards, or just a small favor."
-   _visual: `airport night blurred` · emotion: chilling_
+5. "Stage three: the butchering. When you try to withdraw, they demand 20% in upfront 'tax fees'. The money was gone the second you wired it."
+   _B-Roll Query: `account frozen warning red screen` | Emotion: `intense`_
 
-6. "Here's the test: ask for a live video call today. A real person says yes. A scammer changes the subject or gets angry."
-   _visual: `video camera icon red` · emotion: chilling_
-
-7. "Never send money to someone you haven't met in person. Love doesn't ask for gift cards. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: chilling_
-
-**Tags:** romance scam, catfish, online dating, scam psychology, social engineering, psychology facts, fraud
-
-**Description:**
-```
-How a Romance Scam Starts (The First Message). This is how a romance scam starts.
-Con Artists & Scam Psychology: how coercion really works, why it works on you, and exactly how to protect yourself.
-
-WHAT YOU'LL LEARN:
-• The exact first-message pattern
-• Why they move off the app fast
-• The money question that proves it
-
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
-
-#psychology #truecrime #con_artists
-```
-
-**Key points:**
-```
-• The exact first-message pattern
-• Why they move off the app fast
-• The money question that proves it
-```
+6. "Rule of thumb: never trade on a platform introduced by an online acquaintance. If you must pay to withdraw, it is 100% a scam. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `hand locking dark safe vault` | Emotion: `revelatory`_
 
 ---
 
-### Day 7 — How Cults Isolate You From Everyone You Love
+### Day 5: The 3 Questions Cult Leaders Forbid
 **Pillar:** Cult Psychology Decoded  
-**Hook (first 2s):** "This is how cults isolate you."  
-**YT search keyword:** cult isolation tactics  
-**Word count:** ~161 words
+**Hook (first 2s):** "Cult leaders forbid these 3 questions."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~124 words
 
-**Scene-by-scene (caption → visual query):**
+**Scenes (Forensic Arc):**
 
-1. "No cult asks you to abandon your family on day one. That would be too obvious. Isolation is done slowly, one sentence at a time."
-   _visual: `family dinner tense` · emotion: dark_
+1. "Doctors, tech executives, and professors join high-control groups every year. They do not join because they are naive — they join while in transition."
+   _B-Roll Query: `crowd city rain night dark` | Emotion: `intense`_
 
-2. "First it's sympathy. "Your mom is so controlling." "Your friend is jealous of you." It sounds like they're on your side."
-   _visual: `two people whispering couch` · emotion: dark_
+2. "Recruiters use love bombing to satisfy unfulfilled emotional needs, followed by gradual isolation from skeptical family members."
+   _B-Roll Query: `hands circle candle ritual dark` | Emotion: `chilling`_
 
-3. "Then it's suspicion. "Why do they always criticize me?" A wedge forms. You start defending the group, not your family."
-   _visual: `split screen two faces` · emotion: dark_
+3. "To test if an organization is a high-control group, ask question one: 'What happens if I publicly disagree with the founder?'"
+   _B-Roll Query: `shadowed speaker podium stage` | Emotion: `mysterious`_
 
-4. "Then distance. You skip calls, cancel dinners, lie about where you were. Every old relationship becomes a source of guilt."
-   _visual: `missed calls phone screen` · emotion: dark_
+4. "Question two: 'Can I speak to ex-members who left in good standing?' Controlling groups will always attack ex-members' character."
+   _B-Roll Query: `doorway silhouette leaving dark` | Emotion: `dark`_
 
-5. "Soon the group is your entire world — your job, your home, your love. No one is left to say, "This isn't normal.""
-   _visual: `empty chair dark room` · emotion: dark_
+5. "Question three: 'Are financial records transparent to all members?' Healthy communities welcome questions; cults punish doubt as betrayal."
+   _B-Roll Query: `financial ledger lock dark` | Emotion: `chilling`_
 
-6. "That isolation is the cage. A person alone will believe almost anything, because there's no one left to challenge it."
-   _visual: `person behind window rain` · emotion: dark_
+6. "Healthy communities encourage independent critical thinking. Controlling groups demand absolute obedience. Recognize the difference. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `open book illuminated candle light` | Emotion: `revelatory`_
 
-7. "Protect one thing: one outside friendship they don't control. Keep that door open. That door is how people get out. Follow Coercion Files for the psychology they don't teach you in school."
-   _visual: `dark city night cinematic` · emotion: dark_
+---
 
-**Tags:** cults, isolation, coercive control, manipulation, brainwashing, psychology facts, mind control
+### Day 6: The Salary Negotiation Trap Costing $30,000
+**Pillar:** Coercive Control Awareness  
+**Hook (first 2s):** "Never say this in a salary negotiation."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~127 words
 
-**Description:**
-```
-How Cults Isolate You From Everyone You Love. This is how cults isolate you.
-Cult Psychology Decoded: how coercion really works, why it works on you, and exactly how to protect yourself.
+**Scenes (Forensic Arc):**
 
-WHAT YOU'LL LEARN:
-• Why isolation always comes first
-• The slow language of separation
-• How to keep your support network
+1. "In corporate hiring, saying this one sentence in your final interview can quietly cost you $30,000 over three years."
+   _B-Roll Query: `skyscraper boardroom glass table dark` | Emotion: `intense`_
 
-For educational purposes only — learn to recognize and protect yourself. Not a substitute for professional advice.
+2. "When a recruiter asks: 'What is your current compensation?', answering directly surrenders your entire psychological leverage."
+   _B-Roll Query: `recruiter interview desk silhouette` | Emotion: `mysterious`_
 
-#psychology #truecrime #cults
-```
+3. "Behavioral economists call this anchoring bias: the first number spoken sets the ceiling for all subsequent negotiation."
+   _B-Roll Query: `financial chart anchor drop screen` | Emotion: `dark`_
 
-**Key points:**
-```
-• Why isolation always comes first
-• The slow language of separation
-• How to keep your support network
-```
+4. "If you give a range like '$110k to $130k', the employer's brain automatically anchors to the lowest possible figure."
+   _B-Roll Query: `calculator contract fountain pen dark` | Emotion: `chilling`_
+
+5. "The counter-script: 'I am focused on the value I will bring here. Based on market benchmarks for this role, what is your budgeted range?'"
+   _B-Roll Query: `confident silhouette handshake dark` | Emotion: `revelatory`_
+
+6. "Force them to anchor first, then pause. The first person to speak after a salary offer almost always makes the concession. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `city skyline night corporate tower` | Emotion: `revelatory`_
+
+---
+
+### Day 7: The AI Voice-Clone Scam Draining Bank Accounts
+**Pillar:** Con Artists & Scam Psychology  
+**Hook (first 2s):** "They cloned her daughter's voice in 3 seconds."  
+**Target RPM:** $14 - $32 (Finance / Legal / Cyber Tier)  
+**Word count:** ~129 words
+
+**Scenes (Forensic Arc):**
+
+1. "In 2024, an American mother received a phone call. She heard her daughter sobbing, begging for help after a car accident."
+   _B-Roll Query: `mother distressed phone call night` | Emotion: `intense`_
+
+2. "A menacing voice demanded an immediate $15,000 wire to avoid arrest. Her daughter was actually sitting safely in class."
+   _B-Roll Query: `police sirens reflection dark window` | Emotion: `chilling`_
+
+3. "Generative voice cloning needs only three seconds of clean audio scraped from TikTok or Instagram to replicate vocal cadence perfectly."
+   _B-Roll Query: `ai voice waveform frequency screen dark` | Emotion: `mysterious`_
+
+4. "The scam relies on overwhelming panic: terror shuts down logic, preventing victims from verifying the story before wiring money."
+   _B-Roll Query: `smartphone trembling hand dark` | Emotion: `dark`_
+
+5. "Establish a private 'Family Safe Word' today. If you ever receive an emergency call demanding money, ask for that exact word."
+   _B-Roll Query: `padlock security shield glowing dark` | Emotion: `revelatory`_
+
+6. "If they cannot provide it, hang up immediately and contact your family member on their known personal number. Follow Coercion Files for documented case files that protect your mind."
+   _B-Roll Query: `phone disconnect screen dark` | Emotion: `revelatory`_

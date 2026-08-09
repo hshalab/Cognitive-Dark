@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — multi-signal reward function.
+Cognitive Dark — Multi-signal High-Quality Reward Function.
 
-Sirf views dekh ke bandit ko reward dena 2026 mein galat hai — algorithm
-ab retention, completion aur engagement ko zyada weight deta hai. Yeh module
-raw metrics ko ek hi 0..~3 score mein map karta hai, jis tarah
-ml_engine.record_outcome expect karta hai.
-
-Inputs (sab optional, jitna mile utna behtar):
-  views, likes, comments, shares, saves, watch_time_seconds, duration_seconds,
-  retention (0..1 average viewed), avg_view_seconds, ctr (0..1), subs_gained,
-  voice_rating (0..1 TTS quality, optional), completion (0..1)
+Calibrated strictly for >70% Retention & High-CTR Quality Standards:
+  • Retention weight: 35% (Target: 70%+ Average View Duration)
+  • Completion rate: 16% (Shorts/Reels finish rate)
+  • Engagement & Shares: 20% (FB shares & IG saves weighted highest)
+  • Click-Through-Rate (CTR): 10% (10%+ CTR target)
+  • Views scale: 12%
+  • Quality / Voice / Production: 7%
 """
 
 from __future__ import annotations
@@ -18,15 +16,13 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-# Weights (sum = 1.0). Retention/completion ko sab se zyada wazan kyun ke
-# Shorts/Reels feed mein 2026 ka sab se bara ranking signal yahi hai.
 WEIGHTS = {
-    "retention": 0.34,
+    "retention": 0.35,
     "completion": 0.16,
-    "engagement": 0.22,
-    "views": 0.14,
-    "ctr": 0.09,
-    "quality": 0.05,
+    "engagement": 0.20,
+    "views": 0.12,
+    "ctr": 0.10,
+    "quality": 0.07,
 }
 
 
@@ -61,9 +57,6 @@ class VideoMetrics:
     def effective_completion(self) -> float:
         if self.completion is not None:
             return max(0.0, min(1.0, self.completion))
-        # For Shorts, completion ≈ viewers reaching the end. We approximate from
-        # retention shape but without per-second data use half the retention
-        # above 0.5 as a conservative completion proxy.
         r = self.effective_retention()
         return max(0.0, min(1.0, (r - 0.4) / 0.6)) if r > 0.4 else 0.0
 
@@ -77,29 +70,37 @@ def compute_reward(m: VideoMetrics) -> tuple[float, dict]:
     retention = m.effective_retention()
     completion = m.effective_completion()
 
-    # Engagement rate (interactions per view). 6%+ is excellent for Shorts.
+    # Engagement rate: shares & saves weighted heavily for viral distribution
     interactions = m.likes + 2 * m.comments + 3 * m.shares + 2 * m.saves + 5 * m.subs_gained
     eng_rate = interactions / max(1.0, m.views)
     eng_score = _clamp01(eng_rate / 0.06)
 
-    # Views via log scale: 0 views=0, 100≈0.33, 10k≈0.67, 1M≈1.0
+    # Views via log scale
     view_score = _clamp01(math.log10(max(1.0, m.views)) / 6.0)
 
-    ctr_score = _clamp01((m.ctr or 0.0) / 0.10)            # 10% CTR → full
+    # CTR score (Target 8-12% CTR for viral tier)
+    ctr_score = _clamp01((m.ctr or 0.0) / 0.10)
     quality_score = _clamp01(m.voice_rating)
 
-    raw = (WEIGHTS["retention"] * _clamp01(retention / 0.60) +    # 60%+ ret = full
+    # Retention score: 60-70%+ is the gold standard benchmark
+    retention_score = _clamp01(retention / 0.60)
+
+    raw = (WEIGHTS["retention"] * retention_score +
            WEIGHTS["completion"] * completion +
            WEIGHTS["engagement"] * eng_score +
            WEIGHTS["views"] * view_score +
            WEIGHTS["ctr"] * ctr_score +
            WEIGHTS["quality"] * quality_score)
 
-    # Viral bonus (as in ml_engine.LEARNING) for the rare breakout — lifts cap
     reward = raw * 3.0
+
+    # Viral bonus for breakout retention
     if retention >= 0.55 and m.views >= 1000:
         reward += 1.0
-    reward = round(min(5.0, reward), 3)
+    if retention >= 0.70:
+        reward += 0.5  # Extra bonus for hitting elite 70%+ retention
+
+    reward = round(max(0.0, min(5.0, reward)), 3)
 
     breakdown = {
         "retention": round(retention, 3),
@@ -109,6 +110,7 @@ def compute_reward(m: VideoMetrics) -> tuple[float, dict]:
         "ctr": round(m.ctr or 0.0, 4),
         "voice_rating": round(m.voice_rating, 2),
         "reward": reward,
+        "quality_gate_passed": retention >= 0.70 or retention == 0.0,
     }
     return reward, breakdown
 

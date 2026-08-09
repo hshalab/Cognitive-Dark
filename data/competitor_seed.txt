@@ -3,6 +3,31 @@
 # representative patterns hain — in se hook/pillar patterns extract hote hain.
 # Format: one title per line. Comments (#) ignored.
 
+# --- Forensic social engineering / high-stakes financial fraud (Highest RPM $14-$28) ---
+The AI voice-clone scam draining American bank accounts
+How a 3-word text message bypassed two-factor security
+The $100M pig butchering crypto scam decoded
+In 2024 a surgeon wired $420,000 in 8 minutes
+The romance scam that stole 2 million
+How scammers talk you into giving money
+The first thing a scammer will say on the phone
+This is how con artists gain your trust in 3 minutes
+Urgency is the scam trick that stops you thinking
+One question that exposes a scammer instantly
+The fake emergency phone scam
+Why intelligent people get scammed
+The 'Urgent Fraud Alert' phone script decoded
+The fake CEO wire transfer scam explained
+
+# --- Corporate power dynamics & workplace psychology (Highest RPM $16-$32) ---
+Quiet firing: 3 psychological signs your boss is pushing you out
+If your boss says this in a 1-on-1 meeting, start looking
+How covert workplace narcissists sabotage your promotion
+The salary negotiation phrase that costs you $30,000
+How to handle a boss who takes credit for your work
+Corporate Machiavellianism: how power plays really work
+The 3 words that disarm a toxic coworker instantly
+
 # --- Coercive control / manipulation (highest-performing) ---
 5 Signs Someone Is MANIPULATING You
 If someone says these 3 phrases, they're manipulating you
@@ -19,18 +44,7 @@ The manipulation tactic everyone falls for
 Red flags in a relationship you keep ignoring
 How to spot a dark empath
 Things manipulators say to confuse you
-
-# --- Con artists / scams ---
-The romance scam that stole 2 million
-How scammers talk you into giving money
-The first thing a scammer will say
-This is how con artists gain your trust
-Urgency is the scam trick
-One question that exposes a scammer
-How a romance scam really works
-The fake emergency phone scam
-Why intelligent people get scammed
-The pig butchering scam explained
+The DARVO technique used by covert manipulators
 
 # --- Cults / coercion ---
 Why smart people join cults
@@ -41,10 +55,22 @@ One sign you're in a cult-like group
 The 3 questions cults hate
 How cults use sleep deprivation
 Why people can't leave a cult
+How NXIVM hid a cult inside self-help branding
+
+# --- Interrogation / lie detection (high retention 75%+) ---
+The 3-second silence FBI interrogators use to break alibis
+Statement analysis: 2 words that betray guilty suspects
+How to tell if someone is lying in 10 seconds
+The body language myth about lying
+One sentence that reveals a liar
+What interrogators know that you don't
+The Reid Technique explained
+Microexpressions don't work — here's what does
+Why innocent people confess under fatigue
 
 # --- Brain / psychology facts (mass appeal) ---
 Your brain does this in 3 seconds
-The psychology behind why you can't look away
+The Baader-Meinhof phenomenon explained
 Why your brain loves conspiracy theories
 How your phone is rewiring your brain
 The Baader-Meinhof phenomenon explained
@@ -52,7 +78,6 @@ Why you keep seeing the same number
 The psychology of the silent treatment
 Why negative thoughts feel louder
 How your memory gets manipulated
-The reason you remember songs you hate
 
 # --- Persuasion / mass psychology ---
 How ads manipulate your brain
@@ -64,16 +89,9 @@ The foot-in-the-door technique explained
 Why repetition makes you believe anything
 How propaganda rewires a crowd
 
-# --- Interrogation / lie detection ---
-How to tell if someone is lying
-The body language myth about lying
-One sentence that reveals a liar
-What interrogators know that you don't
-The Reid Technique explained
-Microexpressions don't work — here's what does
-
 # --- Stoic / mental immunity (slower but loyal audience) ---
-Marcus Aurelius: how to stay calm
+Marcus Aurelius: how to stay calm against manipulators
+The 5-second stoic pause before reacting
 Three stoic lessons that change your life
 How to stop caring what people think
 The stoic way to handle disrespect

@@ -1,0 +1,51 @@
+{
+  "title": "The 3-Second Silence FBI Interrogators Use",
+  "hook": "FBI interrogators use a 3-second silence.",
+  "scenes": [
+    {
+      "caption": "FBI behavioral interrogators know that suspects rarely break from aggressive shouting — they break from deliberate, unbroken silence.",
+      "caption_roman": "FBI behavioral interrogators know that suspects rarely break from aggressive shouting — they break from deliberate, unbroken silence.",
+      "visual": "interrogation room mirror dark",
+      "emotion": "intense"
+    },
+    {
+      "caption": "When an agent maintains eye contact and stays silent for three full seconds after an answer, social anxiety spikes exponentially.",
+      "caption_roman": "When an agent maintains eye contact and stays silent for three full seconds after an answer, social anxiety spikes exponentially.",
+      "visual": "close up intense eyes shadow",
+      "emotion": "mysterious"
+    },
+    {
+      "caption": "Behavioral scientists call this verbal leakage. The human brain interprets silence as suspicion and feels compelled to fill the void.",
+      "caption_roman": "Behavioral scientists call this verbal leakage. The human brain interprets silence as suspicion and feels compelled to fill the void.",
+      "visual": "tape recorder audio waveform dark",
+      "emotion": "chilling"
+    },
+    {
+      "caption": "Statement analysis proves: innocent people give short, direct answers. Deceptive suspects add unnecessary justifications and alibi padding.",
+      "caption_roman": "Statement analysis proves: innocent people give short, direct answers. Deceptive suspects add unnecessary justifications and alibi padding.",
+      "visual": "redacted police report desk",
+      "emotion": "dark"
+    },
+    {
+      "caption": "When questioned under pressure: answer in five words or less, and comfortably embrace the silence. Let the other person speak next. Follow Coercion Files for documented case files that protect your mind.",
+      "caption_roman": "When questioned under pressure: answer in five words or less, and comfortably embrace the silence. Let the other person speak next. Follow Coercion Files for documented case files that protect your mind.",
+      "visual": "shadowed figure walking dark corridor",
+      "emotion": "revelatory"
+    }
+  ],
+  "tags": [
+    "interrogation",
+    "lie detection",
+    "fbi profiling",
+    "body language",
+    "statement analysis",
+    "psychology facts",
+    "true crime"
+  ],
+  "description": "The 3-Second Silence FBI Interrogators Use. FBI interrogators use a 3-second silence.\nInterrogation & Lie Detection: Forensic case breakdown — how high-stakes deception hacks the brain, and the exact tactical shields to protect yourself.\n\nWHAT YOU'LL LEARN:\n• Why strategic silence breaks deceptive alibis\n• Statement analysis: direct vs padded answers\n• How to stay immune to pressure questions\n\nFor educational and documentary purposes only. Learn to recognize the pattern before it traps you.\n\n#psychology #truecrime #scams #interrogation",
+  "key_points": "• Why strategic silence breaks deceptive alibis\n• Statement analysis: direct vs padded answers\n• How to stay immune to pressure questions",
+  "pillar": "interrogation",
+  "pillar_name": "Interrogation & Lie Detection",
+  "hook_style": "interrogation_transcript",
+  "source": "forensic_gold_standard_v2"
+}
