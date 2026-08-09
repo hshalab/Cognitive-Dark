@@ -71,6 +71,13 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/instagram_diagnose.py
 
+      - name: Find the IG link (scan ALL pages under the token)
+        if: ${{ inputs.action == 'ig_diagnose' }}
+        env:
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/find_ig_link.py || true
+
       - name: Run 3-platform audit
         if: ${{ inputs.action == 'audit' }}
         env:
