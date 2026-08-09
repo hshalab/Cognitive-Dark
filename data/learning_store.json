@@ -1,12 +1,11 @@
 {
-<<<<<<< Updated upstream
   "arms": {
     "cults::question_hook::morning": {
       "plays": 0,
       "rewards": 9.074,
       "sum_sq": 6.3337,
       "n": 13,
-      "updated": "2026-08-09T15:15:28.739217+00:00",
+      "updated": "2026-08-09T16:28:54.208720+00:00",
       "prior_n": 13,
       "prior_mean": 0.698,
       "seeded": true
@@ -16,7 +15,7 @@
       "rewards": 9.074,
       "sum_sq": 6.3337,
       "n": 13,
-      "updated": "2026-08-09T15:15:28.739225+00:00",
+      "updated": "2026-08-09T16:28:54.208739+00:00",
       "prior_n": 13,
       "prior_mean": 0.698,
       "seeded": true
@@ -26,7 +25,7 @@
       "rewards": 9.074,
       "sum_sq": 6.3337,
       "n": 13,
-      "updated": "2026-08-09T15:15:28.739232+00:00",
+      "updated": "2026-08-09T16:28:54.208754+00:00",
       "prior_n": 13,
       "prior_mean": 0.698,
       "seeded": true
@@ -36,7 +35,7 @@
       "rewards": 4.912,
       "sum_sq": 3.016,
       "n": 8,
-      "updated": "2026-08-09T15:15:28.739240+00:00",
+      "updated": "2026-08-09T16:28:54.208771+00:00",
       "prior_n": 8,
       "prior_mean": 0.614,
       "seeded": true
@@ -46,7 +45,7 @@
       "rewards": 4.912,
       "sum_sq": 3.016,
       "n": 8,
-      "updated": "2026-08-09T15:15:28.739248+00:00",
+      "updated": "2026-08-09T16:28:54.208786+00:00",
       "prior_n": 8,
       "prior_mean": 0.614,
       "seeded": true
@@ -56,7 +55,7 @@
       "rewards": 4.912,
       "sum_sq": 3.016,
       "n": 8,
-      "updated": "2026-08-09T15:15:28.739255+00:00",
+      "updated": "2026-08-09T16:28:54.208801+00:00",
       "prior_n": 8,
       "prior_mean": 0.614,
       "seeded": true
@@ -66,7 +65,7 @@
       "rewards": 4.179,
       "sum_sq": 2.4949,
       "n": 7,
-      "updated": "2026-08-09T15:15:28.739266+00:00",
+      "updated": "2026-08-09T16:28:54.208823+00:00",
       "prior_n": 7,
       "prior_mean": 0.597,
       "seeded": true
@@ -76,7 +75,7 @@
       "rewards": 4.179,
       "sum_sq": 2.4949,
       "n": 7,
-      "updated": "2026-08-09T15:15:28.739274+00:00",
+      "updated": "2026-08-09T16:28:54.208840+00:00",
       "prior_n": 7,
       "prior_mean": 0.597,
       "seeded": true
@@ -86,7 +85,7 @@
       "rewards": 4.179,
       "sum_sq": 2.4949,
       "n": 7,
-      "updated": "2026-08-09T15:15:28.739281+00:00",
+      "updated": "2026-08-09T16:28:54.208855+00:00",
       "prior_n": 7,
       "prior_mean": 0.597,
       "seeded": true
@@ -96,7 +95,7 @@
       "rewards": 3.486,
       "sum_sq": 2.0254,
       "n": 6,
-      "updated": "2026-08-09T15:15:28.739288+00:00",
+      "updated": "2026-08-09T16:28:54.208870+00:00",
       "prior_n": 6,
       "prior_mean": 0.581,
       "seeded": true
@@ -106,7 +105,7 @@
       "rewards": 3.486,
       "sum_sq": 2.0254,
       "n": 6,
-      "updated": "2026-08-09T15:15:28.739295+00:00",
+      "updated": "2026-08-09T16:28:54.208885+00:00",
       "prior_n": 6,
       "prior_mean": 0.581,
       "seeded": true
@@ -116,7 +115,7 @@
       "rewards": 3.486,
       "sum_sq": 2.0254,
       "n": 6,
-      "updated": "2026-08-09T15:15:28.739301+00:00",
+      "updated": "2026-08-09T16:28:54.208899+00:00",
       "prior_n": 6,
       "prior_mean": 0.581,
       "seeded": true
@@ -126,7 +125,7 @@
       "rewards": 2.815,
       "sum_sq": 1.5848,
       "n": 5,
-      "updated": "2026-08-09T15:15:28.739308+00:00",
+      "updated": "2026-08-09T16:28:54.208914+00:00",
       "prior_n": 5,
       "prior_mean": 0.563,
       "seeded": true
@@ -136,7 +135,7 @@
       "rewards": 2.815,
       "sum_sq": 1.5848,
       "n": 5,
-      "updated": "2026-08-09T15:15:28.739314+00:00",
+      "updated": "2026-08-09T16:28:54.208926+00:00",
       "prior_n": 5,
       "prior_mean": 0.563,
       "seeded": true
@@ -146,7 +145,7 @@
       "rewards": 2.815,
       "sum_sq": 1.5848,
       "n": 5,
-      "updated": "2026-08-09T15:15:28.739320+00:00",
+      "updated": "2026-08-09T16:28:54.208938+00:00",
       "prior_n": 5,
       "prior_mean": 0.563,
       "seeded": true
@@ -156,7 +155,7 @@
       "rewards": 2.188,
       "sum_sq": 1.1968,
       "n": 4,
-      "updated": "2026-08-09T15:15:28.739327+00:00",
+      "updated": "2026-08-09T16:28:54.208952+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -166,7 +165,7 @@
       "rewards": 2.188,
       "sum_sq": 1.1968,
       "n": 4,
-      "updated": "2026-08-09T15:15:28.739334+00:00",
+      "updated": "2026-08-09T16:28:54.208965+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -176,7 +175,7 @@
       "rewards": 2.188,
       "sum_sq": 1.1968,
       "n": 4,
-      "updated": "2026-08-09T15:15:28.739340+00:00",
+      "updated": "2026-08-09T16:28:54.208979+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -186,7 +185,7 @@
       "rewards": 2.188,
       "sum_sq": 1.1968,
       "n": 4,
-      "updated": "2026-08-09T15:15:28.739346+00:00",
+      "updated": "2026-08-09T16:28:54.208995+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -196,7 +195,7 @@
       "rewards": 2.188,
       "sum_sq": 1.1968,
       "n": 4,
-      "updated": "2026-08-09T15:15:28.739353+00:00",
+      "updated": "2026-08-09T16:28:54.209008+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -206,7 +205,7 @@
       "rewards": 2.188,
       "sum_sq": 1.1968,
       "n": 4,
-      "updated": "2026-08-09T15:15:28.739359+00:00",
+      "updated": "2026-08-09T16:28:54.209022+00:00",
       "prior_n": 4,
       "prior_mean": 0.547,
       "seeded": true
@@ -216,7 +215,7 @@
       "rewards": 1.59,
       "sum_sq": 0.8427,
       "n": 3,
-      "updated": "2026-08-09T15:15:28.739379+00:00",
+      "updated": "2026-08-09T16:28:54.209036+00:00",
       "prior_n": 3,
       "prior_mean": 0.53,
       "seeded": true
@@ -226,7 +225,7 @@
       "rewards": 1.59,
       "sum_sq": 0.8427,
       "n": 3,
-      "updated": "2026-08-09T15:15:28.739385+00:00",
+      "updated": "2026-08-09T16:28:54.209051+00:00",
       "prior_n": 3,
       "prior_mean": 0.53,
       "seeded": true
@@ -236,7 +235,7 @@
       "rewards": 1.59,
       "sum_sq": 0.8427,
       "n": 3,
-      "updated": "2026-08-09T15:15:28.739391+00:00",
+      "updated": "2026-08-09T16:28:54.209066+00:00",
       "prior_n": 3,
       "prior_mean": 0.53,
       "seeded": true
@@ -246,7 +245,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739398+00:00",
+      "updated": "2026-08-09T16:28:54.209080+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -256,7 +255,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739404+00:00",
+      "updated": "2026-08-09T16:28:54.209094+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -266,7 +265,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739410+00:00",
+      "updated": "2026-08-09T16:28:54.209106+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -276,7 +275,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739417+00:00",
+      "updated": "2026-08-09T16:28:54.209121+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -286,7 +285,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739423+00:00",
+      "updated": "2026-08-09T16:28:54.209135+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -296,7 +295,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739429+00:00",
+      "updated": "2026-08-09T16:28:54.209149+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -306,7 +305,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739436+00:00",
+      "updated": "2026-08-09T16:28:54.209162+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -316,7 +315,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739442+00:00",
+      "updated": "2026-08-09T16:28:54.209173+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -326,7 +325,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739448+00:00",
+      "updated": "2026-08-09T16:28:54.209187+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -336,7 +335,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739455+00:00",
+      "updated": "2026-08-09T16:28:54.209200+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -346,7 +345,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739461+00:00",
+      "updated": "2026-08-09T16:28:54.209213+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -356,7 +355,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739467+00:00",
+      "updated": "2026-08-09T16:28:54.209225+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -366,7 +365,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739473+00:00",
+      "updated": "2026-08-09T16:28:54.209237+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -376,7 +375,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739479+00:00",
+      "updated": "2026-08-09T16:28:54.209248+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -386,7 +385,7 @@
       "rewards": 1.028,
       "sum_sq": 0.5284,
       "n": 2,
-      "updated": "2026-08-09T15:15:28.739485+00:00",
+      "updated": "2026-08-09T16:28:54.209259+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -396,7 +395,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739492+00:00",
+      "updated": "2026-08-09T16:28:54.209272+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -406,7 +405,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739498+00:00",
+      "updated": "2026-08-09T16:28:54.209284+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -416,7 +415,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739504+00:00",
+      "updated": "2026-08-09T16:28:54.209297+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -426,7 +425,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739511+00:00",
+      "updated": "2026-08-09T16:28:54.209337+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -436,7 +435,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739517+00:00",
+      "updated": "2026-08-09T16:28:54.209351+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -446,7 +445,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739523+00:00",
+      "updated": "2026-08-09T16:28:54.209363+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -456,7 +455,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739529+00:00",
+      "updated": "2026-08-09T16:28:54.209376+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -466,7 +465,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739536+00:00",
+      "updated": "2026-08-09T16:28:54.209388+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -476,7 +475,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739542+00:00",
+      "updated": "2026-08-09T16:28:54.209399+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -486,7 +485,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739548+00:00",
+      "updated": "2026-08-09T16:28:54.209411+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -496,7 +495,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739554+00:00",
+      "updated": "2026-08-09T16:28:54.209423+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -506,7 +505,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739560+00:00",
+      "updated": "2026-08-09T16:28:54.209435+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -516,7 +515,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739566+00:00",
+      "updated": "2026-08-09T16:28:54.209448+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -526,7 +525,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739572+00:00",
+      "updated": "2026-08-09T16:28:54.209460+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -536,7 +535,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739578+00:00",
+      "updated": "2026-08-09T16:28:54.209471+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -546,7 +545,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739585+00:00",
+      "updated": "2026-08-09T16:28:54.209482+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -556,7 +555,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739591+00:00",
+      "updated": "2026-08-09T16:28:54.209495+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -566,7 +565,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739597+00:00",
+      "updated": "2026-08-09T16:28:54.209508+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -576,7 +575,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739603+00:00",
+      "updated": "2026-08-09T16:28:54.209521+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -586,7 +585,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739610+00:00",
+      "updated": "2026-08-09T16:28:54.209533+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -596,7 +595,7 @@
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T15:15:28.739616+00:00",
+      "updated": "2026-08-09T16:28:54.209546+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -606,337 +605,337 @@
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744280+00:00"
+      "updated": "2026-08-09T16:28:54.215934+00:00"
     },
     "cults::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744293+00:00"
+      "updated": "2026-08-09T16:28:54.215948+00:00"
     },
     "cults::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744298+00:00"
+      "updated": "2026-08-09T16:28:54.215954+00:00"
     },
     "cults::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744301+00:00"
+      "updated": "2026-08-09T16:28:54.215956+00:00"
     },
     "con_artists::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744310+00:00"
+      "updated": "2026-08-09T16:28:54.215966+00:00"
     },
     "con_artists::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744318+00:00"
+      "updated": "2026-08-09T16:28:54.215974+00:00"
     },
     "con_artists::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744320+00:00"
+      "updated": "2026-08-09T16:28:54.215976+00:00"
     },
     "con_artists::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744323+00:00"
+      "updated": "2026-08-09T16:28:54.215979+00:00"
     },
     "con_artists::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744325+00:00"
+      "updated": "2026-08-09T16:28:54.215981+00:00"
     },
     "mind_control_history::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744330+00:00"
+      "updated": "2026-08-09T16:28:54.215986+00:00"
     },
     "mind_control_history::question_hook::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744336+00:00"
+      "updated": "2026-08-09T16:28:54.215991+00:00"
     },
     "mind_control_history::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744338+00:00"
+      "updated": "2026-08-09T16:28:54.215993+00:00"
     },
     "mind_control_history::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744340+00:00"
+      "updated": "2026-08-09T16:28:54.215996+00:00"
     },
     "mind_control_history::timeline::afternoon": {
-      "plays": 1,
+      "plays": 0,
       "rewards": 0.0,
-      "sum_sq": 6.0,
-      "n": 3,
-      "updated": "2026-08-09T15:19:17.934436+00:00"
+      "sum_sq": 0.0,
+      "n": 0,
+      "updated": "2026-08-09T16:28:54.215998+00:00"
     },
     "mind_control_history::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744345+00:00"
+      "updated": "2026-08-09T16:28:54.216000+00:00"
     },
     "mind_control_history::red_flag::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744348+00:00"
+      "updated": "2026-08-09T16:28:54.216002+00:00"
     },
     "interrogation::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744350+00:00"
+      "updated": "2026-08-09T16:28:54.216005+00:00"
     },
     "interrogation::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744358+00:00"
+      "updated": "2026-08-09T16:28:54.216016+00:00"
     },
     "interrogation::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744361+00:00"
+      "updated": "2026-08-09T16:28:54.216019+00:00"
     },
     "interrogation::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744515+00:00"
+      "updated": "2026-08-09T16:28:54.216021+00:00"
     },
     "interrogation::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744519+00:00"
+      "updated": "2026-08-09T16:28:54.216023+00:00"
     },
     "interrogation::red_flag::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744521+00:00"
+      "updated": "2026-08-09T16:28:54.216025+00:00"
     },
     "coercive_control::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744524+00:00"
+      "updated": "2026-08-09T16:28:54.216028+00:00"
     },
     "coercive_control::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744535+00:00"
+      "updated": "2026-08-09T16:28:54.216037+00:00"
     },
     "coercive_control::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744537+00:00"
+      "updated": "2026-08-09T16:28:54.216040+00:00"
     },
     "coercive_control::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744540+00:00"
+      "updated": "2026-08-09T16:28:54.216042+00:00"
     },
     "mass_psychology::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744546+00:00"
+      "updated": "2026-08-09T16:28:54.216048+00:00"
     },
     "mass_psychology::chilling_fact::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744549+00:00"
+      "updated": "2026-08-09T16:28:54.216050+00:00"
     },
     "mass_psychology::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744554+00:00"
+      "updated": "2026-08-09T16:28:54.216055+00:00"
     },
     "mass_psychology::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744556+00:00"
+      "updated": "2026-08-09T16:28:54.216058+00:00"
     },
     "mass_psychology::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744559+00:00"
+      "updated": "2026-08-09T16:28:54.216060+00:00"
     },
     "mass_psychology::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744562+00:00"
+      "updated": "2026-08-09T16:28:54.216062+00:00"
     },
     "brainwashing_myths::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744567+00:00"
+      "updated": "2026-08-09T16:28:54.216067+00:00"
     },
     "brainwashing_myths::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744575+00:00"
+      "updated": "2026-08-09T16:28:54.216074+00:00"
     },
     "brainwashing_myths::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744577+00:00"
+      "updated": "2026-08-09T16:28:54.216076+00:00"
     },
     "brainwashing_myths::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744580+00:00"
+      "updated": "2026-08-09T16:28:54.216079+00:00"
     },
     "brainwashing_myths::confession::afternoon": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.0,
-      "sum_sq": 0.0,
-      "n": 0,
-      "updated": "2026-08-09T15:15:28.744583+00:00"
+      "sum_sq": 6.0,
+      "n": 3,
+      "updated": "2026-08-09T16:33:34.869560+00:00"
     },
     "brainwashing_myths::red_flag::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744585+00:00"
+      "updated": "2026-08-09T16:28:54.216084+00:00"
     },
     "stoic_defense::case_file::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744588+00:00"
+      "updated": "2026-08-09T16:28:54.216086+00:00"
     },
     "stoic_defense::warning::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744595+00:00"
+      "updated": "2026-08-09T16:28:54.216093+00:00"
     },
     "stoic_defense::plot_twist::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744598+00:00"
+      "updated": "2026-08-09T16:28:54.216095+00:00"
     },
     "stoic_defense::timeline::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744601+00:00"
+      "updated": "2026-08-09T16:28:54.216098+00:00"
     },
     "stoic_defense::confession::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744603+00:00"
+      "updated": "2026-08-09T16:28:54.216100+00:00"
     },
     "stoic_defense::red_flag::afternoon": {
       "plays": 0,
       "rewards": 0.0,
       "sum_sq": 0.0,
       "n": 0,
-      "updated": "2026-08-09T15:15:28.744606+00:00"
+      "updated": "2026-08-09T16:28:54.216102+00:00"
     }
   },
   "videos": [
     {
-      "title": "Project Stargate: The Psychic Spy Program | Coercion Files",
-      "hook": "Project Stargate: The Psychic Spy Program",
-      "pillar": "mind_control_history",
-      "hook_style": "timeline",
-      "arm_key": "mind_control_history::timeline::afternoon",
-      "text_sha": "015afd3c5e745272a112ce1ecf495242471b07708182dad5dd31268840eedab0",
-      "text": "Project Stargate: The Psychic Spy Program It started with charm. It ended with control. This isn't a theory. It's a documented pattern of human behavior. Studies on persuasion show this one factor explains more outcomes than any other — and it's the one nobody checks. The moment you name it, it loses its power over you. That's why awareness is the single strongest defense. Follow Coercion Files — coercion decoded, daily.",
+      "title": "Your Phone Isn't Brainwashing You. Worse. | Coercion Files",
+      "hook": "Your Phone Isn't Brainwashing You. Worse.",
+      "pillar": "brainwashing_myths",
+      "hook_style": "confession",
+      "arm_key": "brainwashing_myths::confession::afternoon",
+      "text_sha": "194e69f3e7558ae4bcbd2e8b28819c1de3429f5319a463fffba3371be11d324b",
+      "text": "Your Phone Isn't Brainwashing You. Worse. Later, the insider admitted the script. There's a reason this works on nearly everyone. It's wired into how we think. Research into human behavior confirms it: familiarity breeds acceptance. The more you hear something, the more true it feels. Once you recognize the pattern, you take your power back. Awareness is the only defense that actually works. Follow Coercion Files for the psychology they don't teach you in school.",
       "source": "template",
-      "run_id": "20260809T151528",
-      "ts": "2026-08-09T15:19:05.039139+00:00"
+      "run_id": "20260809T162854",
+      "ts": "2026-08-09T16:33:19.227451+00:00"
     }
   ],
   "attribution": {
-    "eutVT60gPvs": {
-      "arm_key": "mind_control_history::timeline::afternoon",
+    "_ol5ge90-u8": {
+      "arm_key": "brainwashing_myths::confession::afternoon",
       "platform": "youtube",
-      "title": "Project Stargate: The Psychic Spy Program | Coercion Files",
-      "ts": "2026-08-09T15:19:09.189018+00:00",
+      "title": "Your Phone Isn't Brainwashing You. Worse. | Coercion Files",
+      "ts": "2026-08-09T16:33:24.507441+00:00",
       "credited": false
     },
-    "2034468967460521": {
-      "arm_key": "mind_control_history::timeline::afternoon",
+    "1624303202734288": {
+      "arm_key": "brainwashing_myths::confession::afternoon",
       "platform": "facebook",
-      "title": "Project Stargate: The Psychic Spy Program | Coercion Files",
-      "ts": "2026-08-09T15:19:17.599876+00:00",
+      "title": "Your Phone Isn't Brainwashing You. Worse. | Coercion Files",
+      "ts": "2026-08-09T16:33:34.250134+00:00",
       "credited": false
     }
   },
@@ -944,18 +943,18 @@
     "2026-08-09": {
       "youtube": {
         "count": 1,
-        "last_ts": "2026-08-09T15:19:09.188117+00:00"
+        "last_ts": "2026-08-09T16:33:24.506264+00:00"
       },
       "facebook": {
         "count": 1,
-        "last_ts": "2026-08-09T15:19:17.598976+00:00"
+        "last_ts": "2026-08-09T16:33:34.248963+00:00"
       }
     }
   },
   "penalty_log": [
     {
-      "ts": "2026-08-09T15:19:17.932286+00:00",
-      "arm": "mind_control_history::timeline::afternoon",
+      "ts": "2026-08-09T16:33:34.866841+00:00",
+      "arm": "brainwashing_myths::confession::afternoon",
       "reason": "instagram_upload_failed",
       "penalty": -2.0,
       "platform": "instagram"
@@ -963,15 +962,15 @@
   ],
   "reward_log": [
     {
-      "ts": "2026-08-09T15:19:17.933460+00:00",
-      "arm": "mind_control_history::timeline::afternoon",
+      "ts": "2026-08-09T16:33:34.868300+00:00",
+      "arm": "brainwashing_myths::confession::afternoon",
       "reason": "youtube_published",
       "reward": 1.0,
       "platform": "youtube"
     },
     {
-      "ts": "2026-08-09T15:19:17.934443+00:00",
-      "arm": "mind_control_history::timeline::afternoon",
+      "ts": "2026-08-09T16:33:34.869573+00:00",
+      "arm": "brainwashing_myths::confession::afternoon",
       "reason": "facebook_published",
       "reward": 1.0,
       "platform": "facebook"
@@ -981,61 +980,50 @@
     "youtube": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-09T15:19:09.186972+00:00"
+      "last_check": "2026-08-09T16:33:24.504831+00:00"
     },
     "facebook": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-09T15:19:17.597741+00:00"
+      "last_check": "2026-08-09T16:33:34.247437+00:00"
     },
     "instagram": {
       "failures": 1,
       "healthy": true,
-      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"ArUQ1lvAnCL1OVuLuX8yJDw\"}}",
-      "last_check": "2026-08-09T15:19:17.931117+00:00"
+      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"ASef3xgKlGDN-CJkJ_NSNVc\"}}",
+      "last_check": "2026-08-09T16:33:34.865492+00:00"
     }
   },
   "model_version": 3,
-  "created_at": "2026-08-09T15:15:28.733288+00:00",
+  "created_at": "2026-08-09T16:28:54.198367+00:00",
   "prior_log": [
     {
-      "ts": "2026-08-09T15:15:28.739618+00:00",
+      "ts": "2026-08-09T16:28:54.209553+00:00",
       "source": "competitor_titles",
       "arms_seeded": 60
     }
   ],
   "platform_arms": {
     "instagram": {
-      "mind_control_history::timeline::afternoon": {
+      "brainwashing_myths::confession::afternoon": {
         "n": 1,
         "rewards": -2.0,
         "sum_sq": 4.0
       }
     },
     "youtube": {
-      "mind_control_history::timeline::afternoon": {
+      "brainwashing_myths::confession::afternoon": {
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
       }
     },
     "facebook": {
-      "mind_control_history::timeline::afternoon": {
+      "brainwashing_myths::confession::afternoon": {
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
       }
     }
   }
-=======
-  "arms": {},
-  "videos": [],
-  "attribution": {},
-  "post_log": {},
-  "penalty_log": [],
-  "reward_log": [],
-  "health": {},
-  "model_version": 3,
-  "created_at": "2026-08-09T15:19:51.925368+00:00"
->>>>>>> Stashed changes
 }
