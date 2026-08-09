@@ -183,3 +183,59 @@ def test_release_claim_frees_slot(ml: LearningSystem):
     ml.release_claim("youtube", slot)
     ok, _ = ml.claim_publish("youtube", slot, run_id="run-B")
     assert ok is True
+
+
+# ── V2.8 append-only event log ("the diary" — memory survives ANY crash) ──
+
+def test_events_appended_on_mutations(ml: LearningSystem, tmp_path: Path):
+    ml.choose_strategy()
+    ml.apply_reward("cults::warning::morning", "r", 2.0)
+    ml.record_post("youtube")
+    ml.record_video_id("youtube", "vid123", "cults::warning::morning", "T")
+    assert ml.events_path.exists()
+    text = ml.events_path.read_text(encoding="utf-8")
+    assert '"type": "reward"' in text
+    assert '"type": "post"' in text
+    assert '"type": "attribution"' in text
+
+
+def test_corrupt_store_rebuilds_from_events(tmp_path: Path):
+    """The KEY guarantee: corrupt the store, ML memory still comes back."""
+    path = tmp_path / "store.json"
+    ml = LearningSystem(store_path=path)
+    arm = ml.choose_strategy()["arm_key"]
+    ml.apply_reward(arm, "r", 2.0)
+    ml.apply_penalty(arm, "p", 0.5)
+    ml.record_post("youtube")
+    ml.record_video_id("youtube", "vidX", arm, "Title")
+    # now destroy BOTH the store AND its .bak with conflict markers (the CI
+    # bug) — only the event log survives, exactly the worst-case scenario
+    corrupted = "{\n<<<<<<< Updated upstream\n}\n=======\n}\n>>>>>>> Stashed changes\n"
+    path.write_text(corrupted, encoding="utf-8")
+    path.with_suffix(".json.bak").write_text(corrupted, encoding="utf-8")
+    reloaded = LearningSystem(store_path=path)
+    assert reloaded.store_ok is True          # recovered, not blocked
+    assert reloaded.data["rebuilt_from_events"] is True
+    assert "vidX" in reloaded.data["attribution"]
+    assert reloaded.data["attribution"]["vidX"]["arm_key"] == arm
+    assert arm in reloaded.data["arms"]
+    assert reloaded.data["arms"][arm]["n"] >= 2  # reward + penalty replayed
+    assert reloaded.data["post_log"]  # posts replayed
+    # healed store written to disk
+    assert json.loads(path.read_text(encoding="utf-8")) is not None
+
+
+def test_rebuild_heals_and_saves(tmp_path: Path):
+    path = tmp_path / "store.json"
+    ml = LearningSystem(store_path=path)
+    ml.apply_reward("cults::question_hook::morning", "r", 1.0)
+    path.write_text("<<<<<<< broken", encoding="utf-8")
+    LearningSystem(store_path=path)  # constructor heals via rebuild
+    healed = json.loads(path.read_text(encoding="utf-8"))
+    assert healed["arms"]["cults::question_hook::morning"]["n"] == 1
+
+
+def test_no_events_and_no_store_still_fresh(tmp_path: Path):
+    ml = LearningSystem(store_path=tmp_path / "nope.json")
+    assert ml.store_ok is True
+    assert ml.can_post("youtube", 4, 0)[0] is True

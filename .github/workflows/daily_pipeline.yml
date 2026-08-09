@@ -134,7 +134,7 @@ jobs:
           git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
             || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true
           # NEVER commit conflict markers or invalid JSON — corruption = RED run
-          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json 2>/dev/null; then
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json data/*.jsonl 2>/dev/null; then
             echo "::error::Conflict markers in data/*.json — run scripts/repair_data_files.py --apply first."
             exit 1
           fi
@@ -142,7 +142,9 @@ jobs:
             python -m json.tool "$f" >/dev/null || { echo "::error::Invalid JSON: $f"; exit 1; }
           done
           git add -f data/learning_store.json data/run_journal.json \
-            data/monetization_progress.json data/metrics_report.md
+            data/monetization_progress.json data/metrics_report.md \
+            data/events.jsonl data/strategy_state.json data/strategy_notes.md \
+            data/health_report.md
           if git diff --cached --quiet; then
             echo "No data changes to commit"
           else

@@ -18,6 +18,7 @@ The self-healing layer of the pipeline:
   • PlatformHealth   — wired to ML engine: quarantine platforms that fail.
 """
 
+import contextlib
 import json
 import logging
 import os
@@ -120,6 +121,9 @@ class RepairJournal:
 
     def _write(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        # V2.8: keep a snapshot so a CI-corrupted journal never erases history
+        with contextlib.suppress(OSError):
+            shutil.copy2(self.path, self.path.with_suffix(self.path.suffix + ".bak"))
         tmp = self.path.with_suffix(".tmp")
         tmp.write_text(json.dumps(self.data, indent=2, ensure_ascii=False),
                        encoding="utf-8")

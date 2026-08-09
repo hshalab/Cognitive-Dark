@@ -94,20 +94,31 @@ class LearningSystem:
         # loaded — every posting guard then BLOCKS publishing. A run with no
         # memory must never be allowed to double-post.
         self.store_ok = True
+        self._rebuilt = False
         self.data = self._load()
         self._ensure_schema()
+        # If we rebuilt from the event log, persist the healed store NOW so
+        # the next process loads the real file (no repeated replay).
+        if self._rebuilt and self.store_ok:
+            try:
+                self.save()
+                logger.warning("Healed ML store written to %s", self.store_path)
+            except Exception as exc:
+                logger.warning("Could not persist healed store: %s", exc)
 
     # ── persistence ──
     def _load(self) -> dict:
         """Load the store; never silently return a broken state.
 
-        Order: main file → .bak snapshot. If both are unusable we set
-        self.store_ok = False so can_post()/dedup_guard() refuse to publish
-        until scripts/repair_data_files.py restores a clean store. A missing
-        store (fresh install) is fine — there is simply nothing to guard yet.
+        Order: main file → .bak snapshot → rebuild from the append-only event
+        log. Only if ALL are unusable do we set store_ok=False so that
+        can_post()/dedup_guard() refuse to publish until
+        scripts/repair_data_files.py restores the store. A missing store
+        (fresh install) is fine — there is simply nothing to guard yet.
         """
         bak = self.store_path.with_suffix(self.store_path.suffix + ".bak")
-        if not self.store_path.exists() and not bak.exists():
+        if not self.store_path.exists() and not bak.exists() \
+                and not self.events_path.exists():
             return {}  # fresh start — no memory yet
 
         for path in (self.store_path, bak):
@@ -126,10 +137,25 @@ class LearningSystem:
             except (json.JSONDecodeError, ValueError, OSError) as exc:
                 logger.critical("ML store unreadable at %s (%s)", path, exc)
 
+        # LAST LINE OF DEFENSE: rebuild memory from the append-only event log
+        # (the "diary"). This is what guarantees the ML NEVER loses its
+        # learning — even if both store copies get corrupted by CI conflicts.
+        rebuilt = self._rebuild_from_events()
+        if rebuilt is not None:
+            self._rebuilt = True
+            self.store_ok = True
+            logger.warning(
+                "ML store missing/corrupt — rebuilt from event log "
+                "(%d events replayed, %d arms, %d videos)",
+                rebuilt.get("events_replayed", 0),
+                len(rebuilt.get("arms", {})),
+                len(rebuilt.get("videos", [])))
+            return rebuilt
+
         self.store_ok = False
         logger.critical(
-            "No usable ML store (main + backup both broken). All posting is "
-            "BLOCKED until scripts/repair_data_files.py succeeds.")
+            "No usable ML store (main + backup + event log all broken). "
+            "All posting is BLOCKED until scripts/repair_data_files.py succeeds.")
         return {}
 
     def save(self) -> None:
@@ -154,6 +180,135 @@ class LearningSystem:
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(self.data, fh, ensure_ascii=False, indent=2)
         os.replace(tmp, self.store_path)
+
+    # ── append-only event log (the "diary" — memory survives any crash) ──
+    @property
+    def events_path(self) -> Path:
+        """Events live next to the store: store.json → store.events.jsonl."""
+        return self.store_path.with_suffix(self.store_path.suffix + ".events.jsonl")
+
+    def _append_event(self, etype: str, **payload) -> None:
+        """Append one immutable event line. Never raises (memory is best-effort)."""
+        try:
+            line = {"ts": _now_iso(), "type": etype, **payload}
+            with open(self.events_path, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(line, ensure_ascii=False) + "\n")
+        except OSError as exc:
+            logger.warning("Could not append event %s: %s", etype, exc)
+
+    @staticmethod
+    def _arm_in(data: dict, key: str) -> dict:
+        """Create/get an arm dict inside an arbitrary data root (for replay)."""
+        return data["arms"].setdefault(key, {
+            "plays": 0, "rewards": 0.0, "sum_sq": 0.0, "n": 0,
+            "updated": _now_iso(),
+        })
+
+    def _rebuild_from_events(self) -> dict | None:
+        """Replay the event log into a fresh, valid store. None if unusable."""
+        ep = self.events_path
+        if not ep.exists():
+            return None
+        events = []
+        try:
+            for line in ep.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                events.append(json.loads(line))
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.error("Event log unreadable (%s) — cannot rebuild", exc)
+            return None
+        if not events:
+            return None
+
+        data = {
+            "arms": {}, "videos": [], "attribution": {}, "post_log": {},
+            "publish_claims": {}, "penalty_log": [], "reward_log": [],
+            "health": {}, "model_version": 3,
+            "created_at": events[0].get("ts", _now_iso()),
+            "rebuilt_from_events": True,
+            "rebuilt_ts": _now_iso(),
+            "events_replayed": len(events),
+        }
+        for ev in events:
+            t = ev.get("type")
+            ts = ev.get("ts", _now_iso())
+            try:
+                if t == "reward":
+                    arm = self._arm_in(data, ev["arm"])
+                    w = float(ev["w"])
+                    arm["rewards"] += w
+                    arm["sum_sq"] += w * w
+                    arm["n"] += 1
+                    arm["updated"] = ts
+                    data["reward_log"].append({"ts": ts, "arm": ev["arm"],
+                                               "reward": round(w, 4),
+                                               "platform": ev.get("platform")})
+                elif t == "penalty":
+                    arm = self._arm_in(data, ev["arm"])
+                    w = -abs(float(ev["w"]))
+                    arm["rewards"] += w
+                    arm["sum_sq"] += w * w
+                    arm["n"] += 1
+                    arm["updated"] = ts
+                    data["penalty_log"].append({"ts": ts, "arm": ev["arm"],
+                                                "reason": ev.get("reason", ""),
+                                                "penalty": ev.get("w"),
+                                                "platform": ev.get("platform")})
+                elif t == "post":
+                    date, plat = ev["date"], ev["platform"]
+                    info = data["post_log"].setdefault(date, {}).setdefault(
+                        plat, {"count": 0, "last_ts": None})
+                    info["count"] += 1
+                    info["last_ts"] = ev.get("ts")
+                elif t == "video":
+                    rec = dict(ev.get("rec", {}))
+                    rec.setdefault("ts", ts)
+                    data["videos"].append(rec)
+                elif t == "attribution":
+                    data["attribution"][str(ev["video_id"])] = {
+                        "arm_key": ev.get("arm_key"), "platform": ev.get("platform"),
+                        "title": ev.get("title", ""), "ts": ts, "credited": False,
+                    }
+                elif t == "credit":
+                    a = data["attribution"].get(str(ev.get("video_id")))
+                    if a:
+                        a["credited"] = True
+                        a["credited_at"] = ts
+                        a["reward"] = ev.get("reward", 0)
+                elif t == "claim":
+                    data["publish_claims"].setdefault(ev["platform"], {})[ev["iso"]] = {
+                        "run_id": ev.get("run_id"), "ts": ts}
+                elif t == "health_failure":
+                    h = data["health"].setdefault(ev["platform"],
+                                                  {"failures": 0, "healthy": True})
+                    h["failures"] = h.get("failures", 0) + 1
+                    h["last_reason"] = ev.get("reason", "")
+                    h["last_check"] = ts
+                    if h["failures"] >= 3:
+                        h["healthy"] = False
+                elif t == "health_success":
+                    data["health"][ev["platform"]] = {"failures": 0, "healthy": True,
+                                                      "last_check": ts}
+                elif t == "seed":
+                    for key, (mean, n) in (ev.get("priors") or {}).items():
+                        arm = self._arm_in(data, key)
+                        if arm.get("n", 0) == 0:
+                            arm.update({
+                                "rewards": round(float(mean) * int(n), 4),
+                                "sum_sq": round((float(mean) ** 2) * int(n), 4),
+                                "n": int(n), "prior_n": int(n),
+                                "prior_mean": round(float(mean), 4),
+                                "seeded": True, "updated": ts})
+            except (KeyError, TypeError, ValueError) as exc:
+                logger.warning("Skipping unparseable event %s: %s", t, exc)
+
+        data["reward_log"] = data["reward_log"][-500:]
+        data["penalty_log"] = data["penalty_log"][-500:]
+        if len(data["videos"]) > 2000:
+            data["videos"] = data["videos"][-2000:]
+        return data
 
     def _ensure_schema(self) -> None:
         d = self.data
@@ -225,6 +380,13 @@ class LearningSystem:
                 seeded += 1
         self.data.setdefault("prior_log", []).append({
             "ts": _now_iso(), "source": source, "arms_seeded": seeded})
+        if seeded:
+            priors_for_log = {}
+            for key, arm in self.data["arms"].items():
+                if arm.get("seeded") and arm.get("prior_n"):
+                    priors_for_log[key] = [arm.get("prior_mean", 0.0), arm.get("prior_n")]
+            self._append_event("seed", source=source,
+                               arms_seeded=seeded, priors=priors_for_log)
         self.save()
         logger.info("🌱 Seeded %d arms with warm-start priors (source=%s)", seeded, source)
         return {"arms_seeded": seeded, "source": source}
@@ -357,6 +519,8 @@ class LearningSystem:
             "platform": platform,
         })
         self._trim("reward_log")
+        self._append_event("reward", arm=arm_key, w=round(reward, 4),
+                           platform=platform)
         self.save()
 
     def apply_penalty(self, arm_key: str, reason: str, weight: float = None,
@@ -370,6 +534,8 @@ class LearningSystem:
             "platform": platform,
         })
         self._trim("penalty_log")
+        self._append_event("penalty", arm=arm_key, reason=self._sanitize_reason(reason),
+                           w=abs(w), platform=platform)
         self.save()
         logger.info("PENALTY applied %s → %s (%.1f) platform=%s",
                     reason, arm_key, w, platform or "-")
@@ -386,6 +552,8 @@ class LearningSystem:
             "platform": platform,
         })
         self._trim("reward_log")
+        self._append_event("reward", arm=arm_key, reason=self._sanitize_reason(reason),
+                           w=abs(w), platform=platform)
         self.save()
         logger.info("REWARD applied %s → %s (%.1f) platform=%s",
                     reason, arm_key, w, platform or "-")
@@ -429,6 +597,8 @@ class LearningSystem:
                             key=lambda kv: kv[1].get("ts", ""))[:-500]
             for k, _ in oldest:
                 del self.data["attribution"][k]
+        self._append_event("attribution", video_id=str(video_id),
+                           arm_key=arm_key, platform=platform, title=title)
         self.save()
         logger.info("🔗 Attributed %s:%s → %s", platform, video_id, arm_key)
 
@@ -450,6 +620,7 @@ class LearningSystem:
         a["reward"] = reward
         a["breakdown"] = breakdown
         a["credited_at"] = _now_iso()
+        self._append_event("credit", video_id=vid, reward=round(reward, 4))
         if reward > 0.5:
             self.apply_reward(a["arm_key"], f"metrics:{vid[:12]}", reward, platform=platform)
         else:
@@ -499,6 +670,7 @@ class LearningSystem:
         for d in list(self.data["post_log"].keys()):
             if d < cutoff:
                 del self.data["post_log"][d]
+        self._append_event("post", platform=platform, date=today)
         self.save()
 
     # ── publish-slot claims (prevents two runs targeting the same peak) ──
@@ -566,6 +738,7 @@ class LearningSystem:
             return False, (f"slot {iso} already claimed by run "
                            f"{other.get('run_id')}")
         claims[iso] = {"run_id": run_id, "ts": _now_iso()}
+        self._append_event("claim", platform=platform, iso=iso, run_id=run_id)
         self.save()
         return True, "claimed"
 
@@ -615,6 +788,7 @@ class LearningSystem:
         self.data["videos"].append(rec)
         if len(self.data["videos"]) > 2000:
             self.data["videos"] = self.data["videos"][-2000:]
+        self._append_event("video", rec=rec)
         self.save()
 
     # ── platform health (auto-repair integration) ──
@@ -661,6 +835,8 @@ class LearningSystem:
         if h["failures"] >= 3:
             h["healthy"] = False
             logger.warning("⚠️ Platform %s quarantined after %d failures", platform, h["failures"])
+        self._append_event("health_failure", platform=platform,
+                           reason=self._sanitize_reason(reason))
         self.save()
 
     def report_success(self, platform: str) -> None:
@@ -668,6 +844,7 @@ class LearningSystem:
         h["failures"] = 0
         h["healthy"] = True
         h["last_check"] = _now_iso()
+        self._append_event("health_success", platform=platform)
         self.save()
 
     # ── insight feed for script prompt (closes the learning loop) ──

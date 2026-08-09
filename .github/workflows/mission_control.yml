@@ -1,0 +1,48 @@
+name: "🛰️ Mission Control (weekly health & growth review)"
+
+on:
+  schedule:
+    # Every Monday 09:00 UTC — the "doctor's visit"
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Same group as the daily pipeline → never runs while a video is being made,
+# and never races on git (single writer philosophy for data commits).
+concurrency:
+  group: cognitive-dark-pipeline
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Mission Control (read-only audit → health_report.md)
+        run: python scripts/mission_control.py || true
+
+      - name: Commit report (conflict-safe)
+        run: |
+          set -uo pipefail
+          git config user.name "Cognitive Dark Brain"
+          git config user.email "brain@cognitivedark.ai"
+          git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
+            || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json data/*.jsonl 2>/dev/null; then
+            echo "::error::Conflict markers in data/*.json — run scripts/repair_data_files.py --apply first."
+            exit 1
+          fi
+          git add -f data/health_report.md data/strategy_notes.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "🛰️ Mission Control: weekly health report [skip ci]"
+            git push
+          fi
+        continue-on-error: true

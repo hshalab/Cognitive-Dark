@@ -47,6 +47,21 @@ def is_clean(text: str) -> bool:
     return True
 
 
+def is_clean_jsonl(text: str) -> bool:
+    """True if every non-empty line is valid JSON and no conflict markers."""
+    if MARKER_RE.search(text):
+        return False
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            json.loads(line)
+        except (json.JSONDecodeError, ValueError):
+            return False
+    return True
+
+
 def git_clean_version(rel_path: str) -> str | None:
     """Return the newest clean content for rel_path from git history, or None."""
     try:
@@ -73,14 +88,15 @@ def git_clean_version(rel_path: str) -> str | None:
 def repair(apply: bool) -> tuple[int, int, list[str]]:
     """Scan + optionally fix. Returns (broken, fixed, notes)."""
     broken, fixed, notes = 0, 0, []
-    for path in sorted(DATA_DIR.glob("*.json")):
+    for path in sorted(list(DATA_DIR.glob("*.json")) + list(DATA_DIR.glob("*.jsonl"))):
         rel = path.relative_to(ROOT).as_posix()
         try:
             text = path.read_text(encoding="utf-8")
         except OSError as exc:
             notes.append(f"{rel}: unreadable ({exc})")
             continue
-        if is_clean(text):
+        validator = is_clean if path.suffix == ".json" else is_clean_jsonl
+        if validator(text):
             continue
         broken += 1
         why = "conflict markers" if MARKER_RE.search(text) else "invalid JSON"
@@ -91,10 +107,10 @@ def repair(apply: bool) -> tuple[int, int, list[str]]:
         if apply:
             path.write_text(clean, encoding="utf-8")
             # fresh-validate what we wrote
-            if is_clean(path.read_text(encoding="utf-8")):
+            if validator(path.read_text(encoding="utf-8")):
                 fixed += 1
                 notes.append(f"✅ {rel}: {why} → restored from git history "
-                             f"({len(clean)} bytes, valid JSON)")
+                             f"({len(clean)} bytes, valid)")
             else:
                 notes.append(f"⚠️  {rel}: restore did not validate — inspect manually")
         else:
@@ -105,7 +121,7 @@ def repair(apply: bool) -> tuple[int, int, list[str]]:
 
 def check() -> tuple[int, list[str]]:
     broken, notes = 0, []
-    for path in sorted(DATA_DIR.glob("*.json")):
+    for path in sorted(list(DATA_DIR.glob("*.json")) + list(DATA_DIR.glob("*.jsonl"))):
         rel = path.relative_to(ROOT).as_posix()
         try:
             text = path.read_text(encoding="utf-8")
@@ -113,7 +129,8 @@ def check() -> tuple[int, list[str]]:
             broken += 1
             notes.append(f"❌ {rel}: unreadable ({exc})")
             continue
-        if not is_clean(text):
+        validator = is_clean if path.suffix == ".json" else is_clean_jsonl
+        if not validator(text):
             broken += 1
             why = "conflict markers" if MARKER_RE.search(text) else "invalid JSON"
             notes.append(f"❌ {rel}: {why}")
@@ -122,13 +139,40 @@ def check() -> tuple[int, list[str]]:
     return broken, notes
 
 
+def rebuild_store() -> tuple[int, list[str]]:
+    """Rebuild learning_store.json from the event log (self-heals corruption)."""
+    notes = []
+    try:
+        from ml_engine import LearningSystem
+        ml = LearningSystem()
+        if ml.store_ok:
+            if ml.data.get("rebuilt_from_events"):
+                notes.append(f"✅ Store rebuilt from event log ({ml.data.get('events_replayed')} events)")
+            else:
+                notes.append("✅ Store already valid — no rebuild needed")
+            return 0, notes
+        notes.append("❌ Store + backup + event log all broken — manual recovery needed")
+        return 1, notes
+    except Exception as exc:
+        notes.append(f"❌ Rebuild failed: {exc}")
+        return 1, notes
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--apply", action="store_true",
                     help="restore broken files from git history (default: report only)")
     ap.add_argument("--check", action="store_true",
                     help="validate only; exit 1 if any file is broken")
+    ap.add_argument("--rebuild", action="store_true",
+                    help="rebuild learning_store.json from the event log")
     args = ap.parse_args()
+
+    if args.rebuild:
+        code, notes = rebuild_store()
+        for n in notes:
+            print(n)
+        return code
 
     if args.check:
         broken, notes = check()

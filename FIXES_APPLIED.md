@@ -94,3 +94,48 @@ dispatch in the same window both compute the SAME next peak and schedule
 - `python scripts/repair_data_files.py --check` → all data files valid ✅
 - `PYTHONPATH=src pytest -q tests` → 78 + 7 new = **85 passed** ✅
 - `ruff check src scripts config tests` → All checks passed ✅
+
+## V2.8 — Never-Lose-Memory + Human-Mind Strategy Layer (2026-08-10)
+
+User asked: ML ko memory kabhi na khoyni chahiye, insaan jaisa sochna chahiye,
+aur channel growth / sab kuch khud manage karna chahiye. Built & tested:
+
+### 1. Memory can NEVER be lost (3-layer protection + a diary)
+- **Append-only event log** (`data/events.jsonl`) — the ML's "diary". Every
+  reward, penalty, post, video, attribution, credit, claim, health change and
+  seed is appended as one immutable line BEFORE saving. A corrupt store file
+  can't erase this — it's append-only.
+- **3-layer recovery** in `ml_engine._load()`: main store → `.bak` snapshot →
+  **rebuild from event log** (replay = full memory reconstruction). Only if ALL
+  three are broken does posting get blocked (fail-safe).
+- **Self-heal**: after a rebuild the store is immediately re-written, so the
+  next process loads the real file.
+- `.bak` snapshots added to `monetization_tracker` and `auto_repair` journal.
+- CI validates `.jsonl` + conflict markers everywhere; commit step now persists
+  `data/events.jsonl` + `strategy_state.json` + `strategy_notes.md` +
+  `health_report.md`.
+
+### 2. Human-mind decision layer (Strategy Director V2.8)
+- **Momentum detection**: hot streak (3+ wins in last 4) → exploit winners
+  (epsilon ≤ 0.08); slump (3+ losses) → fresh exploration (epsilon ≥ 0.25) +
+  volume pulled back (caps −1, gap ≥ 4h) — exactly how a human creator reacts.
+- **Variety guard**: same pillar 3x in a row → weight dampened (audience
+  boredom protection).
+- **Narrative memory** (`data/strategy_notes.md`): every decision written in
+  plain language — "kyun kya kar raha hoon" — so the owner can read the ML's
+  reasoning like a planner's diary.
+- Pillar weights now pushed INTO the ML store so the bandit actually uses them.
+
+### 3. Mission Control (`scripts/mission_control.py` + weekly workflow)
+- Read-only weekly "doctor visit": checks ML memory integrity, platform health
+  (quarantines), 7-day posting cadence, publish-slot ledger, momentum, and
+  monetization progress.
+- **GROWTH PLAYBOOK audit** — every 2026 growth lever marked ✅/⚠️/❌ so the
+  owner sees exactly which lever to pull (hook 3s, cadence, SEO, cross-post,
+  comments, IG linking).
+- Outputs `data/health_report.md`; workflow `mission_control.yml` runs Monday
+  weekly + manual. Store stays read-only → no CI race (single-writer rule).
+
+### Verification
+- 96/96 tests pass (78 + 7 V2.7 + 11 V2.8 new), Ruff clean, YAML valid.
+- Live test: corrupt store + .bak, memory fully restored from event diary.

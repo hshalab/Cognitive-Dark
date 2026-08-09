@@ -14,8 +14,10 @@ computes daily targets for the 30-day plan.
 Output: data/monetization_progress.json + prints a daily plan.
 """
 
+import contextlib
 import json
 import logging
+import shutil
 from datetime import datetime, timezone
 
 from config.settings import DATA_DIR, MONETIZATION
@@ -32,11 +34,16 @@ DEFAULTS = {
 
 
 def _load_progress() -> dict:
-    try:
-        with open(PROGRESS_PATH, encoding="utf-8") as fh:
-            return json.load(fh)
-    except (OSError, json.JSONDecodeError):
-        return {}
+    # V2.8: try main file, then .bak snapshot — never silently lose history.
+    for path in (PROGRESS_PATH, PROGRESS_PATH.with_suffix(PROGRESS_PATH.suffix + ".bak")):
+        if not path.exists():
+            continue
+        try:
+            with open(path, encoding="utf-8") as fh:
+                return json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            continue
+    return {}
 
 
 def update_progress(overrides: dict = None) -> dict:
@@ -86,6 +93,9 @@ def update_progress(overrides: dict = None) -> dict:
     ig["daily_targets"] = {"followers": max(0, int((ig_t["followers"] - ig["followers"]) / days))}
 
     PROGRESS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with contextlib.suppress(OSError):
+        shutil.copy2(PROGRESS_PATH,
+                     PROGRESS_PATH.with_suffix(PROGRESS_PATH.suffix + ".bak"))
     with open(PROGRESS_PATH, "w", encoding="utf-8") as fh:
         json.dump(prog, fh, ensure_ascii=False, indent=2)
     return prog
