@@ -44,3 +44,53 @@
 - `PYTHONPATH=src pytest -q tests` → 36 passed ✅
 - `PYTHONPATH=src python src/main.py --selftest` → all 5 stages pass + renders real MP4 ✅
 - Kokoro-ONNX constructor / `create()` signature matches code ✅
+
+## V2.7 — Double-Post & Data-Integrity Fix Pass (2026-08-10)
+
+Observed production bug: **2 videos went public at the same time and the ML
+"didn't know" about it.** Root causes found by live repro of the code:
+
+**Root cause 1 — committed conflict markers corrupted the ML store.**
+`data/learning_store.json` + `data/monetization_progress.json` contained
+`<<<<<<< Updated upstream / ======= / >>>>>>> Stashed changes` markers
+(committed by the old CI `git pull --rebase --autostash || true` +
+`git add -f` pattern). `LearningSystem._load()` silently returned `{}` on
+parse failure → every run started with ZERO memory → `can_post()` min-gap /
+daily-cap and `dedup_guard()` had no history to check → double posts were
+possible and the bandit never actually learned.
+
+**Root cause 2 — two runs picked the same publish peak.**
+`PlatformScheduler.next_peak()` is deterministic; a cron run + a manual
+dispatch in the same window both compute the SAME next peak and schedule
+`publishAt` for the same minute. The min-gap guard checks *upload* time, not
+*publish* time, so it never caught this.
+
+### Fixes applied
+1. **`scripts/repair_data_files.py` (new)** — scans `data/*.json` for conflict
+   markers / invalid JSON and restores the newest CLEAN version from git
+   history (used it to recover both broken files; all 3 data files valid now).
+2. **`src/ml_engine.py` — fail-safe store.** `_load()` never silently returns
+   `{}`: corrupt main file → tries `.bak` snapshot → if both broken,
+   `store_ok=False` and **every posting guard BLOCKS publishing** until the
+   store is repaired. `save()` keeps a `.bak` and REFUSES to overwrite a
+   corrupted store. Missing store (fresh install) still = fresh start.
+3. **`src/ml_engine.py` — publish-slot claim ledger.** New `claim_publish() /
+   release_claim() / claimed_peaks()` persist claimed `publish_at` slots in
+   the store (25h TTL). Two runs can no longer claim the same minute.
+4. **`src/scheduler.py` — `next_peak(now, reserved)`.** Skips already-claimed
+   peaks (exact-hour match, 30-min tolerance), scanning up to 8 days.
+5. **`src/main.py`** — claims the slot BEFORE upload, retries next-free peak
+   on collision, releases the claim on failure, and sanitizes crash-journal
+   errors (no raw exception strings that could embed access tokens).
+6. **CI — single writer + conflict-safe commit.** `daily_pipeline.yml`: the
+   separate `metrics-sync` job (the second writer that caused the race) is
+   merged into the build job; the commit step refuses to push conflict
+   markers / invalid JSON and turns the run RED instead of committing
+   corruption. Same guard in `war_mode.yml`; `ci.yml` validation now also
+   rejects conflict markers.
+7. **`.gitignore`** — `data/*.bak` snapshots never committed.
+
+### Verification
+- `python scripts/repair_data_files.py --check` → all data files valid ✅
+- `PYTHONPATH=src pytest -q tests` → 78 + 7 new = **85 passed** ✅
+- `ruff check src scripts config tests` → All checks passed ✅

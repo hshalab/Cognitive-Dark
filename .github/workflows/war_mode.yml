@@ -66,13 +66,23 @@ jobs:
           WAR_MODE: "true"
         run: python src/main.py
 
-      - name: Sync Learning Data
+      - name: Sync Learning Data (conflict-safe)
         if: always()
         run: |
+          set -uo pipefail
           git config user.name "Cognitive Dark Brain"
           git config user.email "brain@cognitivedark.ai"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME" || true
-          git add data/
+          # On conflict keep the freshly generated data; NEVER commit markers
+          git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
+            || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json 2>/dev/null; then
+            echo "::error::Conflict markers in data/*.json — run scripts/repair_data_files.py --apply first."
+            exit 1
+          fi
+          for f in data/*.json; do
+            python -m json.tool "$f" >/dev/null || { echo "::error::Invalid JSON: $f"; exit 1; }
+          done
+          git add -f data/
           git commit -m "🧠 ML: Daily autonomous update [skip ci]" || echo "No changes"
-          git push || echo "Nothing to push"
+          git push
         continue-on-error: true

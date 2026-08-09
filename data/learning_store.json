@@ -1,5 +1,4 @@
 {
-<<<<<<< Updated upstream
   "arms": {
     "cults::question_hook::morning": {
       "plays": 0,
@@ -1027,15 +1026,4 @@
       }
     }
   }
-=======
-  "arms": {},
-  "videos": [],
-  "attribution": {},
-  "post_log": {},
-  "penalty_log": [],
-  "reward_log": [],
-  "health": {},
-  "model_version": 3,
-  "created_at": "2026-08-09T16:34:06.004473+00:00"
->>>>>>> Stashed changes
 }

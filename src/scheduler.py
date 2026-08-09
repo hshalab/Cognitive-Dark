@@ -46,20 +46,46 @@ class PlatformScheduler:
         self.tz = ZoneInfo(tz or os.environ.get("CD_TIMEZONE", "America/New_York"))
         self.peaks = DAY_PEAKS.get(platform, DAY_PEAKS["youtube"])
 
-    def next_peak(self, now: datetime = None) -> datetime:
-        """Next peak slot in the future (tz-aware, DST-correct)."""
+    def next_peak(self, now: datetime = None, reserved=None) -> datetime:
+        """Next peak slot in the future (tz-aware, DST-correct).
+
+        reserved: optional iterable of tz-aware datetimes already spoken for
+        (e.g. publish slots claimed by another run in the shared ML store).
+        Matching slots are skipped so two runs never target the same
+        publish minute — the root cause of the observed double-post bug.
+        """
+        reserved = list(reserved or [])
         now = now or datetime.now(self.tz)
-        day = now.strftime("%A").lower()
-        hours = self.peaks.get(day, [12, 20])
-        for h in sorted(hours):
-            target = now.replace(hour=h, minute=0, second=0, microsecond=0)
-            if target > now:
-                return target
-        # tomorrow's first peak
-        tomorrow = (now + timedelta(days=1)).replace(minute=0, second=0, microsecond=0)
-        day_t = tomorrow.strftime("%A").lower()
-        return tomorrow.replace(hour=min(self.peaks.get(day_t, [12])),
-                                minute=0, second=0, microsecond=0)
+        # scan today + next 7 days until a free, future peak is found
+        for days_ahead in range(0, 8):
+            base = now + timedelta(days=days_ahead)
+            day = base.strftime("%A").lower()
+            hours = self.peaks.get(day, [12, 20])
+            for h in sorted(hours):
+                target = base.replace(hour=h, minute=0, second=0, microsecond=0)
+                if days_ahead == 0 and target <= now:
+                    continue
+                if not self._claimed(target, reserved):
+                    return target
+        # unreachable in practice: 8 days x 4 peaks all reserved
+        return (now + timedelta(days=1)).replace(hour=12, minute=0,
+                                                 second=0, microsecond=0)
+
+    @staticmethod
+    def _claimed(target: datetime, reserved: list) -> bool:
+        """True if `target` collides (within 30 min) with a reserved slot."""
+        for r in reserved:
+            if isinstance(r, str):
+                try:
+                    r = datetime.fromisoformat(r)
+                except ValueError:
+                    continue
+            if r.tzinfo is None:
+                r = r.replace(tzinfo=timezone.utc)
+            if abs((target.astimezone(timezone.utc) -
+                    r.astimezone(timezone.utc)).total_seconds()) < 1800:
+                return True
+        return False
 
     def cron_utc_times(self) -> list:
         """All peak hours as UTC cron strings (for GitHub Actions).

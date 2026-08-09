@@ -103,28 +103,8 @@ jobs:
           path: content_pack/
           retention-days: 3
 
-      - name: Commit learning memory back
-        run: |
-          git config user.name "Cognitive Dark Bot"
-          git config user.email "bot@cognitivedark.local"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME" || true
-          git add -f data/learning_store.json data/run_journal.json data/monetization_progress.json 2>/dev/null || true
-          git diff --cached --quiet || (git commit -m "🤖 Update ML learning store + journal [skip ci]" && git push)
-        continue-on-error: true
-
-  metrics-sync:
-    runs-on: ubuntu-latest
-    needs: build-and-publish
-    if: always()
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install deps
-        run: |
-          pip install -q -r requirements.txt google-api-python-client google-auth-oauthlib
-      - name: Fetch metrics & update ML
+      - name: Fetch real metrics & credit ML (same memory, single writer)
+        if: always()
         env:
           # V2.1: pass YT creds here too (V2 omitted them → YT metrics never
           # synced in CI). Both naming schemes accepted.
@@ -137,11 +117,35 @@ jobs:
           IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/fetch_metrics.py || echo "Metrics sync completed with warnings"
-      - name: Commit metrics
+
+      # V2.7: SINGLE commit step. The old separate `metrics-sync` job was a
+      # second writer on learning_store.json — its `git pull --rebase
+      # --autostash` conflicted with the build job's push, the `|| true`
+      # swallowed it, and `git add -f` committed the conflict MARKERS. That
+      # corrupted store → silent ML memory resets → dead post guards → the
+      # "2 videos at once" double-post bug. Now: one writer, one push, and a
+      # hard failure (RED run) instead of ever committing corruption.
+      - name: Commit learning memory back (single writer, conflict-safe)
         run: |
+          set -uo pipefail
           git config user.name "Cognitive Dark Bot"
           git config user.email "bot@cognitivedark.local"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME" || true
-          git add -f data/*.json data/metrics_report.md 2>/dev/null || true
-          git diff --cached --quiet || (git commit -m "📊 Sync metrics [skip ci]" && git push)
-        continue-on-error: true
+          # Bring in remote changes; on conflict keep OUR freshly generated data
+          git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
+            || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true
+          # NEVER commit conflict markers or invalid JSON — corruption = RED run
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json 2>/dev/null; then
+            echo "::error::Conflict markers in data/*.json — run scripts/repair_data_files.py --apply first."
+            exit 1
+          fi
+          for f in data/*.json; do
+            python -m json.tool "$f" >/dev/null || { echo "::error::Invalid JSON: $f"; exit 1; }
+          done
+          git add -f data/learning_store.json data/run_journal.json \
+            data/monetization_progress.json data/metrics_report.md
+          if git diff --cached --quiet; then
+            echo "No data changes to commit"
+          else
+            git commit -m "🤖 Update ML learning store + journal [skip ci]"
+            git push
+          fi

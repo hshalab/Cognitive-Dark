@@ -14,6 +14,7 @@ __pycache__/
 !data/run_journal.json
 !data/video_history.json
 !data/monetization_progress.json
+data/*.bak
 
 # keep music assets
 !assets/music/

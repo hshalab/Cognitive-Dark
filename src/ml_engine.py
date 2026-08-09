@@ -33,6 +33,7 @@ import math
 import os
 import random
 import re
+import shutil
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -89,19 +90,66 @@ class LearningSystem:
         if env_eps:
             with contextlib.suppress(ValueError):
                 self.cfg["epsilon"] = float(env_eps)
+        # V2.7 fail-safe: store_ok=False means the ML memory could not be
+        # loaded — every posting guard then BLOCKS publishing. A run with no
+        # memory must never be allowed to double-post.
+        self.store_ok = True
         self.data = self._load()
         self._ensure_schema()
 
     # ── persistence ──
     def _load(self) -> dict:
-        try:
-            with open(self.store_path, encoding="utf-8") as fh:
-                return json.load(fh)
-        except (OSError, json.JSONDecodeError):
-            return {}
+        """Load the store; never silently return a broken state.
+
+        Order: main file → .bak snapshot. If both are unusable we set
+        self.store_ok = False so can_post()/dedup_guard() refuse to publish
+        until scripts/repair_data_files.py restores a clean store. A missing
+        store (fresh install) is fine — there is simply nothing to guard yet.
+        """
+        bak = self.store_path.with_suffix(self.store_path.suffix + ".bak")
+        if not self.store_path.exists() and not bak.exists():
+            return {}  # fresh start — no memory yet
+
+        for path in (self.store_path, bak):
+            if not path.exists():
+                continue
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+                if not isinstance(data, dict):
+                    raise ValueError("store root must be a JSON object")
+                if path is bak:
+                    logger.warning(
+                        "ML store corrupt at %s — recovered from backup %s. "
+                        "Run scripts/repair_data_files.py to restore the real store.",
+                        self.store_path, bak)
+                return data
+            except (json.JSONDecodeError, ValueError, OSError) as exc:
+                logger.critical("ML store unreadable at %s (%s)", path, exc)
+
+        self.store_ok = False
+        logger.critical(
+            "No usable ML store (main + backup both broken). All posting is "
+            "BLOCKED until scripts/repair_data_files.py succeeds.")
+        return {}
 
     def save(self) -> None:
+        """Persist atomically, keeping a last-known-good .bak first.
+
+        If the store is broken we REFUSE to overwrite it (that would destroy
+        the only evidence + recoverable memory) and post no data at all.
+        """
+        if not self.store_ok:
+            logger.critical(
+                "Refusing to overwrite a corrupted ML store — run "
+                "scripts/repair_data_files.py first. Nothing was written.")
+            return
         self.store_path.parent.mkdir(parents=True, exist_ok=True)
+        if self.store_path.exists():
+            try:
+                shutil.copy2(self.store_path,
+                             self.store_path.with_suffix(self.store_path.suffix + ".bak"))
+            except OSError as exc:
+                logger.warning("Could not write .bak backup: %s", exc)
         tmp = self.store_path.with_suffix(".tmp")
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(self.data, fh, ensure_ascii=False, indent=2)
@@ -113,6 +161,7 @@ class LearningSystem:
         d.setdefault("videos", [])          # history of generated posts
         d.setdefault("attribution", {})     # video_id -> {arm_key, platform, ts, credited}
         d.setdefault("post_log", {})        # date -> {platform: {count, last_ts}}
+        d.setdefault("publish_claims", {})   # platform -> {publish_at_iso: {run_id, ts}}
         d.setdefault("penalty_log", [])
         d.setdefault("reward_log", [])
         d.setdefault("health", {})          # platform -> {failures, healthy, last_check}
@@ -411,7 +460,14 @@ class LearningSystem:
     # ── post-volume guards (2026: consistency > bursts) ──
     def can_post(self, platform: str, max_daily: int = 3,
                  min_gap_hours: float = 4.0) -> tuple:
-        """Return (allowed, reason). Enforces daily cap + min gap between posts."""
+        """Return (allowed, reason). Enforces daily cap + min gap between posts.
+
+        V2.7 fail-safe: with a broken/unusable store there is no memory of
+        recent posts — posting is BLOCKED rather than risking double posts.
+        """
+        if not self.store_ok:
+            return (False,
+                    "ML store broken — posting blocked (run scripts/repair_data_files.py)")
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         day = self.data["post_log"].get(today, {})
         info = day.get(platform, {})
@@ -445,12 +501,98 @@ class LearningSystem:
                 del self.data["post_log"][d]
         self.save()
 
+    # ── publish-slot claims (prevents two runs targeting the same peak) ──
+    # The double-post bug: two runs (cron + manual dispatch) both compute the
+    # SAME next peak and both schedule publishAt there → 2 videos go public at
+    # the same minute. The ledger below makes each run CLAIM its slot in the
+    # shared store BEFORE uploading, and next_peak() skips already-claimed
+    # times. Claims older than 25h are pruned (publishAt window is <24h).
+    CLAIM_TTL_HOURS = 25
+
+    def _prune_claims(self) -> None:
+        now = datetime.now(timezone.utc)
+        claims = self.data.get("publish_claims", {})
+        for plat in list(claims):
+            for iso in list(claims[plat]):
+                try:
+                    dt = datetime.fromisoformat(iso)
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
+                    stale = (now - dt).total_seconds() > self.CLAIM_TTL_HOURS * 3600
+                except ValueError:
+                    stale = True
+                if stale:
+                    del claims[plat][iso]
+            if not claims[plat]:
+                del claims[plat]
+
+    def claimed_peaks(self, platform: str) -> list:
+        """Future publish slots already claimed for a platform (tz-aware)."""
+        self._prune_claims()
+        now = datetime.now(timezone.utc)
+        out = []
+        for iso in self.data.get("publish_claims", {}).get(platform, {}):
+            try:
+                dt = datetime.fromisoformat(iso)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                if dt > now:
+                    out.append(dt)
+            except ValueError:
+                continue
+        return out
+
+    def claim_publish(self, platform: str, publish_at, run_id: str = None) -> tuple:
+        """Reserve a publish slot BEFORE uploading. Returns (ok, reason).
+
+        A slot already claimed by a DIFFERENT run_id is refused, so two runs
+        can never schedule the same publish minute.
+        """
+        if not self.store_ok:
+            return False, "ML store broken — cannot claim publish slot"
+        if isinstance(publish_at, str):
+            try:
+                publish_at = datetime.fromisoformat(publish_at)
+            except ValueError:
+                return False, f"bad publish_at: {publish_at}"
+        if publish_at.tzinfo is None:
+            publish_at = publish_at.replace(tzinfo=timezone.utc)
+        iso = publish_at.astimezone(timezone.utc).isoformat()
+        self._prune_claims()
+        claims = self.data.setdefault("publish_claims",
+                                      {}).setdefault(platform, {})
+        other = claims.get(iso)
+        if other and other.get("run_id") != run_id:
+            return False, (f"slot {iso} already claimed by run "
+                           f"{other.get('run_id')}")
+        claims[iso] = {"run_id": run_id, "ts": _now_iso()}
+        self.save()
+        return True, "claimed"
+
+    def release_claim(self, platform: str, publish_at) -> None:
+        """Free a claim when the upload failed (don't hold a slot we didn't use)."""
+        if isinstance(publish_at, str):
+            try:
+                publish_at = datetime.fromisoformat(publish_at)
+            except ValueError:
+                return
+        if publish_at.tzinfo is None:
+            publish_at = publish_at.replace(tzinfo=timezone.utc)
+        iso = publish_at.astimezone(timezone.utc).isoformat()
+        self.data.get("publish_claims", {}).get(platform, {}).pop(iso, None)
+        self.save()
+
     # ── dedup & variation ──
     def dedup_guard(self, script_text: str, hook: str = "") -> dict:
         """Return verdict: {'allowed': bool, 'reason': str}.
 
         Blocks exact re-posts and enforces minimum variation vs recent videos.
+        V2.7 fail-safe: with a broken store there is no dedup history — we
+        BLOCK rather than risk re-posting the same content.
         """
+        if not self.store_ok:
+            return {"allowed": False,
+                    "reason": "ML store broken — dedup unavailable, blocking to avoid re-posts"}
         combined = f"{hook} | {script_text}"
         h = text_sha(combined)
         for v in self.data["videos"][-self.cfg["dedup_window"]:]:

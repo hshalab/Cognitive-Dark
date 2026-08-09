@@ -202,9 +202,24 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
                                      durations=[s["duration"] for s in segments])
         packs[p] = pkg
         sched = PlatformScheduler(p)
-        publish_at = sched.next_peak().isoformat()
+        # V2.7: CLAIM the publish slot BEFORE uploading. If another run (e.g.
+        # cron + manual dispatch in the same window) already claimed this
+        # peak, next_peak() is asked for the next free one. This closes the
+        # "two videos go public at the same minute" double-post bug.
+        claimed = False
+        publish_at = sched.next_peak(reserved=ml.claimed_peaks(p))
+        if not dry_run:
+            for _ in range(6):
+                ok_claim, why = ml.claim_publish(p, publish_at, run_id)
+                if ok_claim:
+                    claimed = True
+                    break
+                logger.warning("⛔ %s: %s → trying next free peak", p, why)
+                publish_at = sched.next_peak(
+                    reserved=[*ml.claimed_peaks(p), publish_at])
         try:
-            res = uploaders[p].upload(final_video, thumb, pkg, publish_at=publish_at)
+            res = uploaders[p].upload(final_video, thumb, pkg,
+                                      publish_at=publish_at.isoformat())
             results[p] = res
             if res.get("ok"):
                 ml.report_success(p)
@@ -218,11 +233,15 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
                 # not a real mistake — just missing config; don't penalize the ML
                 logger.info("ℹ️  %s: skipped (config) — no ML penalty", p.upper())
             else:
+                if claimed:
+                    ml.release_claim(p, publish_at)  # failed — free the slot
                 ml.report_failure(p, res.get("error") or res.get("reason", "unknown"))
                 if arm:
                     ml.apply_penalty(arm, f"{p}_upload_failed",
                                      ml.cfg["penalty_failure"], platform=p)
         except Exception as exc:
+            if claimed:
+                ml.release_claim(p, publish_at)
             logger.error("Platform %s raised: %s", p, exc)
             ml.report_failure(p, str(exc))
             if arm:
@@ -304,8 +323,11 @@ def main():
     except Exception as exc:
         logger.error("Pipeline crashed:\n%s", traceback.format_exc())
         journal = RepairJournal()
+        # V2.7 SECURITY: never persist raw exceptions — platform API errors can
+        # embed access tokens in the URL (same sanitizer the ML engine uses).
         journal.data.setdefault("current", {}).update(
-            {"status": "crashed", "error": str(exc)})
+            {"status": "crashed",
+             "error": LearningSystem._sanitize_reason(str(exc))})
         journal._write()
         sys.exit(1)
 

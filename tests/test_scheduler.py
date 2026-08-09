@@ -41,3 +41,28 @@ def test_cron_utc_times_produces_entries():
         parts = c.split()
         assert len(parts) == 5
         assert parts[2] == "*" and parts[3] == "*"  # day/month always
+
+
+def test_next_peak_skips_reserved_slot():
+    """V2.7: a peak already claimed by another run must be skipped — this is
+    the direct fix for two runs scheduling the same publish minute."""
+    tz = TZ
+    now = datetime(2026, 8, 3, 9, 0, tzinfo=tz)  # Monday 9:00
+    # Monday peaks for youtube: [7, 12, 17, 20] → next is 12:00
+    s = PlatformScheduler("youtube")
+    assert s.next_peak(now=now).hour == 12
+    # ...but if 12:00 is already claimed, we must get 17:00 instead
+    reserved = [datetime(2026, 8, 3, 12, 0, tzinfo=tz)]
+    nxt = s.next_peak(now=now, reserved=reserved)
+    assert nxt.hour == 17
+
+    # reserved can also arrive as ISO strings (what the ML store persists)
+    reserved_iso = ["2026-08-03T12:00:00-04:00"]
+    assert s.next_peak(now=now, reserved=reserved_iso).hour == 17
+
+    # with both 12:00 and 17:00 taken → 20:00, then tomorrow 7:00
+    reserved3 = [datetime(2026, 8, 3, h, tzinfo=tz) for h in (12, 17)]
+    assert s.next_peak(now=now, reserved=reserved3).hour == 20
+    reserved4 = [datetime(2026, 8, 3, h, tzinfo=tz) for h in (12, 17, 20)]
+    assert s.next_peak(now=now, reserved=reserved4).day == 4  # Tuesday
+    assert s.next_peak(now=now, reserved=reserved4).hour == 7
