@@ -124,21 +124,15 @@ def main():
     code, d = get(f"{GRAPH}/{API_VERSION}/{ig_id}", {
         "access_token": ig_tok,
         "fields": "id,username,name,profile_picture_url,biography,media_count,"
-                  "followers_count,follows_count,ig_id,account_type,timezone_id",
+                  "followers_count,follows_count,ig_id,media_count,biography,profile_picture_url",
     })
     if code == 200 and "id" in d:
         print(f"   {OK} account accessible")
         print(f"     username      : {d.get('username')}")
         print(f"     name          : {d.get('name')}")
-        print(f"     account_type  : {d.get('account_type','?')}")
         print(f"     followers     : {d.get('followers_count','?')}")
         print(f"     media_count   : {d.get('media_count','?')}")
-        atype = (d.get("account_type") or "").lower()
-        if atype not in ("business", "coder", "creator"):
-            print(f"   {BAD} account_type='{atype}' — BUSINESS/CREATOR hona zaroori hai.")
-            print("      Instagram app → Settings → Account → Switch to Business/Creator.")
-        else:
-            print(f"   {OK} account type theek hai ({atype})")
+        print(f"     biography     : {d.get('biography','?')[:60]}")
     else:
         err = d.get("error", {}) if isinstance(d, dict) else {}
         print(f"   {BAD} account access FAILED (HTTP {code})")
