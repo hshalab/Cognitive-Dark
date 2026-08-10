@@ -14,6 +14,7 @@ on:
           - shorts_repair
           - boost_existing
           - boost_report
+          - engagement_audit
           - engage_comments
           - human_brief
           - check_keys
@@ -119,6 +120,15 @@ jobs:
             git push
           fi
         continue-on-error: true
+
+      - name: Engagement doctor (zero-like alerts + ML feedback)
+        if: ${{ inputs.action == 'engagement_audit' }}
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        run: |
+          python scripts/analyze_engagement.py || true
 
       - name: Comment engagement engine (fetch + draft human replies)
         if: ${{ inputs.action == 'engage_comments' }}

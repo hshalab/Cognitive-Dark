@@ -49,6 +49,7 @@ TONE & STYLE (HUMAN DOCUMENTARY FEEL):
 6. MONETIZATION SAFETY: Strictly educational/documentary framing. We decode deception to PROTECT viewers, never to teach malicious harm.
 7. TARGET DURATION: 48-58 seconds (approx 110-145 spoken words total across scenes).
 8. CINEMATIC VISUAL PROMPTS: Generate specific, moody, documentary b-roll search terms (e.g., "bank vault cctv dark", "redacted fbi document desk", "shadowed interrogation room", "smartphone notification late night", "rain reflection city neon dark") NOT generic smiling stock models.
+9. ENGAGEMENT (critical): Beat 4 ends with a NATURAL like/comment ask — varied phrasing, never robotic, never "please like and subscribe". Examples: "If this pattern just clicked for you, hit like — it shows this to someone who needs it. And comment: have you seen this play out?" or "Tap like if this protected you. Tell me in the comments — which sign surprised you most?" Choose ONE, natural to the story.
 
 OUTPUT — ONLY valid JSON, no markdown formatting:
 {
@@ -232,11 +233,26 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "Share this to protect someone you know, and follow Coercion Files for declassified defense.",
         "Follow Coercion Files — deception decoded, daily.",
     ]
+    # V3.1: ENGAGEMENT CTAs — like/comment triggers. 97 views / 0 likes ka
+    # sabab: script sirf "Follow" maangta tha. Ab natural like+comment asks,
+    # rotated (insaan jaisa, har video same nahi).
+    engagement_ctas = [
+        "If this pattern just clicked for you, hit like — it tells the algorithm "
+        "to show this to someone who needs it. And comment: have you seen this "
+        "play out? I read everything.",
+        "Drop a comment below — has this ever happened to you? And if this helped, "
+        "like it so more people get protected.",
+        "If this protected you today, tap like. And tell me in the comments — "
+        "which one of these signs surprised you most?",
+        "Comment 'SAFE' if you're sharing this with someone who needs it. And "
+        "like this video if you want more cases like this.",
+    ]
+    # 60% engagement ask, 40% follow/save — human mix
+    cta = random.choice(cta_lines) if random.random() < 0.4 else random.choice(engagement_ctas)
 
     setup = random.choice(narrative_setups.get(pillar.get("key"), narrative_setups["con_artists"]))
     proof = random.choice(forensic_proofs)
     shield = random.choice(tactical_shields)
-    cta = random.choice(cta_lines)
 
     visuals = [
         "bank cctv footage dark",
@@ -336,11 +352,10 @@ Pillar hooks for inspiration: {', '.join(pillar['hooks'][:5])}.
 Write it now — valid JSON only."""
 
     # ── LLM chain (V2.9.13: provider preference — self-healing) ──
-    # GROQ key broken 403 dikha raha hai; GEMINI valid hai. Order ab "last
-    # working provider" se start hota hai (memory data/llm_state.json mein),
-    # taake jo key kaam karti hai wo pehle try ho. Template sirf last resort.
-    script = None
-    source = None
+    # V3.1: HOOK QUALITY GATE — weak hook (score < 1.0) = weak engagement
+    # (97 views / 0 likes ka sabab). Weak hook par naya script regenerate
+    # karte hain (max 3 attempts) taake first-2-second pattern-interrupt
+    # strong ho.
     _state_path = Path(__file__).resolve().parent.parent / "data" / "llm_state.json"
     preferred = None
     try:
@@ -348,22 +363,79 @@ Write it now — valid JSON only."""
             preferred = json.loads(_state_path.read_text(encoding="utf-8")).get("provider")
     except (OSError, json.JSONDecodeError):
         preferred = None
-    providers = {"groq": (_groq, GROQ_KEY), "gemini": (_gemini, GEMINI_KEY)}
-    order = [p for p in (preferred, "gemini", "groq") if p in providers]
-    for name in order:
-        fn, key = providers[name]
-        if not key:
-            continue
+
+    script = None
+    source = None
+    hook_score = 0.0
+    for _attempt in range(3):
+        script = None
+        source = None
+        providers = {"groq": (_groq, GROQ_KEY), "gemini": (_gemini, GEMINI_KEY)}
+        order = [pp for pp in (preferred, "gemini", "groq") if pp in providers]
+        for name in order:
+            fn, key = providers[name]
+            if not key:
+                continue
+            try:
+                script = _parse_script(fn(prompt))
+                source = name
+                break
+            except Exception as exc:
+                logger.warning("%s failed: %s", name, exc)
+        if script is None:
+            script = _template_script(pillar, hook_style)
+            source = "template"
+            logger.info("Using template fallback (no LLM key or LLM failed)")
         try:
-            script = _parse_script(fn(prompt))
-            source = name
+            from viral_intel import score_hook
+            hook_score = score_hook(script.get("hook", ""))["score"]
+        except Exception:
+            hook_score = 1.0
+        if hook_score >= 0.85:
             break
-        except Exception as exc:
-            logger.warning("%s failed: %s", name, exc)
-    if script is None:
-        script = _template_script(pillar, hook_style)
-        source = "template"
-        logger.info("Using template fallback (no LLM key or LLM failed)")
+        logger.warning("Hook weak (score %.2f) — regenerating script (attempt %d/3)",
+                       hook_score, _attempt + 2)
+    # V3.1: hook fallback — 3 attempts ke baad bhi weak ho to documented strong
+    # hook se override (LLM "case_file #3456" jaisa terse deta hai — 2-second
+    # overlay ke liye kamzor). Overlay text alag ho sakta hai narration se —
+    # faceless channels aise hi karte hain.
+    if hook_score < 0.85:
+        strong = None
+        try:
+            from human_layer import random_boosted_hook as _rbh
+            strong = _rbh()
+        except Exception:
+            strong = None
+        if not strong and pillar.get("hooks"):
+            strong = random.choice(pillar["hooks"])
+        if strong:
+            script["hook"] = strong[:85]
+            try:
+                from viral_intel import score_hook as _sh
+                hook_score = _sh(script["hook"])["score"]
+            except Exception:
+                hook_score = 1.0
+            logger.info("Hook overridden with strong documented hook (score %.2f)",
+                        hook_score)
+    # V3.1: CTA repair — last scene mein engagement ask (like/comment/follow)
+    # nahi hai to ek chhota sa final scene append (agar scenes kam hain).
+    _eng_words = ("like", "comment", "follow", "save", "share", "subscribe", "hit")
+    _full = " ".join(sc.get("caption", "") for sc in script.get("scenes", [])).lower()
+    if not any(w in _full for w in _eng_words) and len(script.get("scenes", [])) < 6:
+        try:
+            _cta = random.choice([
+                "If this pattern just clicked for you, hit like — it shows this to "
+                "someone who needs it. And comment: have you seen this play out? "
+                "I read everything.",
+                "Drop a comment — has this ever happened to you? And if this helped, "
+                "tap like so more people get protected.",
+            ])
+            script["scenes"].append({
+                "caption": _cta, "caption_roman": _cta,
+                "visual": "dark city night rain", "emotion": "revelatory"})
+            logger.info("CTA repair: engagement ask appended")
+        except Exception:
+            pass
     # remember which provider worked (self-healing order)
     if source in ("groq", "gemini"):
         try:
@@ -373,6 +445,7 @@ Write it now — valid JSON only."""
             pass
 
     script["source"] = source
+    script["hook_score"] = round(hook_score, 3)
     script["pillar"] = pillar["key"]
     script["pillar_name"] = pillar["name"]
     script["hook_style"] = hook_style

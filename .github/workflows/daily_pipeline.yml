@@ -145,7 +145,7 @@ jobs:
             data/monetization_progress.json data/metrics_report.md \
             data/*.events.jsonl data/strategy_state.json data/strategy_notes.md \
             data/health_report.md data/daily_brief.md data/reply_queue.json \
-            data/llm_state.json 2>/dev/null || true
+            data/engagement_report.md data/llm_state.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No data changes to commit"
           else
