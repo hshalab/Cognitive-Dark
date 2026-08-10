@@ -40,7 +40,7 @@ on:
         default: ""
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   manage:
@@ -99,6 +99,26 @@ jobs:
           IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/boost_report.py || true
+
+      - name: Commit human-layer data (brief, replies) — conflict-safe
+        if: ${{ inputs.action == 'engage_comments' || inputs.action == 'human_brief' }}
+        run: |
+          set -uo pipefail
+          git config user.name "Cognitive Dark Brain"
+          git config user.email "brain@cognitivedark.ai"
+          git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
+            || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json data/*.jsonl 2>/dev/null; then
+            echo "::error::Conflict markers found"; exit 1
+          fi
+          git add -f data/daily_brief.md data/reply_queue.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "☕ Human layer: daily brief / replies [skip ci]"
+            git push
+          fi
+        continue-on-error: true
 
       - name: Comment engagement engine (fetch + draft human replies)
         if: ${{ inputs.action == 'engage_comments' }}
