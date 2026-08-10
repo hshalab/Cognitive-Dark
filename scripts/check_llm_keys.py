@@ -20,7 +20,10 @@ import urllib.request
 
 
 def probe(url, headers=None, timeout=20):
-    req = urllib.request.Request(url, headers=headers or {})
+    hdrs = {"User-Agent": "CognitiveDark-CI/1.0"}
+    if headers:
+        hdrs.update(headers)
+    req = urllib.request.Request(url, headers=hdrs)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.status, r.read()[:300]
