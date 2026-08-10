@@ -330,25 +330,42 @@ Pillar hooks for inspiration: {', '.join(pillar['hooks'][:5])}.
 {learned_hint}
 Write it now — valid JSON only."""
 
-    # ── LLM chain ──
+    # ── LLM chain (V2.9.13: provider preference — self-healing) ──
+    # GROQ key broken 403 dikha raha hai; GEMINI valid hai. Order ab "last
+    # working provider" se start hota hai (memory data/llm_state.json mein),
+    # taake jo key kaam karti hai wo pehle try ho. Template sirf last resort.
     script = None
     source = None
-    if GROQ_KEY:
+    _state_path = Path(__file__).resolve().parent.parent / "data" / "llm_state.json"
+    preferred = None
+    try:
+        if _state_path.exists():
+            preferred = json.loads(_state_path.read_text(encoding="utf-8")).get("provider")
+    except (OSError, json.JSONDecodeError):
+        preferred = None
+    providers = {"groq": (_groq, GROQ_KEY), "gemini": (_gemini, GEMINI_KEY)}
+    order = [p for p in (preferred, "gemini", "groq") if p in providers]
+    for name in order:
+        fn, key = providers[name]
+        if not key:
+            continue
         try:
-            script = _parse_script(_groq(prompt))
-            source = "groq"
+            script = _parse_script(fn(prompt))
+            source = name
+            break
         except Exception as exc:
-            logger.warning("Groq failed: %s", exc)
-    if script is None and GEMINI_KEY:
-        try:
-            script = _parse_script(_gemini(prompt))
-            source = "gemini"
-        except Exception as exc:
-            logger.warning("Gemini failed: %s", exc)
+            logger.warning("%s failed: %s", name, exc)
     if script is None:
         script = _template_script(pillar, hook_style)
         source = "template"
         logger.info("Using template fallback (no LLM key or LLM failed)")
+    # remember which provider worked (self-healing order)
+    if source in ("groq", "gemini"):
+        try:
+            _state_path.parent.mkdir(parents=True, exist_ok=True)
+            _state_path.write_text(json.dumps({"provider": source}), encoding="utf-8")
+        except OSError:
+            pass
 
     script["source"] = source
     script["pillar"] = pillar["key"]
