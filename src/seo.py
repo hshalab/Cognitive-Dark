@@ -113,9 +113,17 @@ def _title(script: dict, platform: str) -> str:
     # V2.9: let the viral-pattern scorer pick the strongest variant
     try:
         from viral_intel import pick_title_variant
-        return pick_title_variant(hook, [c for c in candidates if c])
+        chosen = pick_title_variant(hook, [c for c in candidates if c])
     except Exception:
-        return (candidates[0] if candidates else _power_title(hook, 70))[:100]
+        chosen = (candidates[0] if candidates else _power_title(hook, 70))[:100]
+    # V3.3: SEARCH-KEYWORD GUARANTEE — YouTube title mein keyword hamesha hona
+    # chahiye (search views feed test-batch se independent hain). Variant picker
+    # kabhi-kabhi keyword wala variant chhod deta hai — append karke fix.
+    if platform == "youtube":
+        kw_lower = kw.lower()
+        if kw_lower not in chosen.lower():
+            chosen = f"{chosen[:80]} | {kw.title()}"[:100]
+    return chosen
 
 
 def _description(script: dict, platform: str, durations: list = None) -> str:

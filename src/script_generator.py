@@ -49,7 +49,7 @@ TONE & STYLE (HUMAN DOCUMENTARY FEEL):
 6. MONETIZATION SAFETY: Strictly educational/documentary framing. We decode deception to PROTECT viewers, never to teach malicious harm.
 7. TARGET DURATION: 48-58 seconds (approx 110-145 spoken words total across scenes).
 8. CINEMATIC VISUAL PROMPTS: Generate specific, moody, documentary b-roll search terms (e.g., "bank vault cctv dark", "redacted fbi document desk", "shadowed interrogation room", "smartphone notification late night", "rain reflection city neon dark") NOT generic smiling stock models.
-9. ENGAGEMENT (critical): Beat 4 ends with a NATURAL like/comment ask — varied phrasing, never robotic, never "please like and subscribe". Examples: "If this pattern just clicked for you, hit like — it shows this to someone who needs it. And comment: have you seen this play out?" or "Tap like if this protected you. Tell me in the comments — which sign surprised you most?" Choose ONE, natural to the story.
+9. ENGAGEMENT COMPULSION (critical): Beat 4 ends with a NATURAL but compelling like ask using ONE of these psychology hooks (varied, never robotic, never "please like and subscribe"): (a) reciprocity — "this took 9 hours to research, one like is earned"; (b) algorithm-altruism — "hit like or the algorithm won't show this to someone who needs it"; (c) identity — "if you're the kind of person who opens their eyes, like this"; (d) cliffhanger — "part 2 drops if this hits 10k likes"; (e) challenge — "comment what you'd do in this position". Add a short comment question 50% of the time. Keep it 1-2 punchy sentences, authentic documentary voice.
 
 OUTPUT — ONLY valid JSON, no markdown formatting:
 {
@@ -227,28 +227,17 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "Remember: legitimate authorities will never demand instant secrecy or immediate wire transfers. Pause, breathe, and verify independently.",
     ]
 
-    cta_lines = [
-        "Follow Coercion Files for documented case files that protect your mind.",
-        "Save this case breakdown, and follow Coercion Files for daily forensic psychology.",
-        "Share this to protect someone you know, and follow Coercion Files for declassified defense.",
-        "Follow Coercion Files — deception decoded, daily.",
-    ]
-    # V3.1: ENGAGEMENT CTAs — like/comment triggers. 97 views / 0 likes ka
-    # sabab: script sirf "Follow" maangta tha. Ab natural like+comment asks,
-    # rotated (insaan jaisa, har video same nahi).
-    engagement_ctas = [
-        "If this pattern just clicked for you, hit like — it tells the algorithm "
-        "to show this to someone who needs it. And comment: have you seen this "
-        "play out? I read everything.",
-        "Drop a comment below — has this ever happened to you? And if this helped, "
-        "like it so more people get protected.",
-        "If this protected you today, tap like. And tell me in the comments — "
-        "which one of these signs surprised you most?",
-        "Comment 'SAFE' if you're sharing this with someone who needs it. And "
-        "like this video if you want more cases like this.",
-    ]
-    # 60% engagement ask, 40% follow/save — human mix
-    cta = random.choice(cta_lines) if random.random() < 0.4 else random.choice(engagement_ctas)
+    # V3.3: COMPULSION CTA — audience ko like karna majboor (psychology).
+    # Template CTAs ab compulsion_cta.ccta_pair() se aate hain — har video
+    # alag principle (algorithm-altruism, reciprocity, identity, challenge).
+    try:
+        from compulsion_cta import cta_pair
+        _cta_lines = cta_pair()
+        cta = " ".join(_cta_lines)
+    except Exception:
+        cta = ("If this pattern just clicked for you, hit like — it shows "
+               "this to someone who needs it. And comment: have you seen "
+               "this play out? I read everything.")
 
     setup = random.choice(narrative_setups.get(pillar.get("key"), narrative_setups["con_artists"]))
     proof = random.choice(forensic_proofs)
@@ -433,23 +422,15 @@ Write it now — valid JSON only."""
                 hook_score = 1.0
             logger.info("Hook overridden with strong documented hook (score %.2f)",
                         hook_score)
-    # V3.1: CTA repair — last scene mein engagement ask (like/comment/follow)
-    # nahi hai to ek chhota sa final scene append (agar scenes kam hain).
+    # V3.3: CTA repair — compulsion CTA (psychology like-bait) append agar
+    # script mein like/comment/save trigger nahi hai.
     _eng_words = ("like", "comment", "follow", "save", "share", "subscribe", "hit")
     _full = " ".join(sc.get("caption", "") for sc in script.get("scenes", [])).lower()
     if not any(w in _full for w in _eng_words) and len(script.get("scenes", [])) < 6:
         try:
-            _cta = random.choice([
-                "If this pattern just clicked for you, hit like — it shows this to "
-                "someone who needs it. And comment: have you seen this play out? "
-                "I read everything.",
-                "Drop a comment — has this ever happened to you? And if this helped, "
-                "tap like so more people get protected.",
-            ])
-            script["scenes"].append({
-                "caption": _cta, "caption_roman": _cta,
-                "visual": "dark city night rain", "emotion": "revelatory"})
-            logger.info("CTA repair: engagement ask appended")
+            from compulsion_cta import build_engaging_last_scene
+            script["scenes"].append(build_engaging_last_scene(pillar.get("key")))
+            logger.info("CTA repair: compulsion engagement scene appended")
         except Exception:
             pass
 

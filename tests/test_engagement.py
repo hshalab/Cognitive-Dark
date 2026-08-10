@@ -72,3 +72,31 @@ def test_score_script_weak_script():
         {"caption": "Welcome back to my channel"}]}
     q = score_script(weak)
     assert q["score"] < 0.5, q
+
+
+def test_cta_pair_always_engaging():
+    """cta_pair hamesha like/comment/save trigger de (compulsion engine)."""
+    from compulsion_cta import cta_pair, has_engagement
+    seen = set()
+    for _ in range(60):
+        pair = cta_pair()
+        text = " ".join(pair)
+        assert has_engagement(text), f"no engage word: {text}"
+        # variation — har baar same na ho
+        seen.add(text[:30])
+    assert len(seen) >= 8, f"too repetitive: {len(seen)} unique"
+
+
+def test_build_engaging_last_scene():
+    from compulsion_cta import build_engaging_last_scene, has_engagement
+    scene = build_engaging_last_scene("cults")
+    assert has_engagement(scene["caption"])
+    assert scene["caption_roman"] == scene["caption"]
+    assert scene["emotion"] == "revelatory"
+
+
+def test_llm_cta_instructions_present():
+    from compulsion_cta import llm_cta_instructions
+    txt = llm_cta_instructions()
+    assert "reciprocity" in txt and "algorithm-altruism" in txt
+    assert "please like and subscribe" in txt  # explicitly forbidden
