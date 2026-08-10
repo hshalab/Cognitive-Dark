@@ -421,11 +421,11 @@
       "seeded": true
     },
     "con_artists::red_flag::morning": {
-      "plays": 0,
+      "plays": 1,
       "rewards": 0.496,
       "sum_sq": 0.246,
       "n": 1,
-      "updated": "2026-08-09T16:28:54.209337+00:00",
+      "updated": "2026-08-10T08:09:49.721714+00:00",
       "prior_n": 1,
       "prior_mean": 0.496,
       "seeded": true
@@ -1954,6 +1954,18 @@
       "source": "template",
       "run_id": "20260810T062120",
       "ts": "2026-08-10T06:26:54.408025+00:00"
+    },
+    {
+      "title": "The Tinder Swindler Playbook Explained | Forensic Psychology",
+      "hook": "The Tinder Swindler Playbook Explained",
+      "pillar": "con_artists",
+      "hook_style": "red_flag",
+      "arm_key": "con_artists::red_flag::morning",
+      "text_sha": "309d5d21e9e25ac9a1aae384ac8c1b11717e1a5489542c84d29a5954231410c3",
+      "text": "The Tinder Swindler Playbook Explained. Here is the exact case breakdown. The script is always identical: a sudden crisis, a closing window, and an authoritative voice demanding immediate secrecy. Neuroimaging shows that high-urgency language triggers the amygdala, effectively disabling the prefrontal cortex's ability to evaluate risk. The psychological antidote is unwavering boundary clarity: never make a financial or emotional commitment under manufactured time pressure. Follow Coercion Files for documented case files that protect your mind.",
+      "source": "template",
+      "run_id": "20260810T080949",
+      "ts": "2026-08-10T08:15:33.324281+00:00"
     }
   ],
   "attribution": {
@@ -2220,14 +2232,14 @@
   "prior_version": "forensic-coercion-2026-v2",
   "competitor_sync_ts": "2026-08-10T06:11:01.993455+00:00",
   "pillar_weights": {
-    "cults": 1.072,
-    "coercive_control": 1.051,
-    "con_artists": 1.107,
-    "interrogation": 1.102,
-    "mind_control_history": 1.075,
-    "mass_psychology": 1.087,
-    "brainwashing_myths": 1.038,
-    "stoic_defense": 1.027
+    "cults": 1.081,
+    "coercive_control": 1.06,
+    "con_artists": 1.125,
+    "interrogation": 1.119,
+    "mind_control_history": 1.087,
+    "mass_psychology": 1.101,
+    "brainwashing_myths": 1.043,
+    "stoic_defense": 1.032
   },
   "strategy": {
     "momentum": "steady",
@@ -2238,6 +2250,6 @@
       "facebook": 4,
       "instagram": 3
     },
-    "updated_at": "2026-08-10T06:21:20.925318+00:00"
+    "updated_at": "2026-08-10T08:09:49.717228+00:00"
   }
 }

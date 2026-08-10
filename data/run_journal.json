@@ -1,21 +1,13 @@
 {
   "current": {
-    "run_id": "20260810T062120",
+    "run_id": "20260810T080949",
     "kind": "short_pipeline",
-    "started": "2026-08-10T06:21:20.891191+00:00",
+    "started": "2026-08-10T08:09:49.678124+00:00",
     "status": "success",
-    "finished": "2026-08-10T06:27:27.122864+00:00",
-    "note": "youtube:FAIL; facebook:FAIL; instagram:OK"
+    "finished": "2026-08-10T08:15:33.330338+00:00",
+    "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
   },
   "history": [
-    {
-      "run_id": "20260803T161324",
-      "kind": "short_pipeline",
-      "started": "2026-08-03T16:13:24.225742+00:00",
-      "status": "success",
-      "finished": "2026-08-03T16:17:02.751794+00:00",
-      "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
-    },
     {
       "run_id": "20260803T162624",
       "kind": "short_pipeline",
@@ -407,6 +399,14 @@
       "status": "success",
       "finished": "2026-08-10T06:27:27.122864+00:00",
       "note": "youtube:FAIL; facebook:FAIL; instagram:OK"
+    },
+    {
+      "run_id": "20260810T080949",
+      "kind": "short_pipeline",
+      "started": "2026-08-10T08:09:49.678124+00:00",
+      "status": "success",
+      "finished": "2026-08-10T08:15:33.330338+00:00",
+      "note": "youtube:FAIL; facebook:FAIL; instagram:FAIL"
     }
   ]
 }

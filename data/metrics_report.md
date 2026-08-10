@@ -1,8 +1,8 @@
 # 📊 Cognitive Dark — Metrics Report
 
-*Updated: 2026-08-10T06:27:30.911943+00:00*
+*Updated: 2026-08-10T08:15:36.149800+00:00*
 
-**ML:** 192 arms · 3 videos · 5 attributed · 5 rewards · 4 penalties
+**ML:** 192 arms · 4 videos · 5 attributed · 5 rewards · 4 penalties
 
 **Best formulas:** con_artists/warning (1.5), con_artists/warning (1.5), con_artists/warning (1.5), con_artists/case_file (1.35), con_artists/case_file (1.35)
 
@@ -53,7 +53,7 @@
     },
     "last_growth": 0
   },
-  "last_updated": "2026-08-10T06:27:30.907836+00:00",
+  "last_updated": "2026-08-10T08:15:36.145767+00:00",
   "milestones": {
     "youtube": {
       "milestone": "YT Tier-1 (fan funding)",
