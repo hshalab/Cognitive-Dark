@@ -303,7 +303,7 @@ def main():
                             "kind": "youtube#video", "videoId": vid}}}).execute()
                     actions.append("PL+")
                 except Exception as exc:
-                    actions.append(f"PL-ERR")
+                    actions.append("PL-ERR")
                     logger.warning("playlist add %s failed: %s", vid, exc)
             else:
                 actions.append("would-PL")
