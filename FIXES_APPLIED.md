@@ -190,3 +190,31 @@ User wants: 2026 algorithms ke hisaab se har platform fully optimized + ML advan
   everything in-code to maximize it. The BIGGEST lever outside code: fix
   Instagram linking (currently 0 posts in 7 days → 1/3 of growth dead) and
   keep daily posting on.
+
+## V3.1 — Engagement Layer (97 views / 0 likes ka ilaaj) (2026-08-10)
+
+User reported: 97 views but 0 likes — weak script/hook. Diagnosis from real
+data: whole channel like-rate 0-2% (Shorts benchmark 4-6%) — scripts only
+asked "Follow", never like/comment; some hooks weak/terse.
+
+### Fixes
+1. **ENGAGEMENT CTAs** — template + LLM (SYSTEM_PROMPT rule 9): natural
+   like/comment asks, rotated 60/40 with follow/save CTAs (human mix, har
+   video same nahi). Live proof: "If this warning just saved you from a false
+   confession, hit like — it shows this to someone who needs it..."
+2. **HOOK QUALITY GATE** — script generate hone ke baad `score_hook`; score
+   < 0.85 → regenerate (max 3 attempts). 3 attempts ke baad bhi weak →
+   documented strong hook override (LLM "case_file #3456" jaisa terse
+   replacement). Live: "Why Innocent People Confess" override.
+3. **CTA REPAIR** — last scene mein like/comment/follow word nahi → chhota
+   engagement scene append (agar scenes < 6).
+4. **ENGAGEMENT DOCTOR** (`scripts/analyze_engagement.py` + `engagement_audit`
+   action) — YouTube stats fetch; ≥50 views + 0 likes → arm PENALTY; ≥5%
+   like-rate → arm REWARD (bandit seekhta hai likes kahan se aate hain).
+   Report `data/engagement_report.md`.
+
+### Verification
+- 121/121 tests pass, Ruff clean, CI green (`a257e1b`).
+- Live audit: 16 public videos; Tinder Swindler 74v/1like (1.4%) — no
+  zero-like alerts now; no strong (≥5%) yet — new CTAs need 2-3 weeks.
+- Template CTA test: 30 runs → like/comment asks present + follow/save mix.
