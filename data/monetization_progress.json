@@ -1,30 +1,34 @@
 {
   "youtube": {
-    "subs": 7,
+    "subs": 3,
     "watch_hours": 0,
     "shorts_views_90d": 0,
     "pct": {
-      "subs": 0.7,
+      "subs": 0.3,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
     "daily_targets": {
       "subs": 33,
       "shorts_views": 333333
-    }
+    },
+    "views": 2118,
+    "videos": 16,
+    "last_growth": -4
   },
   "facebook": {
-    "followers": 523,
+    "followers": 513,
     "minutes_60d": 0,
     "uploads_30d": 0,
     "pct": {
-      "followers": 10.5,
+      "followers": 10.3,
       "minutes": 0.0
     },
     "daily_targets": {
       "followers": 149,
       "minutes": 2000
-    }
+    },
+    "last_growth": -10
   },
   "instagram": {
     "followers": 1,
@@ -35,18 +39,19 @@
     },
     "daily_targets": {
       "followers": 16
-    }
+    },
+    "last_growth": 0
   },
-  "last_updated": "2026-08-09T19:49:04.273438+00:00",
+  "last_updated": "2026-08-10T06:17:36.985297+00:00",
   "milestones": {
     "youtube": {
       "milestone": "YT Tier-1 (fan funding)",
-      "pct": 1.4,
+      "pct": 0.6,
       "needs": {
         "subs": 500
       },
       "have": {
-        "subs": 7
+        "subs": 3
       }
     },
     "facebook": {
@@ -58,7 +63,7 @@
         "uploads_30d": 5
       },
       "have": {
-        "followers": 523,
+        "followers": 513,
         "minutes_60d": 0,
         "uploads_30d": 0
       }

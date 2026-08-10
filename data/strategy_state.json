@@ -1,0 +1,32 @@
+{
+  "epsilon": 0.15,
+  "kokoro_speed": 1.08,
+  "pillar_weights": {
+    "cults": 1.053,
+    "coercive_control": 1.034,
+    "con_artists": 1.071,
+    "interrogation": 1.068,
+    "mind_control_history": 1.05,
+    "mass_psychology": 1.058,
+    "brainwashing_myths": 1.027,
+    "stoic_defense": 1.018
+  },
+  "daily_caps": {
+    "youtube": 4,
+    "facebook": 4,
+    "instagram": 3
+  },
+  "min_gap_hours": 3.0,
+  "momentum": "steady",
+  "updated_at": "2026-08-10T06:11:02.003949+00:00",
+  "last_mean_reward": 1.0,
+  "last_engagement": 1.0,
+  "decision_log": [
+    {
+      "ts": "2026-08-10T06:11:02.003834+00:00",
+      "changes": [
+        "pillar weights updated from real performance"
+      ]
+    }
+  ]
+}

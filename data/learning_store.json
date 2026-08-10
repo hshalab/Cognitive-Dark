@@ -241,11 +241,11 @@
       "seeded": true
     },
     "cults::red_flag::morning": {
-      "plays": 0,
-      "rewards": 1.028,
-      "sum_sq": 0.5284,
-      "n": 2,
-      "updated": "2026-08-09T16:28:54.209080+00:00",
+      "plays": 1,
+      "rewards": 0.028000000000000025,
+      "sum_sq": 7.5283999999999995,
+      "n": 6,
+      "updated": "2026-08-10T06:17:37.204683+00:00",
       "prior_n": 2,
       "prior_mean": 0.514,
       "seeded": true
@@ -962,10 +962,10 @@
     },
     "brainwashing_myths::confession::afternoon": {
       "plays": 1,
-      "rewards": 0.0,
-      "sum_sq": 6.0,
-      "n": 3,
-      "updated": "2026-08-09T16:33:34.869560+00:00"
+      "rewards": -1.0,
+      "sum_sq": 7.0,
+      "n": 4,
+      "updated": "2026-08-10T06:17:37.201463+00:00"
     },
     "brainwashing_myths::red_flag::afternoon": {
       "plays": 0,
@@ -1930,6 +1930,18 @@
       "source": "template",
       "run_id": "20260809T162854",
       "ts": "2026-08-09T16:33:19.227451+00:00"
+    },
+    {
+      "title": "How Members Finally Escaped | Forensic Psychology",
+      "hook": "How Members Finally Escaped",
+      "pillar": "cults",
+      "hook_style": "red_flag",
+      "arm_key": "cults::red_flag::morning",
+      "text_sha": "3b28fc24ceb39c78fc32a492608290601b3ab92f339dfe3fca22edc425d0e1fe",
+      "text": "How Members Finally Escaped. Here is the exact case breakdown. Psychologists call it the 'belonging trap'. You don't join because you are gullible — you join because you are human and exhausted. Neuroimaging shows that high-urgency language triggers the amygdala, effectively disabling the prefrontal cortex's ability to evaluate risk. Remember: legitimate authorities will never demand instant secrecy or immediate wire transfers. Pause, breathe, and verify independently. Save this case breakdown, and follow Coercion Files for daily forensic psychology.",
+      "source": "template",
+      "run_id": "20260810T061058",
+      "ts": "2026-08-10T06:17:18.865142+00:00"
     }
   ],
   "attribution": {
@@ -1938,13 +1950,63 @@
       "platform": "youtube",
       "title": "Your Phone Isn't Brainwashing You. Worse. | Coercion Files",
       "ts": "2026-08-09T16:33:24.507441+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 17,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "reward": 0.284,
+      "breakdown": {
+        "retention": 0.0,
+        "completion": 0.0,
+        "engagement_rate": 0.0,
+        "view_score": 0.205,
+        "ctr": 0.0,
+        "voice_rating": 1.0,
+        "reward": 0.284,
+        "quality_gate_passed": true
+      },
+      "credited_at": "2026-08-10T06:17:37.201335+00:00"
     },
     "1624303202734288": {
       "arm_key": "brainwashing_myths::confession::afternoon",
       "platform": "facebook",
       "title": "Your Phone Isn't Brainwashing You. Worse. | Coercion Files",
       "ts": "2026-08-09T16:33:34.250134+00:00",
+      "credited": false
+    },
+    "-PGpiXpQyug": {
+      "arm_key": "cults::red_flag::morning",
+      "platform": "youtube",
+      "title": "How Members Finally Escaped | Forensic Psychology",
+      "ts": "2026-08-10T06:17:25.860043+00:00",
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "retention": 0.0
+      },
+      "reward": 0.21,
+      "breakdown": {
+        "retention": 0.0,
+        "completion": 0.0,
+        "engagement_rate": 0.0,
+        "view_score": 0.0,
+        "ctr": 0.0,
+        "voice_rating": 1.0,
+        "reward": 0.21,
+        "quality_gate_passed": true
+      },
+      "credited_at": "2026-08-10T06:17:37.204584+00:00"
+    },
+    "1497157482100697": {
+      "arm_key": "cults::red_flag::morning",
+      "platform": "facebook",
+      "title": "How Members Finally Escaped | Forensic Psychology",
+      "ts": "2026-08-10T06:17:33.423451+00:00",
       "credited": false
     }
   },
@@ -1958,6 +2020,16 @@
         "count": 1,
         "last_ts": "2026-08-09T16:33:34.248963+00:00"
       }
+    },
+    "2026-08-10": {
+      "youtube": {
+        "count": 1,
+        "last_ts": "2026-08-10T06:17:25.857555+00:00"
+      },
+      "facebook": {
+        "count": 1,
+        "last_ts": "2026-08-10T06:17:33.421014+00:00"
+      }
     }
   },
   "penalty_log": [
@@ -1967,6 +2039,27 @@
       "reason": "instagram_upload_failed",
       "penalty": -2.0,
       "platform": "instagram"
+    },
+    {
+      "ts": "2026-08-10T06:17:34.739464+00:00",
+      "arm": "cults::red_flag::morning",
+      "reason": "instagram_upload_failed",
+      "penalty": -2.0,
+      "platform": "instagram"
+    },
+    {
+      "ts": "2026-08-10T06:17:37.201471+00:00",
+      "arm": "brainwashing_myths::confession::afternoon",
+      "reason": "low_metrics:_ol5ge90-u8",
+      "penalty": -1.0,
+      "platform": "youtube"
+    },
+    {
+      "ts": "2026-08-10T06:17:37.204690+00:00",
+      "arm": "cults::red_flag::morning",
+      "reason": "low_metrics:-PGpiXpQyug",
+      "penalty": -1.0,
+      "platform": "youtube"
     }
   ],
   "reward_log": [
@@ -1983,24 +2076,38 @@
       "reason": "facebook_published",
       "reward": 1.0,
       "platform": "facebook"
+    },
+    {
+      "ts": "2026-08-10T06:17:34.742229+00:00",
+      "arm": "cults::red_flag::morning",
+      "reason": "youtube_published",
+      "reward": 1.0,
+      "platform": "youtube"
+    },
+    {
+      "ts": "2026-08-10T06:17:34.744779+00:00",
+      "arm": "cults::red_flag::morning",
+      "reason": "facebook_published",
+      "reward": 1.0,
+      "platform": "facebook"
     }
   ],
   "health": {
     "youtube": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-09T16:33:24.504831+00:00"
+      "last_check": "2026-08-10T06:17:25.854739+00:00"
     },
     "facebook": {
       "failures": 0,
       "healthy": true,
-      "last_check": "2026-08-09T16:33:34.247437+00:00"
+      "last_check": "2026-08-10T06:17:33.418148+00:00"
     },
     "instagram": {
-      "failures": 1,
+      "failures": 2,
       "healthy": true,
-      "last_reason": "IG container HTTP 400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"type\":\"OAuthException\",\"code\":10,\"fbtrace_id\":\"ASef3xgKlGDN-CJkJ_NSNVc\"}}",
-      "last_check": "2026-08-09T16:33:34.865492+00:00"
+      "last_reason": "404 Client Error: Not Found for url: https://rupload.facebook.com/ig-api-upload/v26.0/18110213935914301",
+      "last_check": "2026-08-10T06:17:34.736961+00:00"
     }
   },
   "model_version": 3,
@@ -2023,13 +2130,23 @@
         "n": 1,
         "rewards": -2.0,
         "sum_sq": 4.0
+      },
+      "cults::red_flag::morning": {
+        "n": 1,
+        "rewards": -2.0,
+        "sum_sq": 4.0
       }
     },
     "youtube": {
       "brainwashing_myths::confession::afternoon": {
-        "n": 1,
-        "rewards": 1.0,
-        "sum_sq": 1.0
+        "n": 2,
+        "rewards": 0.0,
+        "sum_sq": 2.0
+      },
+      "cults::red_flag::morning": {
+        "n": 2,
+        "rewards": 0.0,
+        "sum_sq": 2.0
       }
     },
     "facebook": {
@@ -2037,9 +2154,50 @@
         "n": 1,
         "rewards": 1.0,
         "sum_sq": 1.0
+      },
+      "cults::red_flag::morning": {
+        "n": 1,
+        "rewards": 1.0,
+        "sum_sq": 1.0
       }
     }
   },
-  "publish_claims": {},
-  "prior_version": "forensic-coercion-2026-v2"
+  "publish_claims": {
+    "youtube": {
+      "2026-08-10T11:00:00+00:00": {
+        "run_id": "20260810T061058",
+        "ts": "2026-08-10T06:17:18.869499+00:00"
+      }
+    },
+    "facebook": {
+      "2026-08-10T13:00:00+00:00": {
+        "run_id": "20260810T061058",
+        "ts": "2026-08-10T06:17:25.862755+00:00"
+      }
+    },
+    "instagram": {}
+  },
+  "prior_version": "forensic-coercion-2026-v2",
+  "competitor_sync_ts": "2026-08-10T06:11:01.993455+00:00",
+  "pillar_weights": {
+    "cults": 1.053,
+    "coercive_control": 1.034,
+    "con_artists": 1.071,
+    "interrogation": 1.068,
+    "mind_control_history": 1.05,
+    "mass_psychology": 1.058,
+    "brainwashing_myths": 1.027,
+    "stoic_defense": 1.018
+  },
+  "strategy": {
+    "momentum": "steady",
+    "epsilon": 0.15,
+    "min_gap_hours": 3.0,
+    "daily_caps": {
+      "youtube": 4,
+      "facebook": 4,
+      "instagram": 3
+    },
+    "updated_at": "2026-08-10T06:11:02.003949+00:00"
+  }
 }
