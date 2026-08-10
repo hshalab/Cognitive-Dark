@@ -1,0 +1,20 @@
+name: "GROQ key probe (diagnostic only)"
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Key format check (no secret exposure)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "KEY_STATUS=EMPTY"
+          else
+            echo "KEY_STATUS=PRESENT"
+            echo "KEY_LENGTH=${#GROQ_API_KEY}"
+            echo "KEY_PREFIX=${GROQ_API_KEY:0:4}"
+            echo "KEY_LAST4=${GROQ_API_KEY: -4}"
+          fi
