@@ -12,6 +12,7 @@ on:
           - keep_latest
           - spread
           - shorts_repair
+          - boost_existing
           - ig_diagnose
           - audit
           - fb_metrics
@@ -66,6 +67,21 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
         run: |
           python scripts/youtube_shorts_repair.py ${{ inputs.fix_public && '--fix-public' || '' }}
+
+      - name: BOOST existing content (unstick private + SEO + playlist)
+        if: ${{ inputs.action == 'boost_existing' }}
+        env:
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        run: |
+          echo "::group::DRY-RUN REPORT"
+          python scripts/boost_existing.py || true
+          echo "::endgroup::"
+          echo "::group::APPLY BOOST"
+          python scripts/boost_existing.py --apply || true
+          echo "::endgroup::"
 
       - name: Instagram / Facebook diagnostic (linkage, token, scopes, app mode)
         if: ${{ inputs.action == 'ig_diagnose' }}
