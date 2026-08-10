@@ -84,7 +84,10 @@ def _groq_with(model: str, prompt: str) -> str:
     req = urllib.request.Request(
         url, data=json.dumps(payload).encode(),
         headers={"Authorization": f"Bearer {GROQ_KEY}",
-                 "Content-Type": "application/json"})
+                 "Content-Type": "application/json",
+                 # V2.9.14: Cloudflare (error 1010) blocks Python-urllib's
+                 # default UA → 403 on valid keys. Send a real UA.
+                 "User-Agent": "CognitiveDark-CI/1.0"})
     with urllib.request.urlopen(req, timeout=90) as resp:
         return json.loads(resp.read())["choices"][0]["message"]["content"]
 
@@ -121,7 +124,9 @@ def _gemini_with(model: str, prompt: str) -> str:
     # key in header (x-goog-api-key) — safer than URL query string
     req = urllib.request.Request(
         url, data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY})
+        headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY,
+                 # V2.9.14: same Cloudflare/UA guard as Groq
+                 "User-Agent": "CognitiveDark-CI/1.0"})
     with urllib.request.urlopen(req, timeout=90) as resp:
         data = json.loads(resp.read())
         return data["candidates"][0]["content"]["parts"][0]["text"]
