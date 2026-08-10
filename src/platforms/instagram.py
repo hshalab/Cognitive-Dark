@@ -103,13 +103,25 @@ class InstagramUploader(BasePlatform):
         }
         if caption:
             payload["caption"] = caption[:2200]
-        container = self._container(payload)
-        url = f"{RUP_URL}/{API_VERSION}/{container}"
+        # Create the container here so we get the EXACT rupload URI the API
+        # returns (v26.0+). Building `{RUP_URL}/{API_VERSION}/{id}` ourselves
+        # hit a 404 — Meta versions the upload host independently of the
+        # Graph API version (observed: container uri = .../ig-api-upload/v26.0).
+        url = f"{GRAPH}/{API_VERSION}/{self.ig_id}/media"
+        r = requests.post(url, params={"access_token": self.token}, data=payload,
+                          headers=self._headers(), timeout=120)
+        if r.status_code >= 400:
+            raise RuntimeError(f"IG container HTTP {r.status_code}: {r.text[:500]}")
+        data = r.json()
+        container = data.get("id")
+        if not container:
+            raise RuntimeError(f"no container id: {data}")
+        upload_uri = data.get("uri") or f"{RUP_URL}/{API_VERSION}/{container}"
         fname = os.path.basename(video_path)
         mime = mimetypes.guess_type(video_path)[0] or "video/mp4"
         with open(video_path, "rb") as fh:
             r = requests.put(
-                url, data=fh,
+                upload_uri, data=fh,
                 headers={**self._headers(),
                          "X-Entity-Name": fname,
                          "X-Entity-Length": str(size),
