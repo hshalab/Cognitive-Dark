@@ -367,7 +367,7 @@ Write it now — valid JSON only."""
     script = None
     source = None
     hook_score = 0.0
-    for _attempt in range(3):
+    for _attempt in range(4):
         script = None
         source = None
         providers = {"groq": (_groq, GROQ_KEY), "gemini": (_gemini, GEMINI_KEY)}
@@ -391,10 +391,26 @@ Write it now — valid JSON only."""
             hook_score = score_hook(script.get("hook", ""))["score"]
         except Exception:
             hook_score = 1.0
-        if hook_score >= 0.85:
+        # V3.1: DURATION CHECK — LLM scripts 34s par aa rahi thin (target 45-58s).
+        # Choti script = weak retention + Shorts shelf par nuksan.
+        _words = len(" ".join(str(sc.get("caption", ""))
+                              for sc in script.get("scenes", [])).split())
+        _est = _words / 2.2
+        too_short = _est < 38 and source in ("groq", "gemini")
+        if hook_score >= 0.85 and not too_short:
             break
-        logger.warning("Hook weak (score %.2f) — regenerating script (attempt %d/3)",
-                       hook_score, _attempt + 2)
+        if too_short and _attempt < 3:
+            prompt += ("\n\nIMPORTANT: The previous script was too short "
+                       f"(~{_est:.0f}s, target 48-58s). Make it LONGER: "
+                       "extend to ~120-140 spoken words with one more concrete "
+                       "forensic detail, a second real example, and a named "
+                       "psychology concept/study (e.g. Milgram, Stanford, "
+                       "Cialdini, cognitive dissonance).")
+            logger.warning("Script too short (~%ds) — retrying with 'make longer' hint",
+                           round(_est))
+        else:
+            logger.warning("Hook weak (score %.2f) — regenerating script (attempt %d/4)",
+                           hook_score, _attempt + 2)
     # V3.1: hook fallback — 3 attempts ke baad bhi weak ho to documented strong
     # hook se override (LLM "case_file #3456" jaisa terse deta hai — 2-second
     # overlay ke liye kamzor). Overlay text alag ho sakta hai narration se —
@@ -436,6 +452,37 @@ Write it now — valid JSON only."""
             logger.info("CTA repair: engagement ask appended")
         except Exception:
             pass
+
+    # ── V3.1: FULL SCRIPT QUALITY GATE — sirf hook nahi, poora script ──
+    # score_script: hook(0.25) + cta(0.20) + anchor(0.20) + psych(0.15) +
+    # structure(0.10) + duration(0.10). Weak (C/D) → documented pillar hook
+    # + repair list store. Ye score script ke saath travels karta hai taake
+    # ML engagement doctor isay use kar sake.
+    _quality = {"score": 0.5, "issues": ["unknown"], "components": {}}
+    try:
+        from viral_intel import score_script as _score_script
+        from viral_intel import score_script_grade
+        _quality = _score_script(script)
+        if _quality["score"] < 0.65:
+            # repair: documented strong hook override (human creator ki
+            # swipe file — pillar hooks settings mein already curated hain)
+            pillar_hooks = ([h for h in pillar["hooks"] if h]
+                            if pillar.get("hooks") else [])
+            if pillar_hooks:
+                script["hook"] = random.choice(pillar_hooks)[:85]
+                logger.info("SCRIPT quality gate: weak score %.2f → hook replaced "
+                            "with proven pillar hook", _quality["score"])
+                try:
+                    hook_score = score_hook(script.get("hook", ""))["score"]
+                except Exception:
+                    hook_score = 1.0
+                _quality = _score_script(script)  # re-score
+        logger.info("SCRIPT quality: %.2f (%s) issues=%s",
+                    _quality["score"], score_script_grade(_quality["score"]),
+                    _quality.get("issues", []))
+    except Exception as exc:
+        logger.warning("script quality gate skipped: %s", exc)
+
     # remember which provider worked (self-healing order)
     if source in ("groq", "gemini"):
         try:
@@ -446,6 +493,7 @@ Write it now — valid JSON only."""
 
     script["source"] = source
     script["hook_score"] = round(hook_score, 3)
+    script["script_quality"] = _quality
     script["pillar"] = pillar["key"]
     script["pillar_name"] = pillar["name"]
     script["hook_style"] = hook_style

@@ -46,3 +46,29 @@ def test_analyze_engagement_dry_runs(tmp_path):
     # bina creds ke gracefully exit (0 ya 1 dono chalega, crash nahi)
     assert r.returncode in (0, 1)
     assert "Koi video" in r.stdout or "Videos:" in r.stdout
+
+
+def test_score_script_strong_script():
+    """Achhi script (hook + cta + anchor + psych) ko A/B grade milna chahiye."""
+    from viral_intel import score_script, score_script_grade
+    good = {
+        "hook": "Stop letting them control you.",
+        "scenes": [
+            {"caption": "Stop letting them control you."},
+            {"caption": "The $400k wire transfer happened in 3 days. Cognitive "
+                         "dissonance made her send it."},
+            {"caption": "Cialdini's scarcity principle explains the urgency. "
+                         "If this helped, hit like and comment below."},
+        ],
+    }
+    q = score_script(good)
+    assert q["score"] >= 0.7, q
+    assert score_script_grade(q["score"]) in ("A — strong script", "B — solid")
+
+
+def test_score_script_weak_script():
+    from viral_intel import score_script
+    weak = {"hook": "Hello everyone", "scenes": [
+        {"caption": "Welcome back to my channel"}]}
+    q = score_script(weak)
+    assert q["score"] < 0.5, q

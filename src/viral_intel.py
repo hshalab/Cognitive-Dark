@@ -292,3 +292,92 @@ def random_boosted_hook() -> str:
         "The warning they ignored", "Watch what they say",
     ]
     return random.choice(starters)
+
+
+# ─────────────────────────────────────────────────────────────
+# V3.1 FULL SCRIPT QUALITY SCORE — sirf hook nahi, poora script
+# ─────────────────────────────────────────────────────────────
+PSYCH_CONCEPTS = ["milgram", "stanford", "cialdini", "cognitive dissonance",
+                  "anchoring", "trauma bond", "bystander", "gaslighting",
+                  "confirmation bias", "cognitive bias", "foot in the door",
+                  "scarcity", "mirroring", "love bombing", "conditioning",
+                  "deprogram", "psycholog", "behavioral stud", "research shows",
+                  "studies show", "landmark study", "persuasion", "social proof"]
+ANCHOR_HINTS = ["$", "3-word", "text", "phone", "call", "date", "case", "file",
+                "meeting", "letter", "memo", "minute", "second", "day", "week",
+                "study", "experiment", "court", "trial", "wire", "email"]
+
+
+def score_script(script: dict | None) -> dict:
+    """Score a full script 0..1 — the 'human quality gate'.
+
+    Components:
+      hook        (0.25)  — viral_intel.score_hook
+      cta         (0.20)  — like/comment/follow/save ask present
+      anchor      (0.20)  — concrete detail ($ amount, 3-word text, case file...)
+      psych       (0.15)  — real psychology concept/study named
+      structure   (0.10)  — >=3 scenes, hook first
+      duration    (0.10)  — 45-58s estimated from words
+    """
+    if not script:
+        return {"score": 0.0, "issues": ["no script"], "components": {}}
+    issues = []
+    comp = {}
+
+    # hook
+    try:
+        h = score_hook(script.get("hook", ""))
+        comp["hook"] = h["score"]
+        if h["score"] < 0.85:
+            issues.append(f"hook weak ({h['score']:.2f})")
+    except Exception:
+        comp["hook"] = 0.0
+
+    # cta / engagement
+    full = " ".join(str(s.get("caption", "")) for s in script.get("scenes", [])).lower()
+    eng = any(w in full for w in ("like", "comment", "follow", "save", "share",
+                                  "hit", "subscribe"))
+    comp["cta"] = 1.0 if eng else 0.0
+    if not eng:
+        issues.append("no like/comment/follow ask")
+
+    # concrete anchor
+    anchor = any(a.lower() in full for a in ANCHOR_HINTS)
+    comp["anchor"] = 1.0 if anchor else 0.0
+    if not anchor:
+        issues.append("no concrete anchor (numbers/$/case)")
+
+    # psychology concept
+    psych = any(p in full for p in PSYCH_CONCEPTS)
+    comp["psych"] = 1.0 if psych else 0.0
+    if not psych:
+        issues.append("no named psychology concept/study")
+
+    # structure
+    n_scenes = len(script.get("scenes", []))
+    comp["structure"] = 1.0 if n_scenes >= 3 else 0.0
+    if n_scenes < 3:
+        issues.append(f"only {n_scenes} scenes")
+
+    # duration (approx words -> seconds)
+    words = len(full.split())
+    est_s = words / 2.2  # ~2.2 words/sec narration
+    comp["duration"] = 1.0 if 38 <= est_s <= 65 else 0.0
+    if not (38 <= est_s <= 65):
+        issues.append(f"duration est {est_s:.0f}s (target 38-65)")
+
+    score = round(0.25 * comp["hook"] + 0.20 * comp["cta"] + 0.20 * comp["anchor"]
+                  + 0.15 * comp["psych"] + 0.10 * comp["structure"]
+                  + 0.10 * comp["duration"], 3)
+    return {"score": score, "issues": issues, "components": comp,
+            "est_s": round(est_s, 1), "scenes": n_scenes}
+
+
+def score_script_grade(score: float) -> str:
+    if score >= 0.8:
+        return "A — strong script"
+    if score >= 0.65:
+        return "B — solid"
+    if score >= 0.5:
+        return "C — needs work"
+    return "D — weak (regenerate)"
