@@ -14,6 +14,7 @@ on:
           - shorts_repair
           - boost_existing
           - boost_report
+          - check_keys
           - ig_diagnose
           - audit
           - fb_metrics
@@ -96,6 +97,15 @@ jobs:
           IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/boost_report.py || true
+
+      - name: LLM / API key checker (Groq, Gemini, Pexels, Pixabay)
+        if: ${{ inputs.action == 'check_keys' }}
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        run: python scripts/check_llm_keys.py || true
 
       - name: Instagram / Facebook diagnostic (linkage, token, scopes, app mode)
         if: ${{ inputs.action == 'ig_diagnose' }}
