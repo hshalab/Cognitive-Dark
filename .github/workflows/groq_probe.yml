@@ -6,15 +6,15 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Key format check (no secret exposure)
+      - name: Full key test (no secret exposure)
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
-          if [ -z "$GROQ_API_KEY" ]; then
-            echo "KEY_STATUS=EMPTY"
-          else
-            echo "KEY_STATUS=PRESENT"
-            echo "KEY_LENGTH=${#GROQ_API_KEY}"
-            echo "KEY_PREFIX=${GROQ_API_KEY:0:4}"
-            echo "KEY_LAST4=${GROQ_API_KEY: -4}"
-          fi
+          echo "KEY_LENGTH=${#GROQ_API_KEY}"
+          echo "KEY_PREFIX=${GROQ_API_KEY:0:4}"
+          echo "KEY_LAST4=${GROQ_API_KEY: -4}"
+          echo "--- API TEST ---"
+          curl -s -o /tmp/groq_resp.txt -w "HTTP %{http_code}\n" \
+            -H "Authorization: Bearer ${GROQ_API_KEY}" \
+            "https://api.groq.com/openai/v1/models" || echo "curl failed"
+          head -c 400 /tmp/groq_resp.txt 2>/dev/null || echo "(no body)"
