@@ -359,6 +359,8 @@ def main():
                     help="run offline smoke tests and exit")
     ap.add_argument("--simulate", action="store_true",
                     help="simulate ML learning (UCB convergence) and exit")
+    ap.add_argument("--repeat", type=int, default=1,
+                    help="build N videos per run (default: 1)")
     args = ap.parse_args()
 
     if args.selftest:
@@ -380,15 +382,21 @@ def main():
 
     platforms = [p.strip() for p in args.platforms.split(",")] if args.platforms else None
     try:
-        res = run_pipeline(platforms=platforms, dry_run=args.dry_run,
-                           pillar=args.pillar, topic=args.topic)
-        if not res.get("success"):
+        # Run pipeline N times (for daily volume)
+        all_results = []
+        for i in range(args.repeat):
+            logger.info("=== Video %d/%d ===", i + 1, args.repeat)
+            res = run_pipeline(platforms=platforms, dry_run=args.dry_run,
+                               pillar=args.pillar, topic=args.topic)
+            all_results.append(res)
+            if not res.get("success"):
+                logger.warning("Video %d failed — continuing to next", i + 1)
+                time.sleep(5)
+        if all_results and not any(r.get("success") for r in all_results):
             sys.exit(2)
     except Exception as exc:
         logger.error("Pipeline crashed:\n%s", traceback.format_exc())
         journal = RepairJournal()
-        # V2.7 SECURITY: never persist raw exceptions — platform API errors can
-        # embed access tokens in the URL (same sanitizer the ML engine uses).
         journal.data.setdefault("current", {}).update(
             {"status": "crashed",
              "error": LearningSystem._sanitize_reason(str(exc))})

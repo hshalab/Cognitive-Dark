@@ -86,7 +86,8 @@ jobs:
           KOKORO_MODEL_DIR: "data/models/kokoro"
         # V2.1: no `|| echo` — a crashed pipeline must turn the run RED so it
         # is noticed, instead of reporting success while uploading nothing.
-        run: python src/main.py --platforms "$PLATFORMS" $([ "$DRY_RUN" = "1" ] && echo --dry-run)
+        # --repeat 2: produce 2 videos per run for daily volume consistency.
+        run: python src/main.py --platforms "$PLATFORMS" --repeat 2 $([ "$DRY_RUN" = "1" ] && echo --dry-run)
 
       - name: Package content for manual posting
         if: always()

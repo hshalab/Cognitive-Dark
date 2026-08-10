@@ -228,7 +228,7 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
     ]
 
     # V3.3: COMPULSION CTA — audience ko like karna majboor (psychology).
-    # Template CTAs ab compulsion_cta.ccta_pair() se aate hain — har video
+    # Template CTAs ab compulsion_cta.cta_pair() se aate hain — har video
     # alag principle (algorithm-altruism, reciprocity, identity, challenge).
     try:
         from compulsion_cta import cta_pair

@@ -1,0 +1,137 @@
+name: "🛠️ 2026 Algorithm Video Repair"
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Repair mode: full | fix-public | audit-only"
+        required: false
+        type: choice
+        options:
+          - full
+          - fix-public
+          - audit-only
+        default: "full"
+      skip_yt:
+        description: "YouTube skip karein?"
+        required: false
+        type: boolean
+        default: false
+      skip_fb:
+        description: "Facebook skip karein?"
+        required: false
+        type: boolean
+        default: false
+      skip_ig:
+        description: "Instagram skip karein?"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-videos
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install -q --upgrade pip
+          pip install -q -r requirements.txt google-api-python-client google-auth-oauthlib requests
+
+      - name: Run Video Repair Tool
+        env:
+          # YouTube
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          # Facebook
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          # Instagram
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+          # Mode
+          REPAIR_MODE: ${{ inputs.mode }}
+          SKIP_YT: ${{ inputs.skip_yt && '1' || '0' }}
+          SKIP_FB: ${{ inputs.skip_fb && '1' || '0' }}
+          SKIP_IG: ${{ inputs.skip_ig && '1' || '0' }}
+        run: |
+          set -euo pipefail
+
+          MODE="${REPAIR_MODE:-full}"
+          SKIP_YT="${SKIP_YT:-0}"
+          SKIP_FB="${SKIP_FB:-0}"
+          SKIP_IG="${SKIP_IG:-0}"
+
+          ARGS=()
+          if [ "$MODE" = "audit-only" ]; then
+            ARGS+=("--audit")
+          fi
+          if [ "$MODE" = "fix-public" ]; then
+            ARGS+=("--fix-public")
+          fi
+          if [ "$MODE" = "full" ]; then
+            ARGS+=("--apply")
+          fi
+          if [ "$SKIP_YT" = "1" ]; then
+            ARGS+=("--skip-yt")
+          fi
+          if [ "$SKIP_FB" = "1" ]; then
+            ARGS+=("--skip-fb")
+          fi
+          if [ "$SKIP_IG" = "1" ]; then
+            ARGS+=("--skip-ig")
+          fi
+
+          echo "=============================================="
+          echo "  Coercion Files — 2026 Algorithm Repair"
+          echo "  Mode: $MODE"
+          echo "  Args: ${ARGS[*]}"
+          echo "=============================================="
+
+          python scripts/repair_all_videos.py "${ARGS[@]}"
+
+      - name: Commit changes (conflict-safe)
+        run: |
+          set -uo pipefail
+          git config user.name "Coercion Files Bot"
+          git config user.email "bot@coercionfiles.local"
+
+          # Fetch latest and rebase
+          git pull --no-rebase --autostash origin main 2>/dev/null \
+            || git pull --no-rebase --autostash -X ours origin main || true
+
+          # Safety checks
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json data/*.jsonl 2>/dev/null; then
+            echo "::error::Conflict markers found — repair_data_files.py --apply run karein pehle"
+            exit 1
+          fi
+          for f in data/*.json; do
+            python -m json.tool "$f" >/dev/null || { echo "::error::Invalid JSON: $f"; exit 1; }
+          done
+
+          # Commit only if something changed
+          git add -f data/*.json data/*.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No data changes to commit"
+          else
+            git commit -m "🛠️ 2026 Algorithm Video Repair — metadata & captions optimized [skip ci]"
+            git push
+            echo "✅ Changes committed and pushed"
+          fi
+        continue-on-error: true
