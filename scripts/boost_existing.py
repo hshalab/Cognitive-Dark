@@ -252,7 +252,7 @@ def main():
         title = sn.get("title", "")
         actions = []
 
-        # 1) unstick private/scheduled-past
+        # 1) unstick private/scheduled-past (STATUS-only update)
         if status != "public":
             publish_at = st.get("publishAt", "")
             past = True
@@ -264,11 +264,14 @@ def main():
                     past = True
             if past:
                 if apply:
-                    st["privacyStatus"] = "public"
-                    yt.videos().update(part="status", body={
-                        "id": vid, "status": {"privacyStatus": "public"}}).execute()
-                    actions.append("PUBLIC!")
-                    status = "public"
+                    try:
+                        yt.videos().update(part="status", body={
+                            "id": vid, "status": {"privacyStatus": "public"}}).execute()
+                        actions.append("PUBLIC!")
+                        status = "public"
+                    except Exception as exc:
+                        actions.append("PUB-ERR")
+                        logger.warning("unstick %s failed: %s", vid, exc)
                 else:
                     actions.append("would-public")
                 unstuck += 1
@@ -283,13 +286,20 @@ def main():
                   (new_tags and new_tags != sn.get("tags", []))
         if changed:
             if apply:
-                body = {"id": vid,
+                try:
+                    # SNIPPET-only update (categoryId required for update)
+                    yt.videos().update(part="snippet", body={
+                        "id": vid,
                         "snippet": {"title": new_title or title,
                                     "description": new_desc or sn.get("description", ""),
-                                    "tags": new_tags or sn.get("tags", [])},
-                        "status": st}
-                yt.videos().update(part="snippet,status", body=body).execute()
-                actions.append("SEO+")
+                                    "tags": new_tags or sn.get("tags", []),
+                                    "categoryId": "27",
+                                    "defaultLanguage": "en",
+                                    "defaultAudioLanguage": "en-US"}}).execute()
+                    actions.append("SEO+")
+                except Exception as exc:
+                    actions.append("SEO-ERR")
+                    logger.warning("SEO update %s failed: %s", vid, exc)
             else:
                 actions.append("would-SEO")
             seo_boosted += 1
