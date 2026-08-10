@@ -117,7 +117,6 @@ class InstagramUploader(BasePlatform):
         if not container:
             raise RuntimeError(f"no container id: {data}")
         upload_uri = data.get("uri") or f"{RUP_URL}/{API_VERSION}/{container}"
-        fname = os.path.basename(video_path)
         mime = mimetypes.guess_type(video_path)[0] or "video/mp4"
         # Official IG resumable protocol (Meta docs): POST the raw file to the
         # returned uri with `Authorization: OAuth <token>`, `offset`, `file_size`.
