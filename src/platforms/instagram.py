@@ -119,16 +119,18 @@ class InstagramUploader(BasePlatform):
         upload_uri = data.get("uri") or f"{RUP_URL}/{API_VERSION}/{container}"
         fname = os.path.basename(video_path)
         mime = mimetypes.guess_type(video_path)[0] or "video/mp4"
+        # Official IG resumable protocol (Meta docs): POST the raw file to the
+        # returned uri with `Authorization: OAuth <token>`, `offset`, `file_size`.
+        # PUT + Bearer + X-Entity-* (the old attempt) → 404 from rupload.
         with open(video_path, "rb") as fh:
-            r = requests.put(
+            r = requests.post(
                 upload_uri, data=fh,
-                headers={**self._headers(),
-                         "X-Entity-Name": fname,
-                         "X-Entity-Length": str(size),
-                         "X-Entity-Type": mime,
-                         "Offset": "0",
+                headers={"Authorization": f"OAuth {self.token}",
+                         "offset": "0",
+                         "file_size": str(size),
                          "Content-Type": mime}, timeout=1800)
-        r.raise_for_status()
+        if r.status_code >= 400:
+            raise RuntimeError(f"IG rupload HTTP {r.status_code}: {r.text[:400]}")
         return container
 
     def upload(self, video_path, thumb_path, pkg, publish_at=None):
