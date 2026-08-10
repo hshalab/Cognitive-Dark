@@ -226,16 +226,21 @@ def main():
     already_in_pl = set()
 
     if playlist_id:
-        # existing playlist items
+        # existing playlist items (naya banaya hua playlist propagate hone mein
+        # thora waqt leta hai — 404 aaye to khali maano)
         token = None
-        while True:
-            r = yt.playlistItems().list(part="contentDetails", playlistId=playlist_id,
-                                        maxResults=50, pageToken=token).execute()
-            for it in r.get("items", []):
-                already_in_pl.add(it["contentDetails"]["videoId"])
-            token = r.get("nextPageToken")
-            if not token:
-                break
+        try:
+            while True:
+                r = yt.playlistItems().list(part="contentDetails",
+                                            playlistId=playlist_id,
+                                            maxResults=50, pageToken=token).execute()
+                for it in r.get("items", []):
+                    already_in_pl.add(it["contentDetails"]["videoId"])
+                token = r.get("nextPageToken")
+                if not token:
+                    break
+        except Exception as exc:
+            logger.warning("playlist items list failed (fresh playlist?): %s", exc)
 
     for v in vids:
         vid = v["id"]
@@ -289,13 +294,17 @@ def main():
                 actions.append("would-SEO")
             seo_boosted += 1
 
-        # 3) playlist
+        # 3) playlist (insert failure non-fatal — continue boosting others)
         if status == "public" and playlist_id and vid not in already_in_pl:
             if apply:
-                yt.playlistItems().insert(part="snippet", body={
-                    "snippet": {"playlistId": playlist_id, "resourceId": {
-                        "kind": "youtube#video", "videoId": vid}}}).execute()
-                actions.append("PL+")
+                try:
+                    yt.playlistItems().insert(part="snippet", body={
+                        "snippet": {"playlistId": playlist_id, "resourceId": {
+                            "kind": "youtube#video", "videoId": vid}}}).execute()
+                    actions.append("PL+")
+                except Exception as exc:
+                    actions.append(f"PL-ERR")
+                    logger.warning("playlist add %s failed: %s", vid, exc)
             else:
                 actions.append("would-PL")
             added_to_pl += 1
