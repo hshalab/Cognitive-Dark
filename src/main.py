@@ -242,7 +242,15 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         # peak, next_peak() is asked for the next free one. This closes the
         # "two videos go public at the same minute" double-post bug.
         claimed = False
+        # V3.0: human jitter — exact peak minute par post karne se bot jaisa
+        # fingerprint banta hai; 0-8 min ka natural shift (claims ke baad —
+        # collision safe).
         publish_at = sched.next_peak(reserved=ml.claimed_peaks(p))
+        try:
+            from human_layer import jitter_publish_at
+            publish_at = jitter_publish_at(publish_at)
+        except Exception:
+            pass
         if not dry_run:
             for _ in range(6):
                 ok_claim, why = ml.claim_publish(p, publish_at, run_id)
@@ -308,6 +316,23 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
 
     # ── 7. Monetization progress snapshot (non-destructive merge) ──
     update_progress()
+
+    # ── V3.0: daily brief (human creator's morning notes) ──
+    try:
+        from human_layer import write_daily_brief
+        _j = journal.data
+        _m = {}
+        try:
+            import json as _json
+
+            from monetization_tracker import PROGRESS_PATH
+            _m = _json.loads(PROGRESS_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+        write_daily_brief(ml_data=ml.data, journal=_j, monetization=_m)
+        logger.info("☕ Daily brief written — data/daily_brief.md")
+    except Exception as exc:
+        logger.warning("daily brief skipped: %s", exc)
 
     journal.finish_run(run_id, "success",
                        "; ".join(f"{p}:{'OK' if r.get('ok') else 'FAIL'}"

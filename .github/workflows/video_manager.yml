@@ -14,6 +14,8 @@ on:
           - shorts_repair
           - boost_existing
           - boost_report
+          - engage_comments
+          - human_brief
           - check_keys
           - ig_diagnose
           - audit
@@ -97,6 +99,51 @@ jobs:
           IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
         run: python scripts/boost_report.py || true
+
+      - name: Comment engagement engine (fetch + draft human replies)
+        if: ${{ inputs.action == 'engage_comments' }}
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/engage_comments.py || true
+
+      - name: Daily brief (human creator notes)
+        if: ${{ inputs.action == 'human_brief' }}
+        env:
+          CD_DATA_DIR: data
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'src')
+          from human_layer import write_daily_brief
+          import json
+          from pathlib import Path
+          ml = {}
+          j = {}
+          m = {}
+          try:
+              from ml_engine import LearningSystem
+              ml = LearningSystem().data
+          except Exception:
+              pass
+          try:
+              j = json.loads(Path('data/run_journal.json').read_text())
+          except Exception:
+              pass
+          try:
+              m = json.loads(Path('data/monetization_progress.json').read_text())
+          except Exception:
+              pass
+          p = write_daily_brief(ml_data=ml, journal=j, monetization=m)
+          print(p.read_text())
+          PY
 
       - name: LLM / API key checker (Groq, Gemini, Pexels, Pixabay)
         if: ${{ inputs.action == 'check_keys' }}
