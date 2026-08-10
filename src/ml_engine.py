@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.1 — ML Learning Engine (advanced).
+Coercion Files — ML Learning Engine (advanced).
 
 A lightweight online-learning system that makes the pipeline smarter over time:
 
@@ -542,22 +542,38 @@ class LearningSystem:
         return w
 
     def apply_reward(self, arm_key: str, reason: str, weight: float = None,
-                      platform: str | None = None) -> float:
-        """Reward the arm behind a strong output."""
+                      platform: str | None = None,
+                      content_quality: float = 0.0) -> float:
+        """Reward the arm behind a strong output.
+
+        Args:
+            content_quality: 0..1 score from script quality gate (viral_intel.score_script).
+                             Arms that produce high-quality scripts get a bonus so the
+                             bandit learns to favor formulas that consistently produce
+                             strong content — not just lucky uploads.
+        """
         w = float(weight if weight is not None else self.cfg["bonus_viral"])
-        self._update_arm(arm_key, abs(w))
-        self._record_platform(arm_key, platform, abs(w))
+        # Quality bonus: scripts scoring >=0.7 get a 15% reward boost so the
+        # bandit learns to favor formulas that consistently produce strong content.
+        quality_bonus = w * 0.15 if content_quality >= 0.7 else 0.0
+        total = abs(w) + quality_bonus
+        self._update_arm(arm_key, total)
+        self._record_platform(arm_key, platform, total)
         self.data["reward_log"].append({
-            "ts": _now_iso(), "arm": arm_key, "reason": reason, "reward": w,
-            "platform": platform,
+            "ts": _now_iso(), "arm": arm_key, "reason": reason, "reward": total,
+            "platform": platform, "quality_bonus": quality_bonus,
         })
         self._trim("reward_log")
         self._append_event("reward", arm=arm_key, reason=self._sanitize_reason(reason),
                            w=abs(w), platform=platform)
         self.save()
-        logger.info("REWARD applied %s → %s (%.1f) platform=%s",
-                    reason, arm_key, w, platform or "-")
-        return w
+        if quality_bonus > 0:
+            logger.info("REWARD(+quality) %s → %s (%.1f + %.2f bonus) platform=%s",
+                        reason, arm_key, w, quality_bonus, platform or "-")
+        else:
+            logger.info("REWARD applied %s → %s (%.1f) platform=%s",
+                        reason, arm_key, w, platform or "-")
+        return total
 
     @staticmethod
     def _trim(lst: list, keep: int = 500) -> None:

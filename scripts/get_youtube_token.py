@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — YouTube OAuth Refresh-Token Generator.
+Coercion Files — YouTube OAuth Refresh-Token Generator.
 
 Use this when pointing the pipeline at a NEW channel/account: the OAuth
 *client* (id/secret) stays the same, but the REFRESH_TOKEN must be re-granted

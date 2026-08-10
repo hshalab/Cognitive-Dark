@@ -1,4 +1,4 @@
-name: "⚔️ Cognitive Dark - 30 Day Monetization War Plan"
+name: "⚔️ Coercion Files — 30 Day Monetization War Plan"
 
 on:
   # V2.5.1: schedules consolidated into daily_pipeline (4 windows).
@@ -70,8 +70,8 @@ jobs:
         if: always()
         run: |
           set -uo pipefail
-          git config user.name "Cognitive Dark Brain"
-          git config user.email "brain@cognitivedark.ai"
+          git config user.name "Coercion Files Brain"
+          git config user.email "brain@coercionfiles.ai"
           # On conflict keep the freshly generated data; NEVER commit markers
           git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
             || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true

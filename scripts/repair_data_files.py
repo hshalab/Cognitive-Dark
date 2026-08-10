@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Data File Repair Tool (V2.7).
+Coercion Files — Data File Repair Tool (V2.7).
 
 Fixes committed data corruption in `data/*.json` caused by CI bot conflicts:
 

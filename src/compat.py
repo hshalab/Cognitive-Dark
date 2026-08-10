@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Compatibility shims.
+Coercion Files — Compatibility shims.
 
 MoviePy 1.0.3 was built against older Pillow (uses Image.ANTIALIAS which was
 removed in Pillow 10). Patch it at import time so the pinned moviepy works

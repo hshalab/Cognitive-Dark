@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Monetization Tracker.
+Coercion Files — Monetization Tracker.
 
 Tracks progress toward platform monetization thresholds (2026 rules) and
 computes daily targets for the 30-day plan.

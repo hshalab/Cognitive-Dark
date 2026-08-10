@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Compulsion CTA Engine (V3.3).
+Coercion Files — Compulsion CTA Engine (V3.3).
 
 Audience ko "like karna majboor" karne ke liye — 8 documented psychology
 principles jo Shorts mein likes/comments/saves chalaate hain:

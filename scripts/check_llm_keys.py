@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — LLM / API Key Checker (V2.9.12).
+Coercion Files — LLM / API Key Checker (V2.9.12).
 
 GitHub Actions ke andar secrets ko test karta hai (key kabhi print nahi hoti):
 
@@ -20,7 +20,7 @@ import urllib.request
 
 
 def probe(url, headers=None, timeout=20):
-    hdrs = {"User-Agent": "CognitiveDark-CI/1.0"}
+    hdrs = {"User-Agent": "CoercionFiles-CI/1.0"}
     if headers:
         hdrs.update(headers)
     req = urllib.request.Request(url, headers=hdrs)

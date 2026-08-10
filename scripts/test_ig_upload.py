@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — IG Publish Capability Probe (V2.9.6).
+Coercion Files — IG Publish Capability Probe (V2.9.6).
 
 Sach sach pata lagata hai ke IG ID valid hai ya nahi — bina instagram_basic
 scope ke bhi. Kaise? POST /{ig_id}/media par ek chhota sa REELS container

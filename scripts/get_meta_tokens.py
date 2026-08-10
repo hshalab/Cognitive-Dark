@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Meta (Facebook + Instagram) LONG-LIVED Token Generator.
+Coercion Files — Meta (Facebook + Instagram) LONG-LIVED Token Generator.
 
 The pipeline was failing with 'session invalidated' / 'cannot parse token'
 because short-lived or stale tokens were being pasted. This script does the

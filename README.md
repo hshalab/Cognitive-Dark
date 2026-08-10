@@ -1,7 +1,6 @@
-# 🧠 Cognitive Dark V3 — Mature ML Multi-Platform Growth Engine
+# 🧠 Coercion Files — Mature ML Multi-Platform Growth Engine
 
-**YouTube + Facebook + Instagram** automation system for the Cognitive Dark / Coercion
-Files channel. **Machine-learning-driven, multi-platform, self-repairing** — V3 upgrades
+**YouTube + Facebook + Instagram** automation system for the Coercion Files channel. **Machine-learning-driven, multi-platform, self-repairing** — V3 upgrades
 the bandit to production-grade Bayesian online learning that also learns from real
 top-channel competitor patterns (not just your own videos).
 

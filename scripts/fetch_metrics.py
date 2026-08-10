@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.1 — Metrics Sync (closes the ML learning loop).
+Coercion Files — Metrics Sync (closes the ML learning loop).
 
 Pulls real analytics from all three platforms and:
   1. CREDITS the exact formula behind each published video — every uploaded
@@ -223,7 +223,7 @@ def main():
     report = Path("data/metrics_report.md")
     report.parent.mkdir(exist_ok=True)
     report.write_text(
-        f"# 📊 Cognitive Dark — Metrics Report\n\n"
+        f"# 📊 Coercion Files — Metrics Report\n\n"
         f"*Updated: {datetime.now(timezone.utc).isoformat()}*\n\n"
         f"**ML:** {summary['arms_tested']} arms · {summary['videos_tracked']} videos · "
         f"{summary['attributed_videos']} attributed · {summary['rewards']} rewards · "

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Human Layer (V3.0).
+Coercion Files — Human Layer (V3.0).
 
 System ko ek REAL human creator ki tarah behave karwata hai — not a bot.
 

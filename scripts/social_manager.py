@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — FB / IG Old-Content Cleanup (runs in CI with secrets).
+Coercion Files — FB / IG Old-Content Cleanup (runs in CI with secrets).
 
 Actions:
   list     — print all FB page videos + IG media with age & views/plays

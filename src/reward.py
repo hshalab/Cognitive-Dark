@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Multi-signal High-Quality Reward Function.
+Coercion Files — Multi-signal High-Quality Reward Function.
 
 Calibrated strictly for >70% Retention & High-CTR Quality Standards:
   • Retention weight: 35% (Target: 70%+ Average View Duration)

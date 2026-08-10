@@ -1,4 +1,4 @@
-name: "Cognitive Dark V2.1 — Multi-Platform Daily Pipeline"
+name: "Coercion Files — Multi-Platform Daily Pipeline"
 
 on:
   workflow_dispatch:
@@ -128,8 +128,8 @@ jobs:
       - name: Commit learning memory back (single writer, conflict-safe)
         run: |
           set -uo pipefail
-          git config user.name "Cognitive Dark Bot"
-          git config user.email "bot@cognitivedark.local"
+          git config user.name "Coercion Files Bot"
+          git config user.email "bot@coercionfiles.local"
           # Bring in remote changes; on conflict keep OUR freshly generated data
           git pull --no-rebase --autostash origin "$GITHUB_REF_NAME" 2>/dev/null \
             || git pull --no-rebase --autostash -X ours origin "$GITHUB_REF_NAME" || true

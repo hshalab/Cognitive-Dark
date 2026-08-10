@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Procedural Visual Fallback.
+Coercion Files — Procedural Visual Fallback.
 
 Used when stock clips are unavailable (no API keys, offline, rate-limited).
 Dark cinematic stills (1080x1920) generated with numpy/PIL — the same

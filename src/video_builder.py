@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Video Builder (USA Viral Style, MoviePy 1.0.3 pinned).
+Coercion Files — Video Builder (USA Viral Style, MoviePy 1.0.3 pinned).
 
 USA-STYLE package:
   • FAST CUTS  — every scene is micro-cut into ~2.4s sub-clips with a zoom

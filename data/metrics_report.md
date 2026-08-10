@@ -1,4 +1,4 @@
-# 📊 Cognitive Dark — Metrics Report
+# 📊 Coercion Files — Metrics Report
 
 *Updated: 2026-08-10T08:15:36.149800+00:00*
 

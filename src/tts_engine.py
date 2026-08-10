@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Voice Engine (Kokoro primary).
+Coercion Files — Voice Engine (Kokoro primary).
 
 Chain:  Kokoro TTS (open-source, offline, deep authoritative male)
         → edge-tts (Microsoft free endpoint)
@@ -21,6 +21,8 @@ import subprocess
 import urllib.request
 from pathlib import Path
 
+from config.settings import KOKORO_SPEED as _CFG_KOKORO_SPEED
+
 logger = logging.getLogger("tts_engine")
 
 MODEL_URL = ("https://github.com/thewh1teagle/kokoro-onnx/releases/download/"
@@ -31,7 +33,8 @@ VOICES_URL = ("https://github.com/thewh1teagle/kokoro-onnx/releases/download/"
 KOKORO_VOICE = os.environ.get("KOKORO_VOICE", "am_fenrir")
 # V2.1: default matches config.settings / README USA-style 1.08x (V2 drifted
 # to 0.98x here → narration sounded slow & low-energy unless env was set).
-KOKORO_SPEED = float(os.environ.get("KOKORO_SPEED", "1.08"))
+# Single source of truth: config.settings; env var KOKORO_SPEED overrides.
+KOKORO_SPEED = float(os.environ.get("KOKORO_SPEED", str(_CFG_KOKORO_SPEED)))
 KOKORO_MODEL_DIR = Path(os.environ.get("KOKORO_MODEL_DIR", "data/models/kokoro"))
 
 
@@ -41,7 +44,7 @@ def _download(url: str, dest: Path, min_bytes: int = 100_000) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(".part")
     logger.info("⬇️  Downloading %s → %s", url.split("/")[-1], dest)
-    req = urllib.request.Request(url, headers={"User-Agent": "CognitiveDarkV2/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "CoercionFilesV2/1.0"})
     with urllib.request.urlopen(req, timeout=600) as resp, open(tmp, "wb") as fh:
         shutil.copyfileobj(resp, fh)
     os.replace(tmp, dest)
@@ -203,7 +206,7 @@ def generate_voice_segments(scenes: list, output_dir: str = "output/voice") -> l
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     test = [{"caption": "You've been lied to about how influence really works.",
-             "visual": "dark"}, {"caption": "Follow Cognitive Dark for more.",
+             "visual": "dark"}, {"caption": "Follow Coercion Files for more.",
                                   "visual": "dark"}]
     segs = generate_voice_segments(test)
     for s in segs:

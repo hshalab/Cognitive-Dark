@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Compact Dark Ambient Music Generator.
+Coercion Files — Compact Dark Ambient Music Generator.
 
 Generates 2 short dark-ambient beds (~90s, mono 22.05kHz → ~4MB each) so the
 repo stays small. Run once during setup

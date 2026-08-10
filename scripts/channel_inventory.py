@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.1 — Channel Inventory & Status Diagnostic.
+Coercion Files — Channel Inventory & Status Diagnostic.
 
 The pipeline uploads YouTube videos as PRIVATE with a publishAt schedule. If the
 publish step ever failed, videos sit in Studio as Private forever — invisible to

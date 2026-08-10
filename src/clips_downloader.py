@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Stock Clip Downloader.
+Coercion Files — Stock Clip Downloader.
 
 Sources (free, royalty-free, monetization-safe):
   • Pexels  — api.pexels.com/videos/search   (Authorization header)
@@ -32,7 +32,7 @@ logger = logging.getLogger("clips_downloader")
 PEXELS_KEY = os.environ.get("PEXELS_API_KEY", "")
 PIXABAY_KEY = os.environ.get("PIXABAY_API_KEY", "")
 
-UA = {"User-Agent": "CognitiveDarkV2/1.0 (+https://github.com/CognitiveDark)"}
+UA = {"User-Agent": "CoercionFilesV2/1.0 (+https://github.com/CoercionFiles)"}
 
 
 # ── Pexels ───────────────────────────────────────────────────

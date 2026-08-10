@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.5.1 — Platform-Aware Scheduler.
+Coercion Files — Platform-Aware Scheduler.
 
 • DST-correct: uses IANA tz `America/New_York` (EDT/EST handled automatically).
 • 4 daily peak windows per platform (USA audience), tuned per algorithm:
@@ -18,26 +18,50 @@ logger = logging.getLogger("scheduler")
 
 TZ = ZoneInfo(os.environ.get("CD_TIMEZONE", "America/New_York"))
 
-DAY_PEAKS = {
-    "youtube": {
-        "monday": [7, 12, 17, 20], "tuesday": [7, 12, 17, 20],
-        "wednesday": [7, 12, 17, 20], "thursday": [7, 12, 17, 20],
-        "friday": [7, 12, 17, 21], "saturday": [10, 14, 17, 21],
-        "sunday": [10, 14, 17, 20],
-    },
-    "facebook": {
-        "monday": [9, 13, 17, 20], "tuesday": [9, 13, 17, 20],
-        "wednesday": [9, 13, 17, 20], "thursday": [9, 13, 17, 20],
-        "friday": [9, 12, 17, 20], "saturday": [10, 13, 17, 21],
-        "sunday": [10, 13, 17, 20],
-    },
-    "instagram": {
-        "monday": [11, 14, 17, 19], "tuesday": [11, 14, 17, 19],
-        "wednesday": [11, 14, 17, 19], "thursday": [11, 14, 17, 19],
-        "friday": [11, 14, 17, 18], "saturday": [10, 13, 16, 19],
-        "sunday": [10, 13, 16, 18],
-    },
-}
+
+def _load_peaks() -> dict:
+    """Load peaks from config if available, else use built-in defaults.
+
+    Built-in defaults are the canonical USA-time peaks for each platform.
+    config/settings.py peaks (if any) override per-platform on request.
+    """
+    # Canonical USA peak hours (ET) per platform — the source of truth.
+    built_in = {
+        "youtube": {
+            "monday": [7, 12, 17, 20], "tuesday": [7, 12, 17, 20],
+            "wednesday": [7, 12, 17, 20], "thursday": [7, 12, 17, 20],
+            "friday": [7, 12, 17, 21], "saturday": [10, 14, 17, 21],
+            "sunday": [10, 14, 17, 20],
+        },
+        "facebook": {
+            "monday": [9, 13, 17, 20], "tuesday": [9, 13, 17, 20],
+            "wednesday": [9, 13, 17, 20], "thursday": [9, 13, 17, 20],
+            "friday": [9, 12, 17, 20], "saturday": [10, 13, 17, 21],
+            "sunday": [10, 13, 17, 20],
+        },
+        "instagram": {
+            "monday": [11, 14, 17, 19], "tuesday": [11, 14, 17, 19],
+            "wednesday": [11, 14, 17, 19], "thursday": [11, 14, 17, 19],
+            "friday": [11, 14, 17, 18], "saturday": [10, 13, 16, 19],
+            "sunday": [10, 13, 16, 18],
+        },
+    }
+
+    # Try to enrich from config (config may add/remove slots per platform).
+    try:
+        from config.settings import PLATFORMS
+        for plat, cfg in PLATFORMS.items():
+            if plat in built_in and cfg.get("peak_hours"):
+                # config peak_hours is a flat list → apply to all days
+                for day in built_in[plat]:
+                    built_in[plat][day] = list(cfg["peak_hours"])
+    except Exception:
+        pass
+
+    return built_in
+
+
+DAY_PEAKS = _load_peaks()
 
 
 class PlatformScheduler:

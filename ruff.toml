@@ -1,4 +1,4 @@
-# Cognitive Dark — Ruff configuration
+# Coercion Files — Ruff configuration
 line-length = 240
 target-version = "py311"
 

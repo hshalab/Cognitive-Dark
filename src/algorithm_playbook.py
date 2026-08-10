@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — 2026 Algorithm Playbook (V2.9).
+Coercion Files — 2026 Algorithm Playbook (V2.9).
 
 Har platform ke 2026 ranking signals ka "cheat sheet" — documented best
 practices (koi hack nahi, algorithm ka asli behavior):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.1 — Facebook Uploader (Graph API).
+Coercion Files — Facebook Uploader (Graph API).
 
 • Primary: POST /{page-id}/video_reels (Reels — 9:16, ≤90s, monetization-
   eligible for in-stream ads). Set FB_REELS_ENDPOINT=videos to fall back.

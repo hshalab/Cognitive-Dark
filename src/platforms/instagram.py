@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Instagram Uploader (Instagram Graph API, Reels).
+Coercion Files — Instagram Uploader (Instagram Graph API, Reels).
 
 Flow (documented 2026 API):
   1) POST /{ig-user-id}/media  {media_type: REELS, video_url|upload_type}
@@ -124,7 +124,7 @@ class InstagramUploader(BasePlatform):
         with open(video_path, "rb") as fh:
             r = requests.post(
                 upload_uri, data=fh,
-                headers={"Authorization": f"OAuth {self.token}",
+                headers={"Authorization": f"Bearer {self.token}",
                          "offset": "0",
                          "file_size": str(size),
                          "Content-Type": mime}, timeout=1800)

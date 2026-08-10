@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Master Autonomous Engine & Auto-Pilot.
+Coercion Files — Master Autonomous Engine & Auto-Pilot.
 
 Performs the complete automated cycle in one go:
   1. Diagnostic & Channel Inventory Audit (checks YouTube, Facebook, Instagram)

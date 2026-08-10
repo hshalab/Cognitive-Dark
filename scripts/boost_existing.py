@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — BOOST Existing Content (V2.9.8).
+Coercion Files — BOOST Existing Content (V2.9.8).
 
 Pehle se uploaded videos par views laane ke liye 3 real levers (koi hack nahi,
 YouTube ke allowed API operations):

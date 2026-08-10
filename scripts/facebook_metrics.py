@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — mukammal Facebook Page metrics report.
+Coercion Files — mukammal Facebook Page metrics report.
 
 Page-level (followers, category, about, published) + har video/reel ke
 views, likes, comments, shares, reach, impressions aur created time.

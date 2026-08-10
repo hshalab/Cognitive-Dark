@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Mature bandit core.
+Coercion Files — Mature bandit core.
 
 Yeh module LearningSystem ke liye do production-grade policies deta hai:
 

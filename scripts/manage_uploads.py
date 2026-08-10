@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — YouTube Upload Manager (runs in CI where secrets live).
+Coercion Files — YouTube Upload Manager (runs in CI where secrets live).
 
 Actions:
   list        — print every uploaded video (id, status, publishAt, views, title)
@@ -146,7 +146,7 @@ def spread_schedule(yt):
 
 def main():
     import argparse
-    ap = argparse.ArgumentParser(description="Cognitive Dark YouTube upload manager")
+    ap = argparse.ArgumentParser(description="Coercion Files YouTube upload manager")
     ap.add_argument("action", nargs="?", default="list",
                     choices=["list", "keep_latest", "spread"],
                     help="list | keep_latest | spread")

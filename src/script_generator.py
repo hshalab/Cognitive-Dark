@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Script Generator.
+Coercion Files — Script Generator.
 
   • Primary : Groq (Llama-3.3-70B, JSON mode)
   • Fallback: Gemini 2.0 Flash
@@ -88,7 +88,7 @@ def _groq_with(model: str, prompt: str) -> str:
                  "Content-Type": "application/json",
                  # V2.9.14: Cloudflare (error 1010) blocks Python-urllib's
                  # default UA → 403 on valid keys. Send a real UA.
-                 "User-Agent": "CognitiveDark-CI/1.0"})
+                 "User-Agent": "CoercionFiles-CI/1.0"})
     with urllib.request.urlopen(req, timeout=90) as resp:
         return json.loads(resp.read())["choices"][0]["message"]["content"]
 
@@ -127,7 +127,7 @@ def _gemini_with(model: str, prompt: str) -> str:
         url, data=json.dumps(payload).encode(),
         headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY,
                  # V2.9.14: same Cloudflare/UA guard as Groq
-                 "User-Agent": "CognitiveDark-CI/1.0"})
+                 "User-Agent": "CoercionFiles-CI/1.0"})
     with urllib.request.urlopen(req, timeout=90) as resp:
         data = json.loads(resp.read())
         return data["candidates"][0]["content"]["parts"][0]["text"]
@@ -481,6 +481,29 @@ Write it now — valid JSON only."""
     script["arm_key"] = arm_key or LearningSystem.arm_key(
         pillar["key"], hook_style, "any")
     script.setdefault("tags", pillar["tags"][:10])
+
+    # ── V3.1: CTR-OPTIMIZED TITLE — generate high-CTR title variants ──
+    # YouTube Shorts ke liye CTR-optimized title select karte hain
+    try:
+        from ctr_optimizer import describe_ctr_grade, pick_best_title, score_title_ctr, suggest_ctr_improved_title
+        _title_score = score_title_ctr(script.get("title", ""), "youtube")
+        if _title_score.score < 0.70:
+            _variants = suggest_ctr_improved_title(
+                script.get("hook", script.get("title", "")),
+                "youtube",
+                pillar_keywords=[p["key"] for p in PILLARS]
+            )
+            if _variants:
+                script["title"] = pick_best_title(
+                    script.get("hook", ""), _variants, "youtube"
+                )
+                logger.info("CTR title boost: %s → %s (%s)",
+                            _title_score.title[:40], script["title"][:40],
+                            describe_ctr_grade(
+                                score_title_ctr(script["title"], "youtube").score))
+    except Exception as exc:
+        logger.warning("CTR title optimization skipped: %s", exc)
+
     return script
 
 

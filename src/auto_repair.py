@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Auto-Repair System.
+Coercion Files — Auto-Repair System.
 
 The self-healing layer of the pipeline:
 

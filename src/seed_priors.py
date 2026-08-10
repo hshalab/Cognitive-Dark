@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — ML warm-start priors (Forensic Social Engineering & Human-Feel Engine).
+Coercion Files — ML warm-start priors (Forensic Social Engineering & Human-Feel Engine).
 
 Warm-starts the Bayesian Thompson Bandit and UCB1 algorithm with high-yield
 USA market intelligence priors.

@@ -1,4 +1,4 @@
-# 🇺🇸 Cognitive Dark / Coercion Files — USA Growth Blueprint
+# 🇺🇸 Coercion Files — USA Growth Blueprint
 _Prepared 2026-08-07 · Channel stage: brand-new (4 videos, ~2 total views)_
 
 ---

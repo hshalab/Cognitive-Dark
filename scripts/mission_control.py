@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Mission Control (V2.8).
+Coercion Files — Mission Control (V2.8).
 
 Weekly autonomous health + growth review. THE MANAGER of the operation.
 

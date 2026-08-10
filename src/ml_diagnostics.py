@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — ML diagnostics & maturity report.
+Coercion Files — ML diagnostics & maturity report.
 
 Bandit ki "maturity" aur health ka human-readable + JSON report:
   • Kitne arms real evidence se seekh chuke hain vs abhi priors par

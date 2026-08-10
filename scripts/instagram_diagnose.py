@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Instagram / Facebook Graph API Diagnostic.
+Coercion Files — Instagram / Facebook Graph API Diagnostic.
 
 Yeh script aapke Instagram setup ki tafteesh karti hai aur batati hai ke
 upload kyun fail ho raha hai — account type, FB page link, token scopes,

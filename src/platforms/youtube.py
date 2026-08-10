@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — YouTube Uploader (YouTube Data API v3).
+Coercion Files — YouTube Uploader (YouTube Data API v3).
 
 • SEO title (≤100), keyword-first description, ≤500-char tags, category 27
 • Credentials: accepts EITHER a file path OR a raw JSON string in

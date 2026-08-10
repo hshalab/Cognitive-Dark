@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark - Strategy Director (V2.8 — human-mind layer).
+Coercion Files - Strategy Director (V2.8 — human-mind layer).
 
 Rolling performance (last N videos) dekh khud ba khud in cheezon ko tune karta
 hai taake owner ko manually settings na badalni parein:

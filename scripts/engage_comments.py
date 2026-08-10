@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Comment Engagement Engine (V3.0).
+Coercion Files — Comment Engagement Engine (V3.0).
 
 YouTube/Facebook/Instagram ke comments fetch karta hai aur insaani tone mein
 jawab DRAFT karta hai (LLM se — Groq/Gemini). Drafts data/reply_queue.json
@@ -35,7 +35,7 @@ from human_layer import load_reply_queue, save_reply_queue
 
 GRAPH = "https://graph.facebook.com"
 V = "v25.0"
-UA = "CognitiveDark-CI/1.0"
+UA = "CoercionFiles-CI/1.0"
 
 
 def first_env(*names):

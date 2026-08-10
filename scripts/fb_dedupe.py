@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Facebook duplicate video detector & remover.
+Coercion Files — Facebook duplicate video detector & remover.
 
 Ek hi title ki multiple videos ko pakarta hai, views ke hisaab se sab se
 zyada-views wali copy rakhta hai, baqi DELETE karta hai (--apply se).

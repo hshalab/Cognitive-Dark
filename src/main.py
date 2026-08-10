@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2.1 — Multi-Platform Pipeline Orchestrator.
+Coercion Files — Multi-Platform Pipeline Orchestrator.
 
   Script(Groq) → Clips(Pexels/Pixabay) → Voice(Kokoro) → Video(MoviePy)
   → Upload(YouTube + Facebook + Instagram) → ML feedback → Monetization tracker
@@ -30,7 +30,6 @@ logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger("main")
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from auto_repair import Preflight, RepairJournal, StageRunner, cleanup, selftest
 from clips_downloader import prepare_clips
 from config.settings import MIN_POST_GAP_HOURS, PLATFORMS
@@ -306,10 +305,15 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         logger.warning("content pack write failed: %s", exc)
 
     # ── 6. ML feedback for strong output (rewards on the EXACT arm) ──
+    # Pass content_quality from the script quality gate so the bandit learns
+    # to favor arms that consistently produce high-quality scripts.
+    _script_quality = script.get("script_quality", {}).get("score", 0.0) \
+        if isinstance(script.get("script_quality"), dict) else 0.0
     for p, res in results.items():
         if res.get("ok") and not res.get("dry_run") and arm:
             ml.apply_reward(arm, f"{p}_published",
-                            ml.cfg["bonus_consistent"], platform=p)
+                            ml.cfg["bonus_consistent"], platform=p,
+                            content_quality=_script_quality)
             # Real performance metrics arrive via scripts/fetch_metrics.py,
             # which credits this video's arm through the attribution map.
     ml.save()
@@ -344,7 +348,7 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Cognitive Dark V2.1 pipeline")
+    ap = argparse.ArgumentParser(description="Coercion Files pipeline")
     ap.add_argument("--platforms", default=None,
                     help="comma list: youtube,facebook,instagram (default: all enabled)")
     ap.add_argument("--dry-run", action="store_true",

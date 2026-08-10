@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — YouTube Shorts Diagnostic & Repair.
+Coercion Files — YouTube Shorts Diagnostic & Repair.
 
 Yeh script aapki channel ki saari videos (public/private/scheduled/unlisted)
 ko scan karti hai aur batati hai:

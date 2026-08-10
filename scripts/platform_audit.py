@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — 3-Platform Settings Audit (runs in CI where secrets live).
+Coercion Files — 3-Platform Settings Audit (runs in CI where secrets live).
 
 Reports what each platform currently has + what still needs doing:
   • YouTube : channel identity, subs/views, verification (custom thumbs /

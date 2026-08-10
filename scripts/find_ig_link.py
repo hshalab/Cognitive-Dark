@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Find the IG Link (V2.9.3).
+Coercion Files — Find the IG Link (V2.9.3).
 
 Jab ig_diagnose kehti hai "page par IG linked nahi" lekin aapko lagta hai
 linkage hai — yeh script aapke token ke UNDER SAARE Facebook pages ko list

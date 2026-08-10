@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Deep SEO & Metadata Repair for Cognitive Dark (V2.1).
+Deep SEO & Metadata Repair for Coercion Files (V2.1).
 
 Scans the learning store and channel state, then heals inconsistencies:
   • re-validates the ML store schema (upgrades older versions in place)

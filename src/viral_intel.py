@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Viral Intelligence (V2.9).
+Coercion Files — Viral Intelligence (V2.9).
 
 Har 2026 viral channel jo karta hai uski PATTERN intelligence — formula se,
 luck se nahi:

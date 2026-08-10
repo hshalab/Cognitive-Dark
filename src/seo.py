@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — USA-STYLE Platform SEO Packaging.
+Coercion Files — USA-STYLE Platform SEO Packaging.
 
 USA viral-channel conventions applied:
   • TITLES — hook first, KEYWORD in the first 40 chars, power words, Title
@@ -12,13 +12,17 @@ USA viral-channel conventions applied:
     identical), tuned to each algorithm (FB = comments, IG = saves/shares).
 """
 
+import logging
 import random
 
 from config.settings import PILLARS
 
+logger = logging.getLogger("seo")
+
 POWER_WORDS = ["Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
                "Deadly", "Silently", "Brutal", "Finally", "Nobody Tells You",
-               "They Don't Want You to Know", "Revealed", "Stop", "Master"]
+               "They Don't Want You to Know", "Revealed", "Stop", "Master",
+               "BUG", "TRAP", "FLAG", "EXPOSED", "PROOF", "WARNING"]
 
 PLATFORM_HASHTAGS = {
     "youtube": ["#psychology", "#truecrime", "#mindcontrol"],
@@ -189,12 +193,99 @@ def _tags(script: dict, platform: str) -> list:
     return final
 
 
+def _ctr_boost_title(hook: str, platform: str) -> str:
+    """Apply CTR-boosting patterns to a title for maximum click-through.
+
+    YouTube Shorts-specific: first 3 words are everything on mobile.
+    Uses proven 2026 CTR patterns for psychology/true-crime niche.
+    """
+    hook = hook.strip().rstrip("?.!")
+    if not hook:
+        return ""
+
+    # Pattern 1: Number + specificity (highest CTR in 2026 psychology niche)
+    if len(hook.split()) <= 5 and random.random() < 0.35:
+        numbers = ["3", "7", "10", "11", "12", "21", "50", "100"]
+        hook = f"{random.choice(numbers)} {hook[0].lower() + hook[1:]}" if hook else hook
+
+    # Pattern 2: Question mark → curiosity gap (YouTube Shorts feed loves questions)
+    if not hook.endswith("?") and random.random() < 0.25:
+        question_words = ["Why", "How", "What", "When", "Why do"]
+        hook = f"{random.choice(question_words)} {hook[0].lower() + hook[1:]}?"
+
+    return hook[:70]
+
+
+def _youtube_title_optimizations(script: dict, base_title: str) -> list[str]:
+    """Generate multiple CTR-optimized title variants for YouTube A/B thinking.
+
+    YouTube Shorts: ≤70 chars ideal, first 40 chars most important (mobile),
+    keyword in first 100 chars of description.
+    """
+    hook = script.get("hook", "") or script.get("title", "")
+    variants = []
+
+    # V1: Hook-first (strong pattern interrupt)
+    variants.append(_power_title(hook, 70))
+
+    # V2: Number + hook (specificity CTR boost)
+    n_title = _ctr_boost_title(hook, "youtube")
+    if n_title and n_title != variants[0]:
+        variants.append(_power_title(n_title, 70))
+
+    # V3: Question format (curiosity gap)
+    q_title = _ctr_boost_title(hook, "youtube")
+    if q_title and q_title not in variants:
+        variants.append(_power_title(q_title, 70))
+
+    # Deduplicate and cap
+    seen, out = set(), []
+    for v in variants:
+        key = v.lower().strip()
+        if key and key not in seen and len(v) > 15:
+            seen.add(key)
+            out.append(v)
+    return out[:5]
+
+
 def build_platform_package(script: dict, platform: str,
                            durations: list = None) -> dict:
     """Return {title, description, tags, hashtags, hook} for a platform."""
+    if platform == "youtube":
+        # YouTube: SEO keyword title (longer, search-intent) + CTR optimization
+        title = _title(script, platform)
+        # Apply CTR boost but ensure keyword + length strategy is preserved
+        try:
+            from ctr_optimizer import describe_ctr_grade, pick_best_title, score_title_ctr, suggest_ctr_improved_title
+            _ctr_score = score_title_ctr(title, "youtube")
+            if _ctr_score.score < 0.70:
+                _variants = suggest_ctr_improved_title(
+                    script.get("hook", script.get("title", "")),
+                    "youtube",
+                    pillar_keywords=[p["key"] for p in PILLARS]
+                )
+                if _variants:
+                    # Pick best CTR variant, then ensure keyword is appended
+                    ctr_title = pick_best_title(script.get("hook", ""), _variants, "youtube")
+                    # YouTube strategy: keyword MUST be in title for search + suggested
+                    kw = "psychology facts"
+                    for p in PILLARS:
+                        if p["key"] == script.get("pillar"):
+                            kw = p["search_terms"][0]
+                            break
+                    if kw.lower() not in ctr_title.lower():
+                        ctr_title = f"{ctr_title[:70]} | {kw.title()}"[:100]
+                    title = ctr_title
+                    logger.info("CTR boost: %s (%s)",
+                                title[:55], describe_ctr_grade(score_title_ctr(title, "youtube").score))
+        except Exception:
+            pass
+    else:
+        title = _title(script, platform)
+
     return {
         "platform": platform,
-        "title": _title(script, platform),
+        "title": title,
         "description": _description(script, platform, durations),
         "tags": _tags(script, platform),
         "hashtags": PLATFORM_HASHTAGS.get(platform, []),

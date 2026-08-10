@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark — Market Intelligence.
+Coercion Files — Market Intelligence.
 
 Doosre channels ke PUBLIC data se seekhta hai (views, likes, comments, title
 pattern, duration, publish time). Kisi doosre channel ka RETENTION data YouTube

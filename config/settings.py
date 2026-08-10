@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cognitive Dark V2 — Global Configuration & Converted Niche Strategy.
+Coercion Files — Global Configuration & Converted Niche Strategy.
 
 Niche conversion (2026 trend-researched):
   OLD: "Dark Psychology & Manipulation Tactics"  →  monetization-risk framing
