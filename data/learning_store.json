@@ -1976,23 +1976,30 @@
       "ts": "2026-08-09T16:33:24.507441+00:00",
       "credited": true,
       "metrics": {
-        "views": 17,
+        "views": 25,
         "likes": 0,
         "comments": 0,
-        "retention": 0.0
+        "retention": 0.15,
+        "retention_estimated": true,
+        "platform": "youtube"
       },
-      "reward": 0.284,
+      "reward": 0.32,
       "breakdown": {
-        "retention": 0.0,
+        "retention": 0.15,
+        "retention_measured": false,
+        "retention_estimated": true,
         "completion": 0.0,
         "engagement_rate": 0.0,
-        "view_score": 0.205,
+        "view_score": 0.233,
         "ctr": 0.0,
-        "voice_rating": 1.0,
-        "reward": 0.284,
-        "quality_gate_passed": true
+        "voice_rating": 0.5,
+        "reward": 0.32,
+        "quality_gate_passed": false,
+        "quality_gate_status": "unknown",
+        "data_complete": false
       },
-      "credited_at": "2026-08-10T06:17:37.201335+00:00"
+      "credited_at": "2026-08-10T06:17:37.201335+00:00",
+      "refresh_count": 1
     },
     "1624303202734288": {
       "arm_key": "brainwashing_myths::confession::afternoon",
@@ -2008,23 +2015,30 @@
       "ts": "2026-08-10T06:17:25.860043+00:00",
       "credited": true,
       "metrics": {
-        "views": 0,
+        "views": 29,
         "likes": 0,
         "comments": 0,
-        "retention": 0.0
+        "retention": 0.15,
+        "retention_estimated": true,
+        "platform": "youtube"
       },
-      "reward": 0.21,
+      "reward": 0.324,
       "breakdown": {
-        "retention": 0.0,
+        "retention": 0.15,
+        "retention_measured": false,
+        "retention_estimated": true,
         "completion": 0.0,
         "engagement_rate": 0.0,
-        "view_score": 0.0,
+        "view_score": 0.244,
         "ctr": 0.0,
-        "voice_rating": 1.0,
-        "reward": 0.21,
-        "quality_gate_passed": true
+        "voice_rating": 0.5,
+        "reward": 0.324,
+        "quality_gate_passed": false,
+        "quality_gate_status": "unknown",
+        "data_complete": false
       },
-      "credited_at": "2026-08-10T06:17:37.204584+00:00"
+      "credited_at": "2026-08-10T06:17:37.204584+00:00",
+      "refresh_count": 1
     },
     "1497157482100697": {
       "arm_key": "cults::red_flag::morning",
