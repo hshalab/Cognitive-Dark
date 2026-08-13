@@ -524,3 +524,37 @@ def test_ctr_guard_stem_overlap_not_blocked():
     })
     assert v.status in ("PASS", "WARN"), v.reason
     assert v.evidence["hook_link"] > 0
+
+
+def test_seo_guard_capital_keyword_case_insensitive():
+    """V3.6.4: 'MKUltra Explained' jaisa capital keyword title.lower() mein
+    case-sensitive check se kabhi match nahi hota tha — pillar keywords
+    wale titles ghalat FAIL hote thay."""
+    from guards.seo_guard import SEOGuard
+    pkg = {
+        "title": "Watch What They Say When You Say No: Mkultra Explained",
+        "description": ("Mkultra explained: how one ad campaign manipulated "
+                        "a country, and how to protect yourself from the same "
+                        "pattern. Documented psychology case breakdown with "
+                        "the exact propaganda techniques decoded so viewers "
+                        "can spot them early. Educational — not a substitute "
+                        "for professional advice. #psychology #truecrime"),
+        "tags": ["mkultra", "psychology", "propaganda"],
+        "hashtags": ["psychology", "truecrime"],
+    }
+    payload = {"platform": "youtube", "package": pkg,
+               "script": {"pillar": "mind_control_history"}}
+    v = SEOGuard().check(payload)
+    assert v.status in ("PASS", "WARN"), v.reason
+
+
+def test_ctr_guard_watch_hook_passes():
+    """'Watch what they say...' pattern-interrupt hook hai — guard ki POWER
+    list mein watch nahi tha → ghalat FAIL."""
+    from guards.ctr_guard import CTRGuard
+    v = CTRGuard().check({
+        "platform": "facebook",
+        "package": {"title": "Watch what they say when you say no"},
+        "script": {"hook": "Watch what they say when you say no"},
+    })
+    assert v.status in ("PASS", "WARN"), v.reason

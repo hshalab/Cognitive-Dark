@@ -63,7 +63,10 @@ class SEOGuard(BaseGuard):
         tags = pkg.get("tags") or []
         tags_chars = sum(len(t) + 1 for t in tags)
         kws = self._yt_keywords(self._payload)
-        kw_hits = [k for k in kws if k in title.lower()]
+        # V3.6.4: CASE-INSENSITIVE match — pehle k in title.lower() tha:
+        # "MKUltra explained" (capital) title.lower() mein kabhi match nahi
+        # hota tha → pillar keywords wale titles ghalat FAIL hote thay.
+        kw_hits = [k for k in kws if k.lower() in title.lower()]
         ev.update({"title_len": len(title), "desc_len": len(desc),
                    "tags": len(tags), "tags_chars": tags_chars,
                    "keyword_in_title": bool(kw_hits), "pipe_count":
@@ -74,7 +77,7 @@ class SEOGuard(BaseGuard):
             issues.append("no psychology/search keyword in title")
         if len(desc) < 300:
             issues.append(f"description too short ({len(desc)} chars)")
-        if not any(k in desc[:300].lower() for k in kws):
+        if not any(k.lower() in desc[:300].lower() for k in kws):
             issues.append("keyword not in description first 2 lines")
         if not (1 <= len(tags) <= 50):
             issues.append(f"tags {len(tags)} (1-50 chahiye)")

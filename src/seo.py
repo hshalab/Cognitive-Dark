@@ -296,6 +296,17 @@ def build_platform_package(script: dict, platform: str,
                                         score_title_ctr(title, "youtube").score))
         except Exception:
             pass
+        # V3.6.3: SEARCH-KEYWORD GUARANTEE — SEOGuard ke mutabiq title mein
+        # keyword ZAROORI hai. Title picker/CTR boost kabhi keyword-less
+        # variant chun lete hain → natural ": Keyword" merge (no pipe
+        # stuffing, bot-pattern wapas nahi aata).
+        kw = "psychology facts"
+        for p in PILLARS:
+            if p["key"] == script.get("pillar"):
+                kw = p["search_terms"][0]
+                break
+        if kw.lower() not in title.lower() and len(title) + len(kw) + 2 <= 100:
+            title = f"{title[:80]}: {kw.title()}"[:100]
     else:
         title = _title(script, platform)
 

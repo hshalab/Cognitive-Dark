@@ -100,3 +100,31 @@ def test_llm_cta_instructions_present():
     txt = llm_cta_instructions()
     assert "reciprocity" in txt and "algorithm-altruism" in txt
     assert "please like and subscribe" in txt  # explicitly forbidden
+
+
+def test_yt_package_always_has_keyword():
+    """V3.6.3: SEOGuard keyword requirement — YT package title mein keyword
+    HAMESHA hona chahiye, chahe CTR boost/title picker kuch bhi chune."""
+    import random
+
+    from config.settings import PILLARS
+    from seo import build_platform_package
+    random.seed(7)
+    for _ in range(10):
+        script = {
+            "hook": "How One Ad Manipulated a Country",
+            "title": "How One Ad Manipulated a Country",
+            "pillar": "mind_control_history",
+            "pillar_name": "Declassified Mind Control",
+            "key_points": "• x",
+            "tags": ["psychology"],
+            "scenes": [{"caption": "How one ad manipulated a country with repeated messaging."},
+                       {"caption": "The declassified files show the propaganda campaign ran for months."},
+                       {"caption": "Milgram proved obedience rises under authority pressure."},
+                       {"caption": "Hit like if this helps you spot manufactured consent. Comment below."}],
+        }
+        pkg = build_platform_package(script, "youtube", durations=[4.0] * 4)
+        kw = next(p["search_terms"][0] for p in PILLARS
+                  if p["key"] == "mind_control_history")
+        assert kw.lower() in pkg["title"].lower(), pkg["title"]
+        assert pkg["title"].count("|") <= 0  # pipe-stuffing wapas nahi
