@@ -225,7 +225,9 @@ def _estimate_yt_retention(views: int, likes: int, comments: int) -> float:
 
 def youtube_credit_videos(ml: LearningSystem) -> int:
     """Credit each uncredited, attributed YouTube video with real stats."""
+    # V3.7: pending (uncredited) + refreshable (stale: 0-views/CTR-less) — dono real data se update hote hain
     ids = [v for v in ml.pending_video_ids("youtube") if str(v) != "dry-run"]
+    ids += [v for v in ml.refreshable_video_ids("youtube") if v not in ids]
     if not ids:
         return 0
     try:
@@ -313,7 +315,9 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
     to the arms that produced them. Also fetches insights (watch time) when
     available.
     """
+    # V3.7: pending (uncredited) + refreshable (stale: 0-views/CTR-less) — dono real data se update hote hain
     ids = [v for v in ml.pending_video_ids("facebook") if str(v) != "dry-run"]
+    ids += [v for v in ml.refreshable_video_ids("facebook") if v not in ids]
     if not ids:
         return 0
     tok, page = _fb_service()
@@ -445,7 +449,9 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
     Fetches IG media-level stats: plays, likes, comments, saved, shares.
     Also applies per-platform arm learning (IG learns separately from YT/FB).
     """
+    # V3.7: pending (uncredited) + refreshable (stale: 0-views/CTR-less) — dono real data se update hote hain
     ids = [v for v in ml.pending_video_ids("instagram") if str(v) != "dry-run"]
+    ids += [v for v in ml.refreshable_video_ids("instagram") if v not in ids]
     if not ids:
         return 0
     tok, ig = _ig_service()

@@ -425,3 +425,54 @@ def test_insight_totals_sum():
     ]}
     tot = _insight_totals(resp)
     assert tot == {"plays": 150, "reach": 1000}
+
+
+def test_refreshable_ids_after_zero_view_credit(tmp_path: Path):
+    """V3.7: upload ke foran baad 0-views credit → video refreshable list
+    mein aati hai (naye real data ke liye)."""
+    ml = LearningSystem(store_path=tmp_path / "store.json")
+    key = "cults::warning::morning"
+    ml.record_video_id("youtube", "vidA", key, "t")
+    ml.credit_video("vidA", {"views": 0, "likes": 0, "comments": 0,
+                             "retention_estimated": True})
+    assert "vidA" not in ml.pending_video_ids("youtube")
+    assert "vidA" in ml.refreshable_video_ids("youtube")
+
+
+def test_refresh_delta_reward_no_double_count(tmp_path: Path):
+    """V3.7: refresh par sirf DELTA reward arm par jata hai — purana reward
+    dobara count nahi hota."""
+    ml = LearningSystem(store_path=tmp_path / "store.json")
+    key = "cults::warning::morning"
+    ml.record_video_id("youtube", "vidB", key, "t")
+    ml.credit_video("vidB", {"views": 100, "likes": 5, "comments": 0,
+                             "retention_estimated": False,
+                             "retention": 0.1})
+    first_reward = ml.data["attribution"]["vidB"]["reward"]
+    arm_before = dict(ml.data["arms"][key])
+    # naya real data: viral numbers
+    ml.credit_video("vidB", {"views": 20000, "likes": 1500, "comments": 200,
+                             "shares": 100, "retention": 0.78,
+                             "retention_estimated": False, "ctr": 0.09,
+                             "impressions": 220000})
+    arm_after = ml.data["arms"][key]
+    second_reward = ml.data["attribution"]["vidB"]["reward"]
+    assert second_reward > first_reward
+    # delta = second - first; arm par sirf ek delta apply hua (n +1)
+    assert arm_after["n"] == arm_before["n"] + 1
+    assert arm_after["rewards"] == pytest.approx(
+        arm_before["rewards"] + (second_reward - first_reward), abs=0.01)
+    assert ml.data["attribution"]["vidB"]["refresh_count"] == 1
+
+
+def test_refresh_with_ctr_flows_into_reward():
+    """Real CTR + impressions refresh par reward mein shamil hote hain."""
+    from reward import reward_from_dict
+    r_no, _ = reward_from_dict({"views": 500, "likes": 20, "comments": 2,
+                                "retention_estimated": False, "retention": 0.2})
+    r_ctr, b = reward_from_dict({"views": 500, "likes": 20, "comments": 2,
+                                 "retention_estimated": False,
+                                 "retention": 0.2, "ctr": 0.12,
+                                 "impressions": 5000})
+    assert r_ctr > r_no
+    assert b["ctr"] == 0.12

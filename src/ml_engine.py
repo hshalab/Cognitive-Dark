@@ -714,14 +714,63 @@ class LearningSystem:
         return [vid for vid, a in self.data["attribution"].items()
                 if not a.get("credited") and (platform is None or a["platform"] == platform)]
 
+    def refreshable_video_ids(self, platform: str | None = None,
+                              max_age_days: int = 14) -> list:
+        """V3.7: credited videos jinke metrics STALE hain (0 views ya CTR
+        missing) — daily pipeline upload ke foran baad credit kar deti hai
+        (views=0), ab metrics-sync inhein naye real data se refresh karti
+        hai. Sirf recent videos (max_age_days) taake purane par loop na ho."""
+        cutoff = (datetime.now(timezone.utc) -
+                  timedelta(days=max_age_days)).isoformat()
+        out = []
+        for vid, a in self.data["attribution"].items():
+            if platform and a.get("platform") != platform:
+                continue
+            if not a.get("credited"):
+                continue
+            ts = a.get("ts") or a.get("credited_at") or cutoff
+            if ts < cutoff:
+                continue
+            m = a.get("metrics") or {}
+            if int(m.get("views", 0) or 0) == 0 or m.get("ctr") is None:
+                out.append(vid)
+        return out
+
     def credit_video(self, video_id: str, metrics: dict) -> float:
-        """Convert real analytics for one video into a reward on its arm."""
+        """Convert real analytics for one video into a reward on its arm.
+
+        V3.7 REFRESH: agar video pehle se credited hai (e.g. upload ke foran
+        baad 0-views ke saath) to naye real data se metrics update hote hain
+        aur sirf DELTA reward arm par jata hai — double-count kabhi nahi.
+        """
         vid = str(video_id)
         a = self.data["attribution"].get(vid)
-        if not a or a.get("credited"):
+        if not a:
             return 0.0
         reward, breakdown = self.reward_from_metrics(metrics)
         platform = a.get("platform")
+
+        if a.get("credited"):
+            old_reward = float(a.get("reward", 0.0) or 0.0)
+            a["metrics"] = metrics
+            a["reward"] = reward
+            a["breakdown"] = breakdown
+            a["refresh_count"] = int(a.get("refresh_count", 0) or 0) + 1
+            self._append_event("credit_refresh", video_id=vid,
+                               reward=round(reward, 4))
+            delta = reward - old_reward
+            if abs(delta) > 1e-9 and breakdown.get("data_complete"):
+                if delta > 0:
+                    self.apply_reward(a["arm_key"], f"refresh:{vid[:12]}",
+                                      delta, platform=platform)
+                else:
+                    self.apply_penalty(a["arm_key"], f"refresh:{vid[:12]}",
+                                       abs(delta), platform=platform)
+            logger.info("♻️  %s:%s refreshed — reward %.2f → %.2f (Δ %.2f)",
+                        platform, vid[:12], old_reward, reward, delta)
+            self.save()
+            return reward
+
         a["credited"] = True
         a["metrics"] = metrics
         a["reward"] = reward
