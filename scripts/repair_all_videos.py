@@ -652,7 +652,10 @@ def fb_update_post_text(tok: str, vid: str, text: str) -> tuple[bool, str]:
     kaamyabi wapas. Koi guess nahi: har field ASAL mein try hota hai.
     """
     import requests
-    for field in ("caption", "description", "message"):
+    # V3.6-repair-10: description pehle — video nodes isi mein store
+    # karte hain; caption POST par FB silent 200 deta tha bina kuch change
+    # kiye (loop ka root cause)
+    for field in ("description", "caption", "message"):
         try:
             r = requests.post(
                 f"https://graph.facebook.com/v25.0/{vid}",
@@ -822,9 +825,32 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 if apply and not fix_public_only:
                     ok_upd, via = fb_update_post_text(tok, vid, new_caption)
                     if ok_upd:
-                        actions.append(f"caption+ (via {via})")
-                        STATS["facebook"]["caption_updated"] += 1
-                        caption = new_caption  # Update for reporting
+                        # V3.6-repair-10: verify — FB kabhi silent 200 deta
+                        # hai bina kuch change kiye. Read-back se asal
+                        # change confirm karo; no-op par fake 'fixed' count
+                        # NAHI (honest reporting).
+                        try:
+                            rv = requests.get(
+                                f"https://graph.facebook.com/v25.0/{vid}",
+                                params={"access_token": tok, "fields": fields,
+                                        "timeout": 30},
+                                timeout=30)
+                            if rv.status_code == 200:
+                                d2 = rv.json()
+                                now_txt = (d2.get("description", "") or
+                                           d2.get("caption", "") or
+                                           d2.get("message", "") or "")
+                                if len(now_txt or "") >= 20:
+                                    actions.append(f"caption+ (via {via}) ✓")
+                                    STATS["facebook"]["caption_updated"] += 1
+                                    caption = new_caption
+                                else:
+                                    actions.append("cap-NOOP: API 200 par "
+                                                   "koi change nahi (FB limitation)")
+                            else:
+                                actions.append(f"caption+ (via {via}) — verify fail {rv.status_code}")
+                        except Exception:
+                            actions.append(f"caption+ (via {via}) — verify error")
                     else:
                         actions.append("cap-ERR: all fields failed")
                 else:
