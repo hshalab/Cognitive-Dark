@@ -197,7 +197,19 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         logger.info("🎙️  Narration: %.1fs", narration_s)
 
         # V2.5 SHORTS CAP GUARD: >60s = NOT a Short on YouTube; IG/FB Reels also
-        # favor <60s. Trim trailing scenes (clips+audio together) to stay 40-58s.
+        # favor <60s. Trim scenes (clips+audio together) to stay 40-58s.
+        # V3.6.2: CTA scene (last) kabhi NAHI kat ta — engagement ask hi retention
+        # aur likes ka engine hai. Us ki jagah second-last (detail) scene trim
+        # hota hai jab tak fit na ho jaye.
+        _cta_words = ("like", "comment", "follow", "save", "share", "subscribe", "hit")
+        while narration_s > 57 and len(script["scenes"]) > 4:
+            last = script["scenes"][-1].get("caption", "").lower()
+            has_cta = any(w in last for w in _cta_words)
+            idx = len(script["scenes"]) - 2 if has_cta else len(script["scenes"]) - 1
+            script["scenes"].pop(idx)
+            narration_s -= segments.pop(idx)["duration"]
+            scene_visuals.pop(idx)
+        # emergency: ab bhi lamba ho to aakhri sahara (CTA ke saath)
         while narration_s > 57 and len(script["scenes"]) > 3:
             script["scenes"].pop()
             narration_s -= segments.pop()["duration"]

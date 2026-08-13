@@ -94,6 +94,25 @@ def _power_title(hook: str, max_len: int = 70) -> str:
     return tt[:max_len]
 
 
+def _platform_ctr_title(hook: str, platform: str, max_len: int) -> str:
+    """FB/IG titles bhi CTR-optimized (V3.6.2): pehle raw hook jata tha —
+    pehle 3 words mein na power na keyword → CTRGuard FAIL. Ab weak hook ka
+    best grammatical variant select hota hai; strong hook untouched."""
+    try:
+        from ctr_optimizer import pick_best_title, score_title_ctr, suggest_ctr_improved_title
+        base = hook[:max_len]
+        if score_title_ctr(base, platform).score >= 0.45:
+            return base
+        variants = suggest_ctr_improved_title(hook, platform)
+        if not variants:
+            return base
+        best = pick_best_title(hook, variants, platform)
+        return (best if score_title_ctr(best, platform).score >
+                score_title_ctr(base, platform).score else base)[:max_len]
+    except Exception:
+        return hook[:max_len]
+
+
 def _title(script: dict, platform: str) -> str:
     hook = script.get("hook", "") or script.get("title", "")
     candidates = []
@@ -118,9 +137,9 @@ def _title(script: dict, platform: str) -> str:
         if not kw_in_hook:
             candidates.append(_power_title(f"{hook}: {kw}", 58)[:100])
     elif platform == "facebook":
-        return hook[:58]  # FB feed shows ~58 chars fully
+        return _platform_ctr_title(hook, platform, 58)  # FB feed ~58 chars
     elif platform == "instagram":
-        return hook[:55]
+        return _platform_ctr_title(hook, platform, 55)
     # V2.9: let the viral-pattern scorer pick the strongest variant
     try:
         from viral_intel import pick_title_variant

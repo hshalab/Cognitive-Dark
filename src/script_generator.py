@@ -241,7 +241,7 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "Neuroimaging shows that high-urgency language triggers the amygdala, effectively disabling the prefrontal cortex's ability to evaluate risk.",
         "Behavioral data proves that once you agree to three small, insignificant requests, your likelihood of agreeing to a major concession triples.",
         "Cognitive psychologists call this the compliance cascade: small surrenders quietly condition you for total capitulation.",
-        "Clinical analysis demonstrates that manipulators always rush the timeline because logic and sleep are their greatest enemies.",
+        "Clinical analysis shows that manipulators exploit confirmation bias and scarcity to rush your timeline, because logic and sleep are their greatest enemies.",
     ]
 
     # V3.5: second concrete detail — template scripts 86-94 words ki thin
