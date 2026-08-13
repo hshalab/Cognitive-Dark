@@ -64,7 +64,8 @@ STATS = {
     "facebook": {"scanned": 0, "fixed_public": 0, "caption_updated": 0, "hashtag_fixed": 0,
                  "total_views_before": 0, "total_views_after": 0},
     "instagram": {"scanned": 0, "account_fixed": 0, "caption_updated": 0,
-                  "hashtag_fixed": 0, "total_views_before": 0},
+                  "hashtag_fixed": 0, "total_views_before": 0,
+                  "manual_fixes": 0},
 }
 
 
@@ -616,55 +617,59 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
 
     import requests
 
-    # Get all videos from page (pagination: har page par access_token zaroori)
+    # V3.6-repair: Reels/videos POSTS mein hote hain (video-library edge
+    # mein nahi). PRIMARY: /{page}/posts (pagination + token) — video-type
+    # posts ke message repair karte hain. Fallback: /{page}/videos edge.
     video_ids = []
-    next_url = f"https://graph.facebook.com/v25.0/{page}/videos"
-    params = {"access_token": tok, "fields": "id,title,created_time,status,privacy,"
-                                               "description,caption,length,full_picture",
+    next_url = f"https://graph.facebook.com/v25.0/{page}/posts"
+    params = {"access_token": tok,
+              "fields": "id,type,status,message,created_time",
               "limit": 100}
-
-    while next_url:
+    pages_seen = 0
+    while next_url and pages_seen < 10:
         try:
             r = requests.get(next_url,
                              params=params if "access_token" not in next_url else None,
                              timeout=30)
             if r.status_code >= 400:
-                print(f"⚠️ FB API error: {r.text[:200]}")
+                print(f"⚠️ FB posts error: {r.text[:200]}")
                 break
             data = r.json()
-            for item in data.get("data", []):
-                if item.get("status") == "published":
+            items = data.get("data", [])
+            if pages_seen == 0:
+                print(f"📘 FB posts page 1: {len(items)} items "
+                      f"(types: {sorted({str(i.get('type')) for i in items})})")
+            for item in items:
+                if item.get("type") == "video":
                     video_ids.append(item.get("id"))
             nxt = data.get("paging", {}).get("next")
-            # V3.6: token har page par (Graph next-URL se token remove ho
-            # jata hai kabhi-kabhi) — safe re-append
             next_url = (nxt if "access_token" in nxt else f"{nxt}&access_token={tok}") \
                 if nxt else None
+            pages_seen += 1
         except Exception as exc:
             print(f"⚠️ FB scan error: {exc}")
             break
 
-    # Also try getting published posts that are videos
+    # Fallback: video library edge (bina status filter — diagnostics ke saath)
     if not video_ids:
         try:
             r = requests.get(
-                f"https://graph.facebook.com/v25.0/{page}/feed",
-                params={"access_token": tok, "fields": "id,type,status,privacy,"
-                                                     "description,caption,attachments",
+                f"https://graph.facebook.com/v25.0/{page}/videos",
+                params={"access_token": tok,
+                        "fields": "id,title,status",
                         "limit": 100},
                 timeout=30)
-            if r.status_code == 200:
-                for item in r.json().get("data", []):
-                    if item.get("type") == "video":
-                        vid = item.get("id")
-                        # Get the actual video ID from attachments
-                        attrs = item.get("attachments", {}).get("data", [])
-                        if attrs:
-                            video_ids.append(attrs[0].get("video_fbid") or vid)
-                        else:
-                            video_ids.append(vid)
+            if r.status_code >= 400:
+                print(f"⚠️ FB videos edge error: {r.text[:200]}")
+            else:
+                vids = r.json().get("data", [])
+                print(f"📘 FB video library: {len(vids)} videos "
+                      f"(statuses: {sorted({str(v.get('status')) for v in vids})})")
+                for item in vids:
+                    if item.get("status") == "published":
+                        video_ids.append(item.get("id"))
         except Exception as exc:
-            print(f"⚠️ FB feed scan error: {exc}")
+            print(f"⚠️ FB videos edge scan error: {exc}")
 
     # Deduplicate
     video_ids = list(dict.fromkeys(video_ids))
@@ -678,62 +683,47 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
 
     for vid in video_ids:
         try:
+            # V3.6-repair: posts-scan ke ids POST ids hain (pageid_videoid).
+            # Post-safe fields use karo — video-node fields (title/caption/
+            # description) maangne par API 400 deta hai aur sab silently
+            # skip ho jata tha.
             r = requests.get(
                 f"https://graph.facebook.com/v25.0/{vid}",
                 params={
                     "access_token": tok,
-                    "fields": ("id,title,status,privacy,description,caption,"
-                               "created_time,length,permalink_url,share_count,"
-                               "like_count,comment_count,insights"),
+                    "fields": ("id,message,status,created_time,permalink_url,"
+                               "reactions.summary(total_count),"
+                               "comments.summary(total_count)"),
                     "timeout": 30
                 },
                 timeout=30)
             if r.status_code >= 400:
-                logger.debug("FB video %s: %s", vid, r.text[:200])
+                print(f"  ⚠️ FB post {vid[:20]}: GET fail — {r.text[:150]}")
                 continue
 
             data = r.json()
             status = data.get("status", "unknown")
-            privacy = data.get("privacy", {})
-            privacy_val = privacy.get("value", "unknown") if isinstance(privacy, dict) else str(privacy)
-            caption = data.get("caption", "") or data.get("description", "") or ""
-            views = data.get("insights", {}).get("data", [])
-            view_count = 0
-            for insight in views:
-                if insight.get("name") == "video_views":
-                    for val in insight.get("values", []):
-                        view_count += int(val.get("value", {}).get("video_views", 0) or 0)
-
-            STATS["facebook"]["total_views_before"] += view_count
+            caption = data.get("message", "") or ""
+            reactions = (data.get("reactions", {}) or {}).get("summary", {})
+            comments_n = (data.get("comments", {}) or {}).get("summary", {})
+            like_count = int(reactions.get("total_count", 0) or 0)
+            comment_count = int(comments_n.get("total_count", 0) or 0)
 
             actions = []
             is_ok = True
 
-            # ── Privacy check ──
-            if privacy_val == "private":
-                if apply:
-                    # Facebook Graph API doesn't support privacy change directly
-                    # For Page posts, we can try/unpublish and republish
-                    print(f"  {vid}: private post — manual check needed (FB API limitation)")
-                    actions.append("private-needs-manual")
-                else:
-                    actions.append("would:needs-manual")
-                is_ok = False
-
-            # ── Caption/Description boost (REAL fix, V3.6) ──
+            # ── Caption/Message boost (REAL fix, V3.6) ──
             if not caption or len(caption) < 20:
-                # Weak or missing caption — add optimized caption
-                title = data.get("title", "") or ""
                 keyword = None
                 for p in PILLARS:
                     for term in p.get("search_terms", []):
-                        if term in title.lower():
+                        if term in caption.lower():
                             keyword = term
                             break
                     if keyword:
                         break
 
-                new_caption = f"🚨 {title}\n\n"
+                new_caption = "🚨 Psychology pattern you need to see.\n\n"
                 if keyword:
                     new_caption += f"{keyword.title()} psychology: how this manipulation works and how to protect yourself.\n\n"
                 new_caption += "👇 What would you add? Drop your thoughts in the comments.\n\n"
@@ -751,9 +741,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 else:
                     actions.append("would:caption+")
             else:
-                # Caption theek hai par hashtags kam → REAL hashtag fix:
-                # existing caption ke saath missing hashtags append karke
-                # asal mein update karte hain (V3.6: pehle fake counter tha)
+                # Message theek hai par hashtags kam → REAL hashtag fix
                 hashtag_count = len(re.findall(r"#\w+", caption))
                 if hashtag_count < 4:
                     missing = [h for h in FB_HASHTAGS_BANK
@@ -771,7 +759,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                     elif add:
                         actions.append(f"would:hashtags+ ({hashtag_count}→{hashtag_count + len(add)})")
 
-            print(f"  {vid[:16]} status={status:10} views={view_count:<6} priv={str(privacy_val)[:8]:8} | {' | '.join(actions) if actions else '✅ OK'}")
+            print(f"  {vid[:20]} status={status:10} likes={like_count:<4} comments={comment_count:<4} | {' | '.join(actions) if actions else '✅ OK'}")
             if not is_ok:
                 print(f"    caption: {(caption or '')[:80]}")
 
@@ -889,6 +877,8 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
 
     print(f"📸 IG: {len(media_ids)} Reels mil Gaye\n")
 
+    ig_manual_fixes = []   # V3.6-repair: API caption edit support nahi karta
+
     for mid in media_ids:
         try:
             # V3.6-repair FIX: pehle sirf CORE fields (always available) —
@@ -946,10 +936,13 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
             needs_upgrade = (not caption or len(caption) < 50 or
                             hashtag_count < 15 or not has_save_cta)
 
-            if needs_upgrade and apply and not fix_public_only:
-                # Build 2026-optimized caption
+            if needs_upgrade:
+                # V3.6-repair HONEST: Instagram Graph API published media ke
+                # captions EDIT nahi karta (sirf comment_enabled toggle hai —
+                # Meta docs). API se fix impossible hai → har weak caption ki
+                # improved version MANUAL LIST mein likhte hain (permalink ke
+                # saath) taake owner 1 minute mein khud apply kar sake.
                 title = ""
-                # Try to extract title from caption
                 lines = caption.split("\n") if caption else []
                 for line in lines:
                     if len(line) > 10 and not line.startswith("#"):
@@ -962,24 +955,14 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
                 new_caption += CTA + "\n\n"
                 new_caption += " ".join(IG_HASHTAGS_BANK[:20])
 
-                try:
-                    r2 = requests.post(
-                        f"https://graph.facebook.com/v25.0/{mid}",
-                        params={"access_token": tok},
-                        data={"caption": new_caption},
-                        timeout=30)
-                    if r2.status_code == 200:
-                        actions.append("caption+")
-                        STATS["instagram"]["caption_updated"] += 1
-                        caption = new_caption
-                    else:
-                        actions.append(f"cap-ERR:{r2.text[:50]}")
-                except Exception as exc:
-                    actions.append(f"cap-ERR:{exc}")
-            elif needs_upgrade:
-                actions.append(f"would:caption+ (hashtags={hashtag_count})")
-            elif not has_save_cta:
-                actions.append("would:add-save-cta")
+                permalink = data.get("permalink", "")
+                ig_manual_fixes.append({
+                    "media_id": mid, "permalink": permalink,
+                    "current": (caption or "")[:200],
+                    "suggested": new_caption,
+                })
+                actions.append(f"manual-fix #{(len(ig_manual_fixes))} "
+                               f"(hashtags={hashtag_count}, save_cta={has_save_cta})")
 
             # ── Engagement stats ──
             engagement_rate = (likes + comments * 2 + shares * 3 + saved * 4) / max(1, plays) * 100
@@ -993,9 +976,41 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
             logger.debug("IG reel %s error: %s", mid, exc)
 
     print(f"\n{'='*60}")
+    # V3.6-repair: MANUAL FIX LIST — IG API caption edit support nahi karta
+    if ig_manual_fixes:
+        try:
+            _ig = Path(__file__).resolve().parent.parent / "data" / "ig_caption_fixes.md"
+            _ig.parent.mkdir(parents=True, exist_ok=True)
+            _lines = [
+                "# 📸 Instagram Caption Fixes (MANUAL — API edit support nahi karta)",
+                "",
+                f"*{len(ig_manual_fixes)} reels ki improved captions — apply karo: "
+                "IG app mein reel kholo → ⋮ → Edit → caption paste karo.*",
+                "",
+            ]
+            for i, fx in enumerate(ig_manual_fixes[:30], 1):
+                _lines += [
+                    f"## {i}. {fx['permalink'] or fx['media_id']}",
+                    "",
+                    "**Suggested caption:**",
+                    "```",
+                    fx["suggested"],
+                    "```",
+                    "",
+                ]
+                if fx["current"]:
+                    _lines += [f"*(Current: {fx['current']}...)*", ""]
+            _ig.write_text("\n".join(_lines), encoding="utf-8")
+            print(f"  📝 Manual fixes list: {_ig} ({len(ig_manual_fixes)} reels)")
+        except OSError as exc:
+            print(f"  ⚠️ Manual list write failed: {exc}")
+
     print("INSTAGRAM SUMMARY:")
     print(f"  Scanned         : {STATS['instagram']['scanned']}")
-    print(f"  Captions fixed  : {STATS['instagram']['caption_updated']}")
+    print(f"  Captions fixed  : {STATS['instagram']['caption_updated']}  "
+          "(API caption edit support NAHI karta — manual list mein)")
+    STATS["instagram"]["manual_fixes"] = len(ig_manual_fixes)
+    print(f"  Manual fixes    : {len(ig_manual_fixes)}")
     print(f"{'='*60}\n")
 
 
@@ -1070,7 +1085,9 @@ def main():
             f"- Total views: {STATS['facebook']['total_views_before']}\n\n"
             f"## 📸 Instagram\n"
             f"- Scanned: {STATS['instagram']['scanned']}\n"
-            f"- Captions fixed: {STATS['instagram']['caption_updated']}\n"
+            f"- Captions fixed (API): {STATS['instagram']['caption_updated']} "
+            f"(IG API caption edit support nahi karta)\n"
+            f"- Manual fixes (data/ig_caption_fixes.md): {STATS['instagram']['manual_fixes']}\n"
             f"- Total plays: {STATS['instagram']['total_views_before']}\n",
             encoding="utf-8")
         print(f"📄 Report: {_rp}")
