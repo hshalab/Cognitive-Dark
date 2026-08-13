@@ -756,13 +756,22 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             fields = (("id,message,status,created_time,permalink_url,"
                        "reactions.summary(total_count),"
                        "comments.summary(total_count)") if is_post
-                      else ("id,title,description,status,length,created_time,"
-                            "permalink_url"))
+                      else ("id,title,description,caption,status,length,"
+                            "created_time,permalink_url"))
             r = requests.get(
                 f"https://graph.facebook.com/v25.0/{vid}",
                 params={"access_token": tok, "fields": fields,
                         "timeout": 30},
                 timeout=30)
+            if r.status_code >= 400 and not is_post and "caption" in fields:
+                # video-node par caption field kabhi invalid hota hai →
+                # bina caption ke retry (V3.6-repair-9 safety)
+                fields2 = fields.replace(",caption", "")
+                r = requests.get(
+                    f"https://graph.facebook.com/v25.0/{vid}",
+                    params={"access_token": tok, "fields": fields2,
+                            "timeout": 30},
+                    timeout=30)
             if r.status_code >= 400:
                 print(f"  ⚠️ FB {vid[:20]}: GET fail — {r.text[:150]}")
                 continue
@@ -782,7 +791,11 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 like_count = int(reactions.get("total_count", 0) or 0)
                 comment_count = int(comments_n.get("total_count", 0) or 0)
             else:
-                caption = data.get("description", "") or data.get("title", "") or ""
+                # V3.6-repair-9: read bhi caption field dekhta hai — update
+                # caption mein hota tha par read sirf description → har run
+                # dobara fix karta tha (loop)
+                caption = (data.get("description", "") or data.get("caption", "")
+                           or data.get("title", "") or "")
                 like_count = comment_count = 0
 
             actions = []
