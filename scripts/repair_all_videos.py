@@ -709,7 +709,13 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 continue
 
             data = r.json()
-            status = data.get("status", "unknown")
+            # V3.6-repair-5: status dict ho sakta hai — f"{dict:10}" Python
+            # mein TypeError deta hai (unsupported format string), jis ki
+            # wajah se har item ka print silently crash ho jata tha.
+            st_raw = data.get("status", "unknown")
+            status = (st_raw.get("publishing_phase", {}).get(
+                "publish_status", st_raw.get("video_status", "?"))
+                if isinstance(st_raw, dict) else str(st_raw))
             if is_post:
                 caption = data.get("message", "") or ""
                 reactions = (data.get("reactions", {}) or {}).get("summary", {})
@@ -775,7 +781,9 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 print(f"    caption: {(caption or '')[:80]}")
 
         except Exception as exc:
-            logger.debug("FB video %s error: %s", vid, exc)
+            # V3.6-repair-5: errors ab VISIBLE hain (pehle debug mein
+            # chhupe rehte thay aur pata hi nahi chalta tha ke kya fail hua)
+            print(f"  ⚠️ FB {vid[:20]}: error — {exc}")
 
     print(f"\n{'='*60}")
     print("FACEBOOK SUMMARY:")
