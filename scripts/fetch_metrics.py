@@ -372,23 +372,26 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
                 views = watch_time_secs = impressions = 0
                 ins = {}
                 try:
-                    ri = requests.get(
-                        f"https://graph.facebook.com/v25.0/{vid}/video_insights",
-                        params={"access_token": tok,
-                                "metric": "post_video_views,post_video_view_time,"
-                                          "post_video_avg_time_watched,"
-                                          "post_impressions,post_video_complete_views",
-                                "timeout": 30},
-                        timeout=30)
-                    if ri.status_code == 200:
-                        ins = _insight_totals(ri.json())
-                        views = int(ins.get("post_video_views", 0) or 0)
-                        # value unit ms ho sakta hai (Meta values numeric ms)
-                        wt = ins.get("post_video_view_time", 0) or 0
-                        if wt > 1000:      # ms → seconds (heuristic sign)
-                            wt = wt / 1000.0
-                        watch_time_secs = int(wt)
-                        impressions = int(ins.get("post_impressions", 0) or 0)
+                    # V3.7.4: metric ladder — kuch accounts par 'complete_views'
+                    # invalid hai ("must be a valid insights metric")
+                    for metric_set in (
+                        "post_video_views,post_video_view_time,post_impressions",
+                        "post_video_views,post_impressions",
+                    ):
+                        ri = requests.get(
+                            f"https://graph.facebook.com/v25.0/{vid}/video_insights",
+                            params={"access_token": tok, "metric": metric_set,
+                                    "timeout": 30},
+                            timeout=30)
+                        if ri.status_code == 200:
+                            ins = _insight_totals(ri.json())
+                            views = int(ins.get("post_video_views", 0) or 0)
+                            wt = ins.get("post_video_view_time", 0) or 0
+                            if wt > 1000:      # ms → seconds
+                                wt = wt / 1000.0
+                            watch_time_secs = int(wt)
+                            impressions = int(ins.get("post_impressions", 0) or 0)
+                            break
                     else:
                         logger.warning("FB video_insights %s: HTTP %s — %s",
                                        vid[:16], ri.status_code, ri.text[:200])
@@ -534,46 +537,31 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                 plays = impressions = saved = shares = 0
                 ins = {}
                 try:
-                    ri = requests.get(
-                        f"https://graph.facebook.com/v25.0/{media_id}/insights",
-                        params={"access_token": tok,
-                                "metric": "plays,reach,impressions,saved,shares",
-                                "timeout": 30},
-                        timeout=30)
-                    if ri.status_code == 200:
-                        ins = _insight_totals(ri.json())
-                        plays = int(ins.get("plays", 0) or 0)
-                        impressions = int(ins.get("impressions", 0) or 0) \
-                            or int(ins.get("reach", 0) or 0)
-                        saved = int(ins.get("saved", 0) or 0)
-                        shares = int(ins.get("shares", 0) or 0)
+                    # V3.7.4: metric ladder — har account/media par valid set
+                    # alag hai. Try: plays-first → video_views → core-only
+                    # (sirf sabko milne wale metrics)
+                    for metric_set in (
+                        "plays,reach,impressions,saved,shares",
+                        "video_views,reach,impressions,saved,shares",
+                        "impressions,reach,saved,likes,comments",
+                    ):
+                        ri = requests.get(
+                            f"https://graph.facebook.com/v25.0/{media_id}/insights",
+                            params={"access_token": tok, "metric": metric_set,
+                                    "timeout": 30},
+                            timeout=30)
+                        if ri.status_code == 200:
+                            ins = _insight_totals(ri.json())
+                            plays = int(ins.get("plays", 0) or 0) \
+                                or int(ins.get("video_views", 0) or 0)
+                            impressions = int(ins.get("impressions", 0) or 0) \
+                                or int(ins.get("reach", 0) or 0)
+                            saved = int(ins.get("saved", 0) or 0)
+                            shares = int(ins.get("shares", 0) or 0)
+                            break
                     else:
-                        # V3.7.3: kuch media (non-Reel) par 'plays' invalid
-                        # hota hai → bina plays ke retry
-                        err = ri.text[:200]
-                        if "metric" in err.lower():
-                            try:
-                                ri2 = requests.get(
-                                    f"https://graph.facebook.com/v25.0/{media_id}/insights",
-                                    params={"access_token": tok,
-                                            "metric": "impressions,reach,saved,shares",
-                                            "timeout": 30},
-                                    timeout=30)
-                                if ri2.status_code == 200:
-                                    ins = _insight_totals(ri2.json())
-                                    impressions = int(ins.get("impressions", 0) or 0) \
-                                        or int(ins.get("reach", 0) or 0)
-                                    saved = int(ins.get("saved", 0) or 0)
-                                    shares = int(ins.get("shares", 0) or 0)
-                                else:
-                                    logger.warning("IG insights %s retry: HTTP %s",
-                                                   media_id[:16], ri2.status_code)
-                            except Exception as exc2:
-                                logger.warning("IG insights %s retry failed: %s",
-                                               media_id[:16], exc2)
-                        else:
-                            logger.warning("IG insights %s: HTTP %s — %s",
-                                           media_id[:16], ri.status_code, err)
+                        logger.warning("IG insights %s: all metric sets failed — %s",
+                                       media_id[:16], ri.text[:200])
                 except Exception as exc:
                     logger.warning("IG insights %s failed: %s", media_id[:16], exc)
 
