@@ -1,0 +1,70 @@
+name: "📊 Metrics Sync — real views + CTR"
+
+on:
+  workflow_dispatch:
+  schedule:
+    # har 6 ghante (UTC): views/impressions/CTR fresh rehte hain
+    - cron: "30 3,9,15,21 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: metrics-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install -q --upgrade pip
+          pip install -q -r requirements.txt google-api-python-client google-auth-oauthlib requests
+
+      - name: Fetch real metrics (views, impressions, CTR)
+        env:
+          # YouTube (Analytics scope chahiye CTR ke liye — yt-analytics.readonly)
+          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS || secrets.YOUTUBE_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          # Facebook
+          FB_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID || secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          # Instagram
+          IG_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_USER_ID || secrets.IG_BUSINESS_ACCOUNT_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN || secrets.FACEBOOK_ACCESS_TOKEN || secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/fetch_metrics.py
+
+      - name: Commit learning memory (conflict-safe)
+        run: |
+          set -uo pipefail
+          git config user.name "Coercion Files Bot"
+          git config user.email "bot@coercionfiles.local"
+          git pull --no-rebase --autostash origin main 2>/dev/null \
+            || git pull --no-rebase --autostash -X ours origin main || true
+          if grep -lE '^(<<<<<<<|>>>>>>>)' data/*.json data/*.jsonl 2>/dev/null; then
+            echo "::error::Conflict markers in data/*.json"
+            exit 1
+          fi
+          for f in data/*.json; do
+            python -m json.tool "$f" >/dev/null || { echo "::error::Invalid JSON: $f"; exit 1; }
+          done
+          git add -f data/learning_store.json data/*.events.jsonl \
+            data/metrics_report.md data/monetization_progress.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No data changes to commit"
+          else
+            git commit -m "📊 Metrics sync — real views + impressions + CTR [skip ci]"
+            git push
+            echo "✅ Metrics committed and pushed"
+          fi

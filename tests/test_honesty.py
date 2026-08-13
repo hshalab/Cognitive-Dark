@@ -386,3 +386,42 @@ def test_self_praise_rewards_are_purged_on_load(tmp_path: Path):
     assert ml.data["self_praise_purged"] == 2
     reasons = [r["reason"] for r in ml.data["reward_log"]]
     assert reasons == ["metrics:abc123"]
+
+
+# ── 13. V3.7 REAL CTR pipeline ────────────────────────────────────
+def test_ctr_from_math():
+    """CTR = views ÷ impressions, clamp 0..1, None jab impressions na hon."""
+    import sys
+    sys.path.insert(0, "scripts")
+    from fetch_metrics import ctr_from
+    assert ctr_from(50, 1000) == 0.05
+    assert ctr_from(0, 100) == 0.0
+    assert ctr_from(2000, 1000) == 1.0        # clamp (data glitch safe)
+    assert ctr_from(500, 0) is None           # impressions unknown → None
+    assert ctr_from(500, None) is None
+
+
+def test_real_ctr_improves_reward():
+    """Asal CTR data aane par reward BADHTA hai (10% CTR-weight real data se)
+    — aur no-CTR data ke muqable honest farq rehta hai."""
+    from reward import reward_from_dict
+    base = {"views": 10000, "likes": 600, "comments": 100,
+            "retention": 0.7, "retention_estimated": False}
+    r_no_ctr, _b_no = reward_from_dict(dict(base))
+    r_ctr, b_ctr = reward_from_dict({**base, "ctr": 0.08,
+                                     "impressions": 50000})
+    assert r_ctr > r_no_ctr
+    assert b_ctr["ctr"] == 0.08
+    assert b_ctr["data_complete"] is True
+
+
+def test_insight_totals_sum():
+    import sys
+    sys.path.insert(0, "scripts")
+    from fetch_metrics import _insight_totals
+    resp = {"data": [
+        {"name": "plays", "values": [{"value": 100}, {"value": 50}]},
+        {"name": "reach", "values": [{"value": 1000}]},
+    ]}
+    tot = _insight_totals(resp)
+    assert tot == {"plays": 150, "reach": 1000}

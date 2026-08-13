@@ -34,7 +34,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -111,9 +111,93 @@ def youtube_metrics() -> dict:
         return {}
 
 
+# ── V3.7 REAL CTR pipeline ────────────────────────────────────────
+# CTR = Views ÷ Impressions. Ye system ka PEHLA real CTR measurement hai:
+#   • YouTube  → youtubeAnalytics v2 (impressions metric; yt-analytics
+#                readonly scope chahiye — creds mein already list hai)
+#   • Facebook → /{video-id}/video_insights (post_impressions +
+#                post_video_views)
+#   • Instagram→ /{media-id}/insights (impressions/reach + plays)
+# Data na ho (scope/token/permission) → CTR bheja hi nahi jata; reward.py
+# isay "unknown" treat karta hai — kabhi guess nahi. Is CTR se reward.py
+# ka 10% CTR-weight ab REAL data se chalta hai.
+
+def ctr_from(views: int, impressions: int) -> float | None:
+    """CTR = views / impressions (0..1). None agar impressions unknown/0.
+    Clamp 0..1 — views impressions se zyada kabhi nahi (data glitch se)."""
+    if not impressions or int(impressions) <= 0:
+        return None
+    return round(max(0.0, min(1.0, float(views) / float(impressions))), 4)
+
+
+def _yt_analytics():
+    """youtubeAnalytics v2 service — impressions/CTR ke liye.
+
+    None agar creds nahi hain ya token mein yt-analytics scope nahi
+    (graceful — CTR bas skip hota hai, baqi metrics chalti hain).
+    """
+    info = _resolve_yt_creds()
+    if not info:
+        return None
+    try:
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+        from googleapiclient.discovery import build
+        creds = Credentials.from_authorized_user_info(info)
+        if (creds.expired or not creds.valid) and creds.refresh_token:
+            creds.refresh(Request())
+        return build("youtubeAnalytics", "v2", credentials=creds)
+    except Exception as exc:
+        logger.warning("YouTube Analytics unavailable (CTR skip): %s", exc)
+        return None
+
+
+def yt_ctr_for_video(analytics, video_id: str, days: int = 14) -> tuple:
+    """(views, impressions, ctr) for ONE video from Analytics API.
+
+    Returns (None, None, None) agar data nahi / scope nahi / error.
+    """
+    if analytics is None:
+        return None, None, None
+    end = datetime.now(timezone.utc).date()
+    start = end - timedelta(days=days)
+    try:
+        rep = analytics.reports().query(
+            ids="channel==MINE",
+            startDate=start.isoformat(),
+            endDate=end.isoformat(),
+            metrics="views,impressions",
+            dimensions="video",
+            filters=f"video=={video_id}",
+        ).execute()
+        rows = rep.get("rows") or []
+        if not rows:
+            return None, None, None
+        a_views = int(rows[0][0] or 0)
+        impressions = int(rows[0][1] or 0)
+        return a_views, impressions, ctr_from(a_views, impressions)
+    except Exception as exc:
+        logger.warning("YT Analytics for %s failed (scope/permission?): %s",
+                       video_id[:12], exc)
+        return None, None, None
+
+
+def _insight_totals(resp: dict) -> dict:
+    """Meta insights response → {metric_name: total}."""
+    out = {}
+    for entry in (resp or {}).get("data", []):
+        total = 0
+        for v in entry.get("values", []):
+            try:
+                total += int(v.get("value", 0) or 0)
+            except (TypeError, ValueError):
+                continue
+        out[entry.get("name")] = total
+    return out
+
+
 def _estimate_yt_retention(views: int, likes: int, comments: int) -> float:
     """Approximate retention from engagement signals (no Analytics API scope needed).
-
     Real retention needs youtubeAnalytics API. This estimate is conservative:
       - likes/views ratio: ~3-5% is normal for Shorts, >5% = good retention
       - comments/views ratio: >0.5% = strong engagement = likely high retention
@@ -148,6 +232,7 @@ def youtube_credit_videos(ml: LearningSystem) -> int:
         yt = _yt_service()
         if yt is None:
             return 0
+        analytics = _yt_analytics()   # V3.7: CTR ke liye (scope na ho to None)
         credited = 0
         for chunk_start in range(0, len(ids), 50):
             chunk = ids[chunk_start:chunk_start + 50]
@@ -158,16 +243,29 @@ def youtube_credit_videos(ml: LearningSystem) -> int:
                 likes = int(st.get("likeCount", 0))
                 comments = int(st.get("commentCount", 0))
                 retention = _estimate_yt_retention(views, likes, comments)
-                ml.credit_video(item["id"], {
+                metrics = {
                     "views": views, "likes": likes, "comments": comments,
                     "retention": retention,
                     "retention_estimated": True,   # V3.6: ye guess hai
                     "platform": "youtube",
-                })
+                }
+                # V3.7: REAL impressions + CTR (Analytics API) — data ho to
+                # views bhi Analytics ke accurate count se update
+                a_views, impressions, ctr = yt_ctr_for_video(analytics, item["id"])
+                if ctr is not None:
+                    metrics["ctr"] = ctr
+                    metrics["impressions"] = impressions
+                    if a_views is not None and a_views > 0:
+                        metrics["views"] = a_views
+                    logger.info("YT credit: %s → views=%d impressions=%s "
+                                "CTR=%.1f%% (REAL)", item["id"][:16], metrics["views"],
+                                impressions, ctr * 100)
+                else:
+                    logger.info("YT credit: %s → views=%d likes=%d "
+                                "retention≈%.0f%% (CTR: no analytics scope)",
+                                item["id"][:16], views, likes, retention * 100)
+                ml.credit_video(item["id"], metrics)
                 credited += 1
-                # Log for human review
-                logger.info("YT credit: %s → views=%d likes=%d retention≈%.0f%%",
-                            item["id"][:16], views, likes, retention * 100)
         return credited
     except Exception as exc:
         logger.warning("YouTube video credit failed: %s", exc)
@@ -275,6 +373,27 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
                     retention_note = f"{retention * 100:.0f}%"
                 elif views > 0:
                     metrics["retention_estimated"] = True    # koi guess nahi
+                # V3.7: REAL CTR — post_impressions vs post_video_views
+                # (video_insights endpoint; permission na ho to gracefully skip)
+                try:
+                    ri = requests.get(
+                        f"https://graph.facebook.com/v25.0/{vid}/video_insights",
+                        params={"access_token": tok,
+                                "metric": "post_impressions,post_video_views",
+                                "timeout": 30},
+                        timeout=30)
+                    if ri.status_code == 200:
+                        ins = _insight_totals(ri.json())
+                        impr = ins.get("post_impressions", 0)
+                        vv = ins.get("post_video_views", 0) or views
+                        ctr = ctr_from(vv, impr)
+                        if ctr is not None:
+                            metrics["ctr"] = ctr
+                            metrics["impressions"] = impr
+                            logger.info("FB credit: %s → views=%d impressions=%s "
+                                        "CTR=%.1f%% (REAL)", vid[:16], views, impr, ctr * 100)
+                except Exception as exc:
+                    logger.debug("FB video_insights %s failed: %s", vid[:16], exc)
                 ml.credit_video(vid, metrics)
                 credited += 1
                 logger.info("FB credit: %s → views=%d watch=%ds retention=%s",
@@ -365,7 +484,7 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                 # jata tha — IG ke saves/shares real hain, retention nahi.
                 # Ab sirf REAL metrics jate hain; reward.py ko retention
                 # nahi milti to wo use "unknown" treat karta hai.
-                ml.credit_video(media_id, {
+                metrics = {
                     "views": plays,
                     "likes": likes,
                     "comments": comments,
@@ -373,7 +492,29 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                     "saves": saved,
                     "retention_estimated": True,   # koi retention data nahi
                     "platform": "instagram",
-                })
+                }
+                # V3.7: REAL CTR — plays ÷ impressions (reach fallback).
+                # IG Reels CTR ka standard yehi hai.
+                try:
+                    ri = requests.get(
+                        f"https://graph.facebook.com/v25.0/{media_id}/insights",
+                        params={"access_token": tok,
+                                "metric": "plays,impressions,reach",
+                                "timeout": 30},
+                        timeout=30)
+                    if ri.status_code == 200:
+                        ins = _insight_totals(ri.json())
+                        impr = ins.get("impressions", 0) or ins.get("reach", 0)
+                        ctr = ctr_from(plays, impr)
+                        if ctr is not None:
+                            metrics["ctr"] = ctr
+                            metrics["impressions"] = impr
+                            logger.info("IG credit: %s → plays=%d impressions=%s "
+                                        "CTR=%.1f%% (REAL)", media_id[:16],
+                                        plays, impr, ctr * 100)
+                except Exception as exc:
+                    logger.debug("IG insights %s failed: %s", media_id[:16], exc)
+                ml.credit_video(media_id, metrics)
                 credited += 1
                 logger.info("IG credit: %s → plays=%d likes=%d saved=%d "
                             "retention=unknown (real saves/shares credited)",
@@ -442,6 +583,21 @@ def main():
     summary = ml.summary()
     report = Path("data/metrics_report.md")
     report.parent.mkdir(exist_ok=True)
+
+    # V3.7: REAL CTR table — credited videos jinke impressions+CTR aaye
+    ctr_rows = []
+    for vid, a in ml.data.get("attribution", {}).items():
+        m = a.get("metrics") or {}
+        if m.get("ctr") is not None:
+            ctr_rows.append(
+                f"- **{a.get('platform', '?'):10}** `{vid[:16]}` → "
+                f"CTR **{m['ctr'] * 100:.1f}%** "
+                f"({int(m.get('impressions', 0)):,} impressions → "
+                f"{int(m.get('views', 0)):,} views)")
+    ctr_block = ("\n".join(ctr_rows) if ctr_rows else
+                 "_(abhi koi video impressions ke saath credit nahi hui — "
+                 "CTR agle run mein aayega)_")
+
     report.write_text(
         f"# 📊 Coercion Files — Metrics Report\n\n"
         f"*Updated: {datetime.now(timezone.utc).isoformat()}*\n\n"
@@ -449,6 +605,7 @@ def main():
         f"{summary['attributed_videos']} attributed · {summary['rewards']} rewards · "
         f"{summary['penalties']} penalties\n\n"
         f"**Videos credited this run:** YT={yt_cred} · FB={fb_cred} · IG={ig_cred}\n\n"
+        f"## 🎯 REAL CTR (impressions-based, no guesses)\n\n{ctr_block}\n\n"
         f"**Best formulas:** " +
         (", ".join(f"{b['pillar']}/{b['hook_style']} ({b['mean']})"
                    for b in summary["best_formulas"]) or "none yet") + "\n\n"
@@ -457,6 +614,8 @@ def main():
     )
     print(f"Metrics synced → {report}")
     print(f"  YT credited={yt_cred} · FB credited={fb_cred} · IG credited={ig_cred}")
+    if ctr_rows:
+        print(f"  🎯 REAL CTR: {len(ctr_rows)} videos with impressions data")
 
 
 if __name__ == "__main__":
