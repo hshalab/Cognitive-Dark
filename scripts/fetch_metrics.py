@@ -390,8 +390,8 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
                         watch_time_secs = int(wt)
                         impressions = int(ins.get("post_impressions", 0) or 0)
                     else:
-                        logger.warning("FB video_insights %s: HTTP %s", vid[:16],
-                                       ri.status_code)
+                        logger.warning("FB video_insights %s: HTTP %s — %s",
+                                       vid[:16], ri.status_code, ri.text[:200])
                 except Exception as exc:
                     logger.warning("FB video_insights %s failed: %s", vid[:16], exc)
 
@@ -548,9 +548,32 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                         saved = int(ins.get("saved", 0) or 0)
                         shares = int(ins.get("shares", 0) or 0)
                     else:
-                        logger.warning("IG insights %s: HTTP %s — %s",
-                                       media_id[:16], ri.status_code,
-                                       ri.text[:120])
+                        # V3.7.3: kuch media (non-Reel) par 'plays' invalid
+                        # hota hai → bina plays ke retry
+                        err = ri.text[:200]
+                        if "metric" in err.lower():
+                            try:
+                                ri2 = requests.get(
+                                    f"https://graph.facebook.com/v25.0/{media_id}/insights",
+                                    params={"access_token": tok,
+                                            "metric": "impressions,reach,saved,shares",
+                                            "timeout": 30},
+                                    timeout=30)
+                                if ri2.status_code == 200:
+                                    ins = _insight_totals(ri2.json())
+                                    impressions = int(ins.get("impressions", 0) or 0) \
+                                        or int(ins.get("reach", 0) or 0)
+                                    saved = int(ins.get("saved", 0) or 0)
+                                    shares = int(ins.get("shares", 0) or 0)
+                                else:
+                                    logger.warning("IG insights %s retry: HTTP %s",
+                                                   media_id[:16], ri2.status_code)
+                            except Exception as exc2:
+                                logger.warning("IG insights %s retry failed: %s",
+                                               media_id[:16], exc2)
+                        else:
+                            logger.warning("IG insights %s: HTTP %s — %s",
+                                           media_id[:16], ri.status_code, err)
                 except Exception as exc:
                     logger.warning("IG insights %s failed: %s", media_id[:16], exc)
 

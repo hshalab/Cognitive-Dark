@@ -156,5 +156,15 @@ jobs:
             echo "No data changes to commit"
           else
             git commit -m "🤖 Update ML learning store + journal [skip ci]"
-            git push
+            # V3.7.3: push RETRY (3x) — pehle ek race mein push chup-chaap
+            # fail hua aur aaj ki 3 uploads ki attribution lost ho gayi
+            for i in 1 2 3; do
+              if git pull --no-rebase --autostash -X ours origin main 2>/dev/null \
+                 && git push 2>/dev/null; then
+                echo "✅ Learning store pushed (attempt $i)"
+                break
+              fi
+              echo "⚠️ push attempt $i failed — retrying..."
+              sleep 10
+            done
           fi
