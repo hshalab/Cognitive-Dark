@@ -177,6 +177,26 @@ def yt_ctr_for_video(analytics, video_id: str, days: int = 14) -> tuple:
         impressions = int(rows[0][1] or 0)
         return a_views, impressions, ctr_from(a_views, impressions)
     except Exception as exc:
+        # V3.7.2: `impressions` metric sirf YPP/content-owner channels par
+        # hai (chhote channel par 400 "Unknown identifier"). Fallback:
+        # sirf views — accurate count phir bhi milta hai, CTR unknown rehta
+        # hai (honest — koi guess nahi).
+        if "impressions" in str(exc) or "Unknown identifier" in str(exc):
+            try:
+                rep = analytics.reports().query(
+                    ids="channel==MINE",
+                    startDate=start.isoformat(),
+                    endDate=end.isoformat(),
+                    metrics="views",
+                    dimensions="video",
+                    filters=f"video=={video_id}",
+                ).execute()
+                rows = rep.get("rows") or []
+                if rows:
+                    return int(rows[0][0] or 0), None, None
+            except Exception:
+                pass
+            return None, None, None
         logger.warning("YT Analytics for %s failed (scope/permission?): %s",
                        video_id[:12], exc)
         return None, None, None
@@ -254,18 +274,19 @@ def youtube_credit_videos(ml: LearningSystem) -> int:
                 # V3.7: REAL impressions + CTR (Analytics API) — data ho to
                 # views bhi Analytics ke accurate count se update
                 a_views, impressions, ctr = yt_ctr_for_video(analytics, item["id"])
+                if a_views is not None and a_views > 0:
+                    metrics["views"] = a_views
                 if ctr is not None:
                     metrics["ctr"] = ctr
                     metrics["impressions"] = impressions
-                    if a_views is not None and a_views > 0:
-                        metrics["views"] = a_views
                     logger.info("YT credit: %s → views=%d impressions=%s "
                                 "CTR=%.1f%% (REAL)", item["id"][:16], metrics["views"],
                                 impressions, ctr * 100)
                 else:
                     logger.info("YT credit: %s → views=%d likes=%d "
-                                "retention≈%.0f%% (CTR: no analytics scope)",
-                                item["id"][:16], views, likes, retention * 100)
+                                "retention≈%.0f%% (CTR: impressions metric "
+                                "unavailable — YPP hone par khud aa jayega)",
+                                item["id"][:16], metrics["views"], likes, retention * 100)
                 ml.credit_video(item["id"], metrics)
                 credited += 1
         return credited
@@ -329,46 +350,84 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
         credited = 0
         for vid in ids:
             try:
-                # Fetch video stats
+                # V3.7.2: VALID video-node fields — pehle "stats,insights"
+                # fields maang rahe thay jo FB video node par exist hi nahi
+                # karte (400 → silent skip → FB credit kabhi nahi hota tha)
                 r = requests.get(
                     f"https://graph.facebook.com/v25.0/{vid}",
                     params={
                         "access_token": tok,
-                        "fields": "stats,insights,permalink_url,status_code,created_time",
+                        "fields": "id,title,description,length,created_time,"
+                                  "permalink_url",
                     },
                     timeout=30,
                 )
                 if r.status_code >= 400:
-                    logger.debug("FB video %s not fetchable: %s", vid[:16], r.text[:200])
+                    logger.warning("FB video %s GET fail: %s", vid[:16], r.text[:150])
                     continue
                 data = r.json()
-                stats = data.get("stats", {})
-                views = int(stats.get("views", 0))
-                # insights may need extra permissions — extract watch_time_secs
-                watch_time_secs = 0
-                for period_data in (data.get("insights", {}) or {}).get("data", []):
-                    for point in period_data.get("values", []):
-                        val = point.get("value", {})
-                        if isinstance(val, dict):
-                            watch_time_secs += int(val.get("watch_duration_seconds", 0) or 0)
+                duration_secs = float(data.get("length", 0) or 0)
 
-                # V3.6: retention sirf tab bhejo jab MEASURED ho (real watch
-                # time). Pehle watch-time na hone par fabricated 0.15/0.05
-                # heuristic bheji jati thi — wo guess reward function ke 35%
-                # weight ke saath bandit ko dhoka deta tha. Ab sirf real
-                # watch time retention banata hai; warna retention bheja hi
-                # nahi jata (reward.py isay "unknown" treat karta hai).
-                duration_ms = int(stats.get("duration", 60000))
-                duration_secs = duration_ms / 1000.0
+                # insights: views / watch-time / impressions / complete-views
+                views = watch_time_secs = impressions = 0
+                ins = {}
+                try:
+                    ri = requests.get(
+                        f"https://graph.facebook.com/v25.0/{vid}/video_insights",
+                        params={"access_token": tok,
+                                "metric": "post_video_views,post_video_view_time,"
+                                          "post_video_avg_time_watched,"
+                                          "post_impressions,post_video_complete_views",
+                                "timeout": 30},
+                        timeout=30)
+                    if ri.status_code == 200:
+                        ins = _insight_totals(ri.json())
+                        views = int(ins.get("post_video_views", 0) or 0)
+                        # value unit ms ho sakta hai (Meta values numeric ms)
+                        wt = ins.get("post_video_view_time", 0) or 0
+                        if wt > 1000:      # ms → seconds (heuristic sign)
+                            wt = wt / 1000.0
+                        watch_time_secs = int(wt)
+                        impressions = int(ins.get("post_impressions", 0) or 0)
+                    else:
+                        logger.warning("FB video_insights %s: HTTP %s", vid[:16],
+                                       ri.status_code)
+                except Exception as exc:
+                    logger.warning("FB video_insights %s failed: %s", vid[:16], exc)
+
+                # likes/comments: summary edges (permission na ho to 0)
+                likes = comments = shares = 0
+                try:
+                    rl = requests.get(
+                        f"https://graph.facebook.com/v25.0/{vid}/likes",
+                        params={"access_token": tok, "summary": "true",
+                                "limit": "0", "timeout": 30}, timeout=30)
+                    if rl.status_code == 200:
+                        likes = int((rl.json().get("summary") or {})
+                                    .get("total_count", 0) or 0)
+                except Exception:
+                    pass
+                try:
+                    rc = requests.get(
+                        f"https://graph.facebook.com/v25.0/{vid}/comments",
+                        params={"access_token": tok, "summary": "true",
+                                "limit": "0", "timeout": 30}, timeout=30)
+                    if rc.status_code == 200:
+                        comments = int((rc.json().get("summary") or {})
+                                       .get("total_count", 0) or 0)
+                except Exception:
+                    pass
+
                 metrics = {
                     "views": views,
-                    "likes": int(stats.get("likes", 0)),
-                    "comments": int(stats.get("comments", 0)),
-                    "shares": int(stats.get("shares", 0) or 0),
+                    "likes": likes,
+                    "comments": comments,
+                    "shares": shares,
                     "watch_time_seconds": watch_time_secs,
                     "duration_seconds": duration_secs,
                     "platform": "facebook",
                 }
+                # V3.6: retention sirf MEASURED (real watch time) par
                 retention_note = "unknown (no watch-time data)"
                 if views > 0 and watch_time_secs > 0 and duration_secs > 0:
                     retention = min(0.95, watch_time_secs / (views * duration_secs))
@@ -377,33 +436,20 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
                     retention_note = f"{retention * 100:.0f}%"
                 elif views > 0:
                     metrics["retention_estimated"] = True    # koi guess nahi
-                # V3.7: REAL CTR — post_impressions vs post_video_views
-                # (video_insights endpoint; permission na ho to gracefully skip)
-                try:
-                    ri = requests.get(
-                        f"https://graph.facebook.com/v25.0/{vid}/video_insights",
-                        params={"access_token": tok,
-                                "metric": "post_impressions,post_video_views",
-                                "timeout": 30},
-                        timeout=30)
-                    if ri.status_code == 200:
-                        ins = _insight_totals(ri.json())
-                        impr = ins.get("post_impressions", 0)
-                        vv = ins.get("post_video_views", 0) or views
-                        ctr = ctr_from(vv, impr)
-                        if ctr is not None:
-                            metrics["ctr"] = ctr
-                            metrics["impressions"] = impr
-                            logger.info("FB credit: %s → views=%d impressions=%s "
-                                        "CTR=%.1f%% (REAL)", vid[:16], views, impr, ctr * 100)
-                except Exception as exc:
-                    logger.debug("FB video_insights %s failed: %s", vid[:16], exc)
+                # V3.7: REAL CTR — views ÷ impressions
+                ctr = ctr_from(views, impressions)
+                if ctr is not None:
+                    metrics["ctr"] = ctr
+                    metrics["impressions"] = impressions
+                    logger.info("FB credit: %s → views=%d impressions=%s "
+                                "CTR=%.1f%% (REAL)", vid[:16], views, impressions,
+                                ctr * 100)
                 ml.credit_video(vid, metrics)
                 credited += 1
                 logger.info("FB credit: %s → views=%d watch=%ds retention=%s",
                             vid[:16], views, watch_time_secs, retention_note)
             except Exception as exc:
-                logger.debug("FB video %s credit error: %s", vid[:16], exc)
+                logger.warning("FB video %s credit error: %s", vid[:16], exc)
         return credited
     except Exception as exc:
         logger.warning("Facebook video credit batch failed: %s", exc)
@@ -463,26 +509,50 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
         credited = 0
         for media_id in ids:
             try:
+                # V3.7.2: VALID media-node fields — pehle plays/shares/
+                # saved_count direct fields maang rahe thay jo IG media node
+                # par exist nahi karte (400 → silent skip → IG credit kabhi
+                # nahi hota tha). Ye sab INSIGHTS metrics hain.
                 r = requests.get(
                     f"https://graph.facebook.com/v25.0/{media_id}",
                     params={
                         "access_token": tok,
-                        "fields": (
-                            "insights,caption,media_type,permalink,"
-                            "comments_count,like_count,plays,shares,saved_count"
-                        ),
+                        "fields": "id,caption,media_type,permalink,timestamp,"
+                                  "comments_count,like_count",
                     },
                     timeout=30,
                 )
                 if r.status_code >= 400:
-                    logger.debug("IG media %s not fetchable: %s", media_id[:16], r.text[:200])
+                    logger.warning("IG media %s GET fail: %s", media_id[:16],
+                                   r.text[:150])
                     continue
                 data = r.json()
-                plays = int(data.get("plays", 0) or 0)
                 likes = int(data.get("like_count", 0) or 0)
                 comments = int(data.get("comments_count", 0) or 0)
-                shares = int(data.get("shares", 0) or 0)
-                saved = int(data.get("saved_count", 0) or 0)
+
+                # insights: plays/reach/impressions/saved/shares (valid metrics)
+                plays = impressions = saved = shares = 0
+                ins = {}
+                try:
+                    ri = requests.get(
+                        f"https://graph.facebook.com/v25.0/{media_id}/insights",
+                        params={"access_token": tok,
+                                "metric": "plays,reach,impressions,saved,shares",
+                                "timeout": 30},
+                        timeout=30)
+                    if ri.status_code == 200:
+                        ins = _insight_totals(ri.json())
+                        plays = int(ins.get("plays", 0) or 0)
+                        impressions = int(ins.get("impressions", 0) or 0) \
+                            or int(ins.get("reach", 0) or 0)
+                        saved = int(ins.get("saved", 0) or 0)
+                        shares = int(ins.get("shares", 0) or 0)
+                    else:
+                        logger.warning("IG insights %s: HTTP %s — %s",
+                                       media_id[:16], ri.status_code,
+                                       ri.text[:120])
+                except Exception as exc:
+                    logger.warning("IG insights %s failed: %s", media_id[:16], exc)
 
                 # V3.6: fabricated retention hata di. Pehle
                 # `retention = 0.10 + engagement_rate * 10` jaisa GUESS
@@ -501,25 +571,13 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                 }
                 # V3.7: REAL CTR — plays ÷ impressions (reach fallback).
                 # IG Reels CTR ka standard yehi hai.
-                try:
-                    ri = requests.get(
-                        f"https://graph.facebook.com/v25.0/{media_id}/insights",
-                        params={"access_token": tok,
-                                "metric": "plays,impressions,reach",
-                                "timeout": 30},
-                        timeout=30)
-                    if ri.status_code == 200:
-                        ins = _insight_totals(ri.json())
-                        impr = ins.get("impressions", 0) or ins.get("reach", 0)
-                        ctr = ctr_from(plays, impr)
-                        if ctr is not None:
-                            metrics["ctr"] = ctr
-                            metrics["impressions"] = impr
-                            logger.info("IG credit: %s → plays=%d impressions=%s "
-                                        "CTR=%.1f%% (REAL)", media_id[:16],
-                                        plays, impr, ctr * 100)
-                except Exception as exc:
-                    logger.debug("IG insights %s failed: %s", media_id[:16], exc)
+                ctr = ctr_from(plays, impressions)
+                if ctr is not None:
+                    metrics["ctr"] = ctr
+                    metrics["impressions"] = impressions
+                    logger.info("IG credit: %s → plays=%d impressions=%s "
+                                "CTR=%.1f%% (REAL)", media_id[:16],
+                                plays, impressions, ctr * 100)
                 ml.credit_video(media_id, metrics)
                 credited += 1
                 logger.info("IG credit: %s → plays=%d likes=%d saved=%d "
