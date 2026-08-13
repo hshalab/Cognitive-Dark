@@ -118,6 +118,12 @@ def _estimate_yt_retention(views: int, likes: int, comments: int) -> float:
       - likes/views ratio: ~3-5% is normal for Shorts, >5% = good retention
       - comments/views ratio: >0.5% = strong engagement = likely high retention
       - Heavily penalized if views but near-zero engagement (swipe-away signal).
+
+    ⚠️ V3.6: ye ESTIMATE hai, measurement nahi. reward.py is ko
+    `retention_estimated` flag ke saath alag treat karta hai (half weight,
+    viral bonus NAHI) — fabricated retention ab bandit ko dhoka nahi de
+    sakti. Agar YT Analytics scope (yt-analytics.readonly) available ho to
+    asal retention use karo — wahan se `retention_measured` milega.
     """
     if views <= 0:
         return 0.0
@@ -155,6 +161,7 @@ def youtube_credit_videos(ml: LearningSystem) -> int:
                 ml.credit_video(item["id"], {
                     "views": views, "likes": likes, "comments": comments,
                     "retention": retention,
+                    "retention_estimated": True,   # V3.6: ye guess hai
                     "platform": "youtube",
                 })
                 credited += 1
@@ -243,29 +250,35 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
                         if isinstance(val, dict):
                             watch_time_secs += int(val.get("watch_duration_seconds", 0) or 0)
 
-                # Estimate retention: if views but no watch_time, low retention
+                # V3.6: retention sirf tab bhejo jab MEASURED ho (real watch
+                # time). Pehle watch-time na hone par fabricated 0.15/0.05
+                # heuristic bheji jati thi — wo guess reward function ke 35%
+                # weight ke saath bandit ko dhoka deta tha. Ab sirf real
+                # watch time retention banata hai; warna retention bheja hi
+                # nahi jata (reward.py isay "unknown" treat karta hai).
                 duration_ms = int(stats.get("duration", 60000))
                 duration_secs = duration_ms / 1000.0
-                if views > 0 and watch_time_secs > 0 and duration_secs > 0:
-                    retention = min(0.95, watch_time_secs / (views * duration_secs))
-                elif views > 0:
-                    # No watch time data — use view-only heuristic
-                    retention = 0.15 if views > 100 else 0.05
-                else:
-                    retention = 0.0
-
-                ml.credit_video(vid, {
+                metrics = {
                     "views": views,
                     "likes": int(stats.get("likes", 0)),
                     "comments": int(stats.get("comments", 0)),
                     "shares": int(stats.get("shares", 0) or 0),
-                    "retention": round(retention, 3),
                     "watch_time_seconds": watch_time_secs,
+                    "duration_seconds": duration_secs,
                     "platform": "facebook",
-                })
+                }
+                retention_note = "unknown (no watch-time data)"
+                if views > 0 and watch_time_secs > 0 and duration_secs > 0:
+                    retention = min(0.95, watch_time_secs / (views * duration_secs))
+                    metrics["retention"] = round(retention, 3)
+                    metrics["retention_estimated"] = False   # MEASURED
+                    retention_note = f"{retention * 100:.0f}%"
+                elif views > 0:
+                    metrics["retention_estimated"] = True    # koi guess nahi
+                ml.credit_video(vid, metrics)
                 credited += 1
-                logger.info("FB credit: %s → views=%d retention≈%.0f%% watch=%ds",
-                            vid[:16], views, retention * 100, watch_time_secs)
+                logger.info("FB credit: %s → views=%d watch=%ds retention=%s",
+                            vid[:16], views, watch_time_secs, retention_note)
             except Exception as exc:
                 logger.debug("FB video %s credit error: %s", vid[:16], exc)
         return credited
@@ -346,25 +359,25 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                 shares = int(data.get("shares", 0) or 0)
                 saved = int(data.get("saved_count", 0) or 0)
 
-                # IG retention estimate: plays / (reach estimate) is hard;
-                # use engagement density as proxy. Strong save/share = good retention.
-                total_engagement = likes + comments * 2 + shares * 3 + saved * 4
-                engagement_rate = total_engagement / max(1, plays)
-                # IG Reels: >5% engagement rate = strong, 1-5% = ok, <1% = weak
-                retention = min(0.90, 0.10 + engagement_rate * 10.0) if plays > 0 else 0.0
-
+                # V3.6: fabricated retention hata di. Pehle
+                # `retention = 0.10 + engagement_rate * 10` jaisa GUESS
+                # bana kar reward function ko "measured retention" bata diya
+                # jata tha — IG ke saves/shares real hain, retention nahi.
+                # Ab sirf REAL metrics jate hain; reward.py ko retention
+                # nahi milti to wo use "unknown" treat karta hai.
                 ml.credit_video(media_id, {
                     "views": plays,
                     "likes": likes,
                     "comments": comments,
                     "shares": shares,
                     "saves": saved,
-                    "retention": round(retention, 3),
+                    "retention_estimated": True,   # koi retention data nahi
                     "platform": "instagram",
                 })
                 credited += 1
-                logger.info("IG credit: %s → plays=%d likes=%d saved=%d retention≈%.0f%%",
-                            media_id[:16], plays, likes, saved, retention * 100)
+                logger.info("IG credit: %s → plays=%d likes=%d saved=%d "
+                            "retention=unknown (real saves/shares credited)",
+                            media_id[:16], plays, likes, saved)
             except Exception as exc:
                 logger.debug("IG media %s credit error: %s", media_id[:16], exc)
         return credited
@@ -373,29 +386,21 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
         return 0
 
 
-# ── Growth rewards ──────────────────────────────────────────────────
+# ── Growth rewards (REMOVED in V3.6 — fuzzy attribution) ────────────
+# Channel-level growth (subs/followers gained) ko "recent arms" par reward
+# dena REALITY par based nahi tha: growth kis VIDEO ki wajah se hui, ye koi
+# nahi jaanta — sab recent formulas ko credit dena bandit ko dhoka tha.
+# Video-level crediting (upar) hi asal attribution hai: har video ka real
+# performance us ke EXACT arm tak jata hai.
 
 def apply_growth_rewards(ml: LearningSystem, prog: dict) -> None:
-    """Reward the formulas behind recent posts when the channel grows.
+    """V3.6: no-op — fuzzy growth attribution hata di gayi.
 
-    Each platform's growth (subs/followers gained) applies a consistency bonus
-    to the arms that were recently active on that platform — so per-platform
-    learning happens naturally.
+    Channel growth ko 'recent arms' par reward dena band kar diya hai
+    kyunke ye bata hi nahi sakte ke growth kis video ki wajah se hui.
+    Video-level crediting (upar) hi asal, exact attribution hai.
     """
-    grew = []
-    for plat in ("youtube", "facebook", "instagram"):
-        growth = prog.get(plat, {}).get("last_growth", 0) or 0
-        if growth > 0:
-            grew.append((plat, growth))
-    if not grew:
-        return
-    recent = ml.recent_arm_keys(6)
-    for plat, growth in grew:
-        for arm in recent:
-            ml.apply_reward(arm, f"{plat}_growth_{growth}",
-                            ml.cfg.get("bonus_consistent", 1.0),
-                            platform=plat)
-    logger.info("Growth rewards: %s → %d recent arms", grew, len(recent))
+    return  # intentional no-op
 
 
 # ── Main ─────────────────────────────────────────────────────────────

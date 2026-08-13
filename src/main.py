@@ -32,7 +32,7 @@ logger = logging.getLogger("main")
 
 from auto_repair import Preflight, RepairJournal, StageRunner, cleanup, selftest
 from clips_downloader import prepare_clips
-from config.settings import MIN_POST_GAP_HOURS, PLATFORMS
+from config.settings import MIN_POST_GAP_HOURS, OUTPUT_DIR, PLATFORMS
 from ml_engine import LearningSystem, text_sha
 from monetization_tracker import update_progress
 from scheduler import PlatformScheduler
@@ -82,8 +82,14 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         existing = sum(1 for a in ml.data["arms"].values() if a.get("n", 0) > 0)
         if existing < len(_priors) * 3:
             ml.apply_seed_priors(priors=_priors, source=_analysis["source"])
-            logger.info("🌡 Market intel: %d patterns from %s",
-                        len(_priors), _analysis["source"])
+            if _analysis.get("curated"):
+                logger.warning("🌡 Market intel: %d patterns from %s — CURATED "
+                               "believe hain, evidence nahi. Real competitor "
+                               "data (YOUTUBE_API_KEY) aane par ye override "
+                               "honge.", len(_priors), _analysis["source"])
+            else:
+                logger.info("🌡 Market intel: %d patterns from %s",
+                            len(_priors), _analysis["source"])
     except Exception as exc:
         logger.warning("Market intel warm-start skipped: %s", exc)
 
@@ -136,65 +142,129 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         except Exception as e:
             logger.warning("Brain decision failed: %s", e)
 
-    # ── 1. Script (ML-chosen strategy) ──
-    runner = StageRunner(max_retries=2)
-    script = runner.run(generate_script, "script", [], pillar_key=pillar,
-                        topic=topic, ml=ml)
-    logger.info("📝 %s [%s/%s] (%s)", script["title"], script["pillar"],
-                script["hook_style"], script["source"])
-    arm = script.get("arm_key")  # V2.1: the EXACT arm travels with the script
+    # ── 1-4. BUILD + 🛂 INDEPENDENT RELEASE GATE (V3.5) ─────────────
+    # Har department ka apna independent guard (script, hook, voice,
+    # caption, video, seo, ctr, views) + USASupervisor aakhri judge.
+    # Video tabhi upload hoti hai jab SAB guards pass karein — warna
+    # repair loop naya script banata hai (GATE_MAX_REPAIRS tak), phir
+    # video HELD rehti hai aur upload nahi hota.
+    from guards.gate import ReleaseGate
+    gate = ReleaseGate()
+    max_repairs = int(os.environ.get("GATE_MAX_REPAIRS", "2"))
+    gate_verdicts: dict = {}
+    publish_times: dict = {}
+    packs: dict = {}
+    final_video = ""
+    thumb = ""
+    for _attempt in range(max_repairs + 1):
+        # ── 1. Script (ML-chosen strategy) ──
+        runner = StageRunner(max_retries=2)
+        script = runner.run(generate_script, "script", [], pillar_key=pillar,
+                            topic=topic, ml=ml)
+        logger.info("📝 %s [%s/%s] (%s)", script["title"], script["pillar"],
+                    script["hook_style"], script["source"])
+        arm = script.get("arm_key")  # V2.1: the EXACT arm travels with the script
 
-    # ── dedup & variation guard (retry w/ new strategy) ──
-    guard = ml.dedup_guard(" ".join(s["caption"] for s in script["scenes"]),
-                           script.get("hook", ""))
-    retries = 0
-    while not guard["allowed"] and retries < 4:
-        logger.warning("⛔ Too-similar content (%s) → retrying with fresh strategy (%d)",
-                       guard["reason"], retries + 1)
-        if arm:
-            ml.apply_penalty(arm, "dedup_blocked", 0.3)
-        script = generate_script(ml=ml, topic=topic)
-        arm = script.get("arm_key")
+        # ── dedup & variation guard (retry w/ new strategy) ──
         guard = ml.dedup_guard(" ".join(s["caption"] for s in script["scenes"]),
                                script.get("hook", ""))
-        retries += 1
-    if not guard["allowed"]:
-        logger.error("⛔ Could not produce unique content after 4 attempts")
-        journal.finish_run(run_id, "blocked", guard["reason"])
-        return {"success": False, "reason": guard["reason"]}
+        retries = 0
+        while not guard["allowed"] and retries < 4:
+            logger.warning("⛔ Too-similar content (%s) → retrying with fresh strategy (%d)",
+                           guard["reason"], retries + 1)
+            if arm:
+                ml.apply_penalty(arm, "dedup_blocked", 0.3)
+            script = generate_script(ml=ml, topic=topic)
+            arm = script.get("arm_key")
+            guard = ml.dedup_guard(" ".join(s["caption"] for s in script["scenes"]),
+                                   script.get("hook", ""))
+            retries += 1
+        if not guard["allowed"]:
+            logger.error("⛔ Could not produce unique content after 4 attempts")
+            journal.finish_run(run_id, "blocked", guard["reason"])
+            return {"success": False, "reason": guard["reason"]}
 
-    # ── 2. Clips (Pexels → Pixabay → procedural) — 3 DISTINCT cuts per scene ──
-    clip_sets = prepare_clips(script["scenes"], per_scene=3)
-    scene_visuals = [[c["path"] for c in s] for s in clip_sets]
-    logger.info("🎞️  Clips: %s (%d scenes x %d cuts)",
-                ", ".join(sorted({c["source"] for s in clip_sets for c in s})),
-                len(scene_visuals), len(scene_visuals[0]) if scene_visuals else 0)
+        # ── 2. Clips (Pexels → Pixabay → procedural) — 3 DISTINCT cuts per scene ──
+        clip_sets = prepare_clips(script["scenes"], per_scene=3)
+        scene_visuals = [[c["path"] for c in s] for s in clip_sets]
+        logger.info("🎞️  Clips: %s (%d scenes x %d cuts)",
+                    ", ".join(sorted({c["source"] for s in clip_sets for c in s})),
+                    len(scene_visuals), len(scene_visuals[0]) if scene_visuals else 0)
 
-    # ── 3. Voice (Kokoro → edge → elevenlabs → silence) ──
-    segments = generate_voice_segments(script["scenes"])
-    narration_s = sum(s["duration"] for s in segments)
-    logger.info("🎙️  Narration: %.1fs", narration_s)
+        # ── 3. Voice (Kokoro → edge → elevenlabs → silence) ──
+        segments = generate_voice_segments(script["scenes"])
+        narration_s = sum(s["duration"] for s in segments)
+        logger.info("🎙️  Narration: %.1fs", narration_s)
 
-    # V2.5 SHORTS CAP GUARD: >60s = NOT a Short on YouTube; IG/FB Reels also
-    # favor <60s. Trim trailing scenes (clips+audio together) to stay 40-58s.
-    while narration_s > 57 and len(script["scenes"]) > 3:
-        script["scenes"].pop()
-        narration_s -= segments.pop()["duration"]
-        scene_visuals.pop()
-    logger.info("✂️  Final scenes: %d (%.1fs narration — Shorts-safe)",
-                len(script["scenes"]), narration_s)
-    release_tts()  # free the ~300MB Kokoro model before video render
+        # V2.5 SHORTS CAP GUARD: >60s = NOT a Short on YouTube; IG/FB Reels also
+        # favor <60s. Trim trailing scenes (clips+audio together) to stay 40-58s.
+        while narration_s > 57 and len(script["scenes"]) > 3:
+            script["scenes"].pop()
+            narration_s -= segments.pop()["duration"]
+            scene_visuals.pop()
+        logger.info("✂️  Final scenes: %d (%.1fs narration — Shorts-safe)",
+                    len(script["scenes"]), narration_s)
+        release_tts()  # free the ~300MB Kokoro model before video render
 
-    # ── 4. Video (USA style: fast cuts + word captions + hook overlay) ──
-    final_video = build_short(scene_visuals, segments, script["scenes"],
-                              hook=script.get("hook", ""))
-    thumb = generate_thumbnail(scene_visuals[0][0], script.get("hook", ""))
-    logger.info("🎬 Built %s + thumbnail", final_video)
+        # ── 4. Video (USA style: fast cuts + word captions + hook overlay) ──
+        final_video = build_short(scene_visuals, segments, script["scenes"],
+                                  hook=script.get("hook", ""))
+        thumb = generate_thumbnail(scene_visuals[0][0], script.get("hook", ""))
+        logger.info("🎬 Built %s + thumbnail", final_video)
+
+        # ── 4b. 🛂 RELEASE GATE: har department ka independent guard ──
+        # Guards producer ke self-scores nahi dekhte — sirf raw artifacts
+        # (files, text, packages) + real ML outcomes. Supervisor fail-closed.
+        core_blocked = False
+        for p in platforms:
+            if not PLATFORMS.get(p, {}).get("enabled"):
+                continue
+            pkg = build_platform_package(script, p,
+                                         durations=[s["duration"] for s in segments])
+            packs[p] = pkg
+            sched = PlatformScheduler(p)
+            publish_at = sched.next_peak(reserved=ml.claimed_peaks(p))
+            try:
+                from human_layer import jitter_publish_at
+                publish_at = jitter_publish_at(publish_at)
+            except Exception:
+                pass
+            publish_times[p] = publish_at
+            verdict = gate.evaluate({
+                "platform": p,
+                "script": script,
+                "segments": segments,
+                "video_path": final_video,
+                "thumb_path": thumb,
+                "package": pkg,
+                "publish_at": publish_at,
+                "sibling_packages": {op: packs[op] for op in packs if op != p},
+                "ml": ml,
+            })
+            gate_verdicts[p] = verdict
+            if not verdict.released and verdict.core_blocked():
+                core_blocked = True
+        if not core_blocked or _attempt >= max_repairs:
+            break
+        logger.warning("🔁 GATE repair %d/%d — core guard fail, naya script: %s",
+                       _attempt + 1, max_repairs,
+                       "; ".join(r for v in gate_verdicts.values()
+                                 for r in v.blocking_reasons())[:220])
+
+    # gate payload save (scripts/run_gate.py + audit ke liye)
+    try:
+        gate.save_payload(
+            {p: {"platform": p, "script": script, "segments": segments,
+                 "video_path": final_video, "thumb_path": thumb,
+                 "package": packs.get(p), "publish_at": publish_times.get(p)}
+             for p in gate_verdicts},
+            out_dir=OUTPUT_DIR)
+    except Exception as exc:
+        logger.warning("gate payload save failed: %s", exc)
 
     # ── 5. Upload per platform (algorithm-adapted, volume-guarded) ──
     uploaders = _platform_uploaders(dry_run)
     results = {}
-    packs = {}
     caption_text = " ".join(s["caption"] for s in script["scenes"])
     ml.register_video({
         "title": script["title"], "hook": script.get("hook", ""),
@@ -210,6 +280,16 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
         if not cfg or not cfg.get("enabled"):
             logger.info("⏭️  %s disabled in config", p)
             continue
+        # 🛂 GATE verdict: guards/supervisor ne HELD kiya → upload nahi
+        verdict = gate_verdicts.get(p)
+        if verdict and not verdict.released:
+            logger.error("🛂 %s GATE HELD (grade %s) — upload nahi hua: %s",
+                         p.upper(), verdict.grade,
+                         "; ".join(verdict.blocking_reasons())[:220])
+            results[p] = {"platform": p, "ok": False, "gate_blocked": True,
+                          "grade": verdict.grade,
+                          "reasons": verdict.blocking_reasons()}
+            continue
         if not ml.platform_healthy(p):
             logger.warning("⛔ %s quarantined (3+ failures) — skipping", p)
             continue
@@ -220,36 +300,31 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
             results[p] = {"platform": p, "ok": False, "skipped": True, "reason": why}
             continue
 
-        pkg = build_platform_package(script, p,
-                                     durations=[s["duration"] for s in segments])
+        pkg = packs.get(p) or build_platform_package(
+            script, p, durations=[s["duration"] for s in segments])
         # V2.9: 2026-algorithm playbook audit per platform (log only — helps
         # spot weak packages before upload)
         try:
             from algorithm_playbook import audit_package
             _audit = audit_package(pkg, p)
-            if _audit.get("passed", 0) < _audit.get("total", 1):
+            if _audit.get("passed", 0) < _audit.get("verifiable", _audit.get("total", 1)):
                 logger.info("🎛 %s playbook: %d/%d — %s", p.upper(),
-                            _audit["passed"], _audit["total"],
+                            _audit["passed"], _audit.get("verifiable", _audit.get("total", 1)),
                             "; ".join(c["signal"] for c in _audit["checks"]
-                                      if not c["ok"]))
+                                      if c.get("status") == "fail"))
         except Exception:
             pass
         packs[p] = pkg
-        sched = PlatformScheduler(p)
         # V2.7: CLAIM the publish slot BEFORE uploading. If another run (e.g.
         # cron + manual dispatch in the same window) already claimed this
         # peak, next_peak() is asked for the next free one. This closes the
         # "two videos go public at the same minute" double-post bug.
         claimed = False
-        # V3.0: human jitter — exact peak minute par post karne se bot jaisa
-        # fingerprint banta hai; 0-8 min ka natural shift (claims ke baad —
-        # collision safe).
-        publish_at = sched.next_peak(reserved=ml.claimed_peaks(p))
-        try:
-            from human_layer import jitter_publish_at
-            publish_at = jitter_publish_at(publish_at)
-        except Exception:
-            pass
+        # publish_at pehle hi compute + jitter ho chuka hai (gate step) —
+        # supervisor ne isi window ko USA-audience ke liye validate kiya hai
+        sched = PlatformScheduler(p)
+        publish_at = publish_times.get(p) or sched.next_peak(
+            reserved=ml.claimed_peaks(p))
         if not dry_run:
             for _ in range(6):
                 ok_claim, why = ml.claim_publish(p, publish_at, run_id)
@@ -304,18 +379,24 @@ def run_pipeline(platforms: list = None, dry_run: bool = False,
     except Exception as exc:
         logger.warning("content pack write failed: %s", exc)
 
-    # ── 6. ML feedback for strong output (rewards on the EXACT arm) ──
-    # Pass content_quality from the script quality gate so the bandit learns
-    # to favor arms that consistently produce high-quality scripts.
+    # ── 6. ML feedback — ONLY from real performance ────────────────
+    # V3.4: publish hone par reward dena BAND (bonus_consistent = 0). Pehle
+    # har upload ko +1.0 milta tha + self-scored quality bonus — bandit ko
+    # "sab kuch viral hai" ka jhoota signal milta tha aur weak formulas
+    # repeat hote rehte thay jabke views 0 thay. Ab arm ka reward SIRF
+    # scripts/fetch_metrics.py se aata hai (real views/likes/retention),
+    # jo attribution map ke zariye EXACT arm tak pahunchta hai.
     _script_quality = script.get("script_quality", {}).get("score", 0.0) \
         if isinstance(script.get("script_quality"), dict) else 0.0
     for p, res in results.items():
         if res.get("ok") and not res.get("dry_run") and arm:
-            ml.apply_reward(arm, f"{p}_published",
-                            ml.cfg["bonus_consistent"], platform=p,
-                            content_quality=_script_quality)
-            # Real performance metrics arrive via scripts/fetch_metrics.py,
-            # which credits this video's arm through the attribution map.
+            bonus = float(ml.cfg.get("bonus_consistent", 0.0) or 0.0)
+            if bonus > 0:
+                ml.apply_reward(arm, f"{p}_published", bonus, platform=p,
+                                content_quality=_script_quality)
+            else:
+                logger.info("📊 %s upload OK — NO reward yet. Real metrics "
+                            "(views/retention) will decide this arm's fate.", p.upper())
     ml.save()
 
     # ── 7. Monetization progress snapshot (non-destructive merge) ──

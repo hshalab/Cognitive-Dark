@@ -84,6 +84,10 @@ jobs:
           TTS_PRIMARY: "onnx"
           KOKORO_VOICE: "am_fenrir"
           KOKORO_MODEL_DIR: "data/models/kokoro"
+          # V3.5 Independent Release Gate — strict (default) = sab guards
+          # + supervisor pass hona zaroori; warn = report only (emergency).
+          GATE_MODE: "strict"
+          GATE_MAX_REPAIRS: "2"
         # V2.1: no `|| echo` — a crashed pipeline must turn the run RED so it
         # is noticed, instead of reporting success while uploading nothing.
         # --repeat 2: produce 2 videos per run for daily volume consistency.
@@ -146,7 +150,8 @@ jobs:
             data/monetization_progress.json data/metrics_report.md \
             data/*.events.jsonl data/strategy_state.json data/strategy_notes.md \
             data/health_report.md data/daily_brief.md data/reply_queue.json \
-            data/engagement_report.md data/llm_state.json 2>/dev/null || true
+            data/engagement_report.md data/llm_state.json \
+            data/gate_report.md data/gate_report.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No data changes to commit"
           else

@@ -161,7 +161,10 @@ def score_title_ctr(title: str, platform: str = "youtube") -> CTRScore:
     title_lower = title.lower()
     comp = {}
     issues = []
-    total_boost = 0.50  # base score (everything passes minimum threshold)
+    # V3.4 HONEST BASE: 0.25 (pehle 0.50 tha — har title, chahe kitna hi weak
+    # ho, "C — average" se neeche ja hi nahi sakta tha). Ab bina kisi viral
+    # signal ke title D-grade ho jata hai, jaise hona chahiye.
+    total_boost = 0.25
 
     # ── Length check ──
     optimal = PLATFORM_CTR_BOOSTS.get(platform, {}).get("title_max_optimal", 55)
@@ -191,6 +194,7 @@ def score_title_ctr(title: str, platform: str = "youtube") -> CTRScore:
         comp["specificity_combined"] = 0.0
 
     # ── Platform-specific ──
+    keyword_found = False  # V3.4: FB/IG path pe ye undefined tha → NameError
     if platform == "youtube":
         # Case number format ("Case #123: ...") → strong CTR in true-crime
         if re.search(r"case\s*#\d+", title_lower):
@@ -199,13 +203,16 @@ def score_title_ctr(title: str, platform: str = "youtube") -> CTRScore:
         else:
             comp["case_number"] = 0.0
 
-        # Keyword check — top psychology keywords
+        # Keyword check — top psychology keywords (ab real boost deta hai —
+        # pehle sirf 0.5/1.0 ka label tha jo score ko chhoota hi nahi tha)
         keywords = ["psychology", "coercion", "cult", "con", "mind", "brainwash",
                     "scam", "manipulation", "dark", "behavioral", "truth", "lies",
                     "control", "gaslighting", "red flag", "stoic"]
         keyword_found = any(k in title_lower for k in keywords)
-        comp["keyword"] = 1.0 if keyword_found else 0.5
-        if not keyword_found:
+        comp["keyword"] = 1.0 if keyword_found else 0.0
+        if keyword_found:
+            total_boost += 0.12
+        else:
             issues.append("no psychology/search keyword in title")
 
     elif platform == "facebook":
@@ -248,11 +255,30 @@ def score_title_ctr(title: str, platform: str = "youtube") -> CTRScore:
     )
 
 
+def _cap(text: str) -> str:
+    """First-letter capitalize (mid-title) — wo "micro-Expressions" jaisa
+    toota styling kabhi na ho."""
+    return text[:1].upper() + text[1:] if text else text
+
+
+def _trunc_words(text: str, max_len: int) -> str:
+    """Truncate at a WORD boundary (V3.4: pehle hard-cut beech-lafz par hota
+    tha — "Interviewers Watch F" + 'or' adhoora reh jata tha)."""
+    if len(text) <= max_len:
+        return text
+    cut = text[:max_len].rsplit(" ", 1)[0]
+    return cut.strip() if cut else text[:max_len]
+
+
 def suggest_ctr_improved_title(hook: str, platform: str = "youtube",
                                 pillar_keywords: list = None) -> list[str]:
     """Generate CTR-optimized title variants from a hook.
 
     Returns 3-5 title options, each targeting a different CTR pattern.
+    V3.4: har template GRAMMATICALLY safe hai (pehle "3 why Smart People..."
+    jaise toote titles bante thay). Variants sirf tab use hote hain jab
+    original title genuinely weak ho (<0.55), aur tab bhi sirf tabhi replace
+    hota hai jab variant sach mein zyada score kare — honest CTR gate.
     """
     hook = hook.strip().rstrip("?.!")
     if not hook:
@@ -260,33 +286,33 @@ def suggest_ctr_improved_title(hook: str, platform: str = "youtube",
 
     variants = []
     _keywords = pillar_keywords or ["psychology", "truth", "mind", "control"]
+    cap_low = _cap(hook[0].lower() + hook[1:])
+    is_question_start = bool(re.match(r"^(why|how|what|when|who)\b", hook, re.I))
 
-    # Variant 1: Number + hook (specificity CTR boost)
-    numbers = ["3", "7", "10", "11", "12", "50", "100", "21", "6"]
-    num = random.choice(numbers)
-    v1 = f"{num} {hook[0].lower() + hook[1:]}" if hook else hook
-    variants.append(v1[:70])
+    # 1) Reveal/exposure framing — hamesha grammatical
+    reveal = random.choice(["The Truth About", "What Nobody Tells You About"])
+    variants.append(_trunc_words(f"{reveal} {cap_low}", 70))
 
-    # Variant 2: Question format (curiosity gap)
-    q_words = ["Why", "How", "What", "When", "Why do"]
-    v2 = f"{random.choice(q_words)} {hook[0].lower() + hook[1:]}?"
-    variants.append(v2[:70])
+    # 2) Question framing — sirf jab hook pehle se question nahi hai
+    if not is_question_start:
+        variants.append(_trunc_words(f"Why {cap_low}", 70))
+        variants.append(_trunc_words(f"How {cap_low} Works", 70))
+    else:
+        variants.append(_trunc_words(f"{_cap(hook)} — Explained", 70))
 
-    # Variant 3: Command/negative (stop/never pattern)
-    cmd_prefix = random.choice(["Stop", "Never", "Don't"])
-    v3 = f"{cmd_prefix} {hook.lower()}"
-    variants.append(v3[:70])
+    # 3) Command/negative (stop/never pattern)
+    if not re.match(r"^(stop|never|don'?t)\b", hook, re.I):
+        variants.append(_trunc_words(
+            f"{random.choice(['Stop', 'Never'])} {cap_low}", 70))
 
-    # Variant 4: Reveal/exposure framing
-    reveal_prefix = random.choice(["The Truth About", "What They Don't Tell You About",
-                                   "Exposed: "])
-    v4 = f"{reveal_prefix} {hook[0].lower() + hook[1:]}"
-    variants.append(v4[:70])
+    # 4) Curiosity-gap ending
+    variants.append(_trunc_words(
+        f"{_cap(hook)} — What Nobody Tells You", 70))
 
-    # Variant 5: Case format (true-crime style)
-    case_num = random.randint(1, 999)
-    v5 = f"Case #{case_num}: {hook}"
-    variants.append(v5[:70])
+    # 5) Case format (true-crime style)
+    if not hook[:1].isdigit():
+        variants.append(_trunc_words(
+            f"Case #{random.randint(1, 999)}: {_cap(hook)}", 70))
 
     # Deduplicate
     seen, out = set(), []
@@ -307,7 +333,7 @@ def score_hook_retention(hook: str, first_scene_text: str = "") -> dict:
         return {"score": 0.0, "issues": ["empty hook"]}
 
     issues = []
-    score = 0.50  # base
+    score = 0.25  # V3.4 honest base (pehle 0.50 — weak hook bhi "average" dikhta tha)
 
     # Length: ideal 4-8 words for 2-second overlay
     words = hook.split()
@@ -365,14 +391,15 @@ def pick_best_title(hook: str, variants: list[str], platform: str = "youtube"
 
 
 def describe_ctr_grade(score: float) -> str:
-    """Human-readable CTR grade."""
+    """Human-readable CTR grade — V3.4 honest scale (pehle 0.50 base ki wajah
+    se "D" grade practically unreachable tha; ab weak titles genuinely fail)."""
     if score >= 0.85:
         return "S — elite CTR potential"
-    if score >= 0.75:
+    if score >= 0.72:
         return "A — strong CTR"
-    if score >= 0.65:
+    if score >= 0.60:
         return "B — good, room to improve"
-    if score >= 0.50:
+    if score >= 0.45:
         return "C — average, needs optimization"
     return "D — weak CTR, rewrite recommended"
 
@@ -390,13 +417,14 @@ def analyze_content_density(scenes: list[dict]) -> dict:
     per_scene = []
     total_score = 0.0
 
+    # V3.4: generic words (day/week/text/phone/call/meeting/letter/email/
+    # number/amount) hata diye — ye har sentence mein mil jaate thay aur har
+    # scene ko free "concrete ✅" milta tha. Ab sirf real evidence counts.
     concrete_markers = [
-        "$", "3-word", "text", "phone", "call", "date", "case", "file",
-        "meeting", "letter", "memo", "minute", "second", "day", "week",
-        "study", "experiment", "court", "trial", "wire", "email",
+        "$", "3-word", "case", "file", "memo", "study", "experiment",
+        "court", "trial", "wire", "transcript", "record", "report",
         "fbi", "cia", "stanford", "milgram", "cialdini", "project",
-        "declassified", "document", "transcript", "record", "report",
-        "number", "amount", "thousand", "million", "billion",
+        "declassified", "document", "thousand", "million", "billion",
     ]
 
     psych_concepts = [
@@ -412,21 +440,20 @@ def analyze_content_density(scenes: list[dict]) -> dict:
     for i, scene in enumerate(scenes):
         text = (scene.get("caption") or "").lower()
         words = text.split()
-        score = 0.30  # base per-scene
+        score = 0.10  # V3.4 honest base (pehle 0.30 — har scene "passing" dikhta tha)
+        _issues = []
 
         # Concrete anchor presence
         has_concrete = any(m in text for m in concrete_markers)
         score += 0.20 if has_concrete else 0.0
         if not has_concrete:
-            per_scene.append({"scene": i, "score": round(score, 3),
-                              "issue": "no concrete anchor"})
+            _issues.append("no concrete anchor")
 
         # Psychology concept named
         has_psych = any(p in text for p in psych_concepts)
         score += 0.15 if has_psych else 0.0
         if not has_psych:
-            per_scene.append({"scene": i, "score": round(score, 3),
-                              "issue": "no named psych concept"})
+            _issues.append("no named psych concept")
 
         # Sentence length (shorter = better retention pacing)
         sent_len = len(words)
@@ -434,8 +461,7 @@ def analyze_content_density(scenes: list[dict]) -> dict:
             score += 0.10
         elif sent_len > 50:
             score -= 0.05
-            per_scene.append({"scene": i, "score": round(score, 3),
-                              "issue": f"too long ({sent_len} words)"})
+            _issues.append(f"too long ({sent_len} words)")
 
         # Action verbs (active voice = better pacing)
         action_verbs = {"stole", "lied", "confessed", "wired", "called",
@@ -443,17 +469,16 @@ def analyze_content_density(scenes: list[dict]) -> dict:
                         "caught", "tricked", "manipulated", "demanded",
                         "threatened", "promised", "claimed", "denied",
                         "admitted", "agreed", "fell", "lost", "gained",
-                        "ran", "left", "joined", "escaped", "-faced",
+                        "ran", "left", "joined", "escaped", "faced",
                         "triggered", "broke", "cried", "screamed"}
         has_action = any(v in text for v in action_verbs)
         score += 0.10 if has_action else 0.0
         if not has_action:
-            per_scene.append({"scene": i, "score": round(score, 3),
-                              "issue": "no action verb"})
+            _issues.append("no action verb")
 
         per_scene.append({"scene": i, "score": round(min(1.0, score), 3),
                           "action": has_action, "concrete": has_concrete,
-                          "psych": has_psych})
+                          "psych": has_psych, "issues": _issues})
         total_score += min(1.0, score)
 
     avg = round(total_score / len(scenes), 3) if scenes else 0.0

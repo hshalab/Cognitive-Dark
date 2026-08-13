@@ -291,11 +291,46 @@ def selftest() -> bool:
                           out_path="output/tmp/selftest_video.mp4")
         assert Path(out).exists() and Path(out).stat().st_size > 10000
 
+    def _gate():
+        # Independent Release Gate: chalta hai + HONEST report deta hai
+        # (selftest payload mein audio missing hai → voice guard ko FAIL
+        # karna chahiye — fail-closed, jhoot nahi)
+        from guards.gate import ReleaseGate
+        g = ReleaseGate(mode="strict")
+        payload = {
+            "platform": "youtube",
+            "script": {"hook": "Why smart people join cults",
+                       "title": "Why Smart People Join Cults",
+                       "arm_key": "cults::question_hook::morning",
+                       "scenes": [
+                           {"caption": "Why smart people join cults."},
+                           {"caption": "The $400k wire transfer happened in 3 days."},
+                           {"caption": "Milgram proved obedience is social."},
+                           {"caption": "Cialdini's scarcity explains the rush."},
+                           {"caption": "Hit like if this helped you spot it."}]},
+            "segments": [{"path": None, "duration": 2.5, "text": "x"}],
+            "video_path": "output/tmp/selftest_video.mp4",
+            "thumb_path": None,
+            "package": {"title": "Why Smart People Join Cults",
+                        "description": "psychology — how cults recruit. "
+                        "Educational, protect yourself. #psychology",
+                        "tags": ["psychology"], "hashtags": ["psychology"],
+                        "hook": "Why smart people join cults"},
+            "publish_at": None,
+            "ml": None,
+        }
+        rep = g.evaluate(payload)
+        assert rep.verdicts and len(rep.verdicts) >= 8, "gate ne sab guards nahi chalaye"
+        # audio missing → voice FAIL (honest, fail-closed) → released False
+        assert rep.released is False, "gate ne missing-audio video ko release kar diya"
+        assert any(v.guard == "voice" and v.blocking for v in rep.verdicts)
+
     t("script generator (template fallback)", _script)
     t("scheduler (DST-aware, per-platform)", _scheduler)
     t("ml engine (UCB + reward/penalty + dedup)", _ml)
     t("seo packaging", _seo)
     t("video builder (procedural, offline)", _video)
+    t("release gate (independent guards, fail-closed)", _gate)
     return ok
 
 

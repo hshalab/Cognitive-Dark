@@ -150,8 +150,17 @@ def creator_intuition(ml_data: dict | None) -> list[str]:
     arms = ml_data.get("arms", {})
     scored = []
     for key, arm in arms.items():
-        if arm.get("n", 0) >= 3:
-            scored.append((arm["rewards"] / max(1, arm["n"]), key, arm["n"]))
+        # V3.4: sirf REAL outcomes (n >= 2) — priors sirf belief hain, "kya
+        # chala" nahi. Pehle seeded priors hi intuition ko "hot streak" ka
+        # jhoota ehsaas dete thay.
+        n_real = int(arm.get("n", 0) or 0)
+        if n_real < 2:
+            continue
+        pn = int(arm.get("prior_n", 0) or 0)
+        pm = float(arm.get("prior_mean", 0.0) or 0.0)
+        rewards = float(arm.get("rewards", 0.0) or 0.0)
+        mean = (pm * pn + rewards) / (pn + n_real)
+        scored.append((mean, key, n_real))
     scored.sort(reverse=True)
     if scored:
         mean, key, n = scored[0]

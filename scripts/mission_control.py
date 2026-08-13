@@ -139,16 +139,26 @@ def audit(ml: LearningSystem) -> tuple[list[str], list[str]]:
     except (OSError, json.JSONDecodeError) as exc:
         problems.append(f"⚠️ monetization_progress.json unreadable ({exc})")
 
-    # 8) Growth playbook — the levers that actually grow a 2026 channel
+    # 8) Growth playbook — V3.6 HONEST: sirf MEASURED cheezon ko ✅ milta hai.
+    # Static config claims ("built-in ✅") hata diye — module ka hona is baat
+    # ka saboot nahi ke output theek hai. Ab config items ⚙️ (gate har run
+    # verify karta hai) aur asal verification sirf gate/measurements se.
     ok.append("")
-    ok.append("**📈 GROWTH PLAYBOOK audit**")
-    ok.append("- Hook in first 3s: " + ("✅ ON" if USA_STYLE.get("hook_seconds", 2.2) <= 3 else "⚠️ tune"))
-    ok.append("- Fast cuts / USA style: ✅ ON (built-in)")
-    ok.append("- SEO titles + power words: ✅ ON (seo.py)")
-    ok.append("- Cross-platform reuse (1 video → YT/FB/IG): ✅ ON")
-    ok.append("- Daily consistency: see cadence check above")
-    ok.append("- Reply to comments (community signal): ⚠️ manual — reply daily")
-    ok.append("- CTA 'follow/subscribe' inside video: ⚠️ verify last upload has it")
+    ok.append("**📈 GROWTH PLAYBOOK audit (V3.6 — sirf measured checks ✅)**")
+    ok.append("- Hook in first 3s: " + (
+        "✅ measured by HookGuard (har upload)" if USA_STYLE.get("hook_seconds", 2.2) <= 3
+        else "⚠️ tune (hook_seconds config > 3s)"))
+    ok.append("- Video format/audio/captions: ⚙️ config ON — VideoGuard/VoiceGuard/"
+              "CaptionGuard har upload par REAL files measure karte hain")
+    ok.append("- SEO/CTR per platform: ⚙️ config ON — SEOGuard/CTRGuard har "
+              "package ko 2026 rules par judge karte hain")
+    ok.append("- Cross-platform reuse: ⚙️ config ON — supervisor har platform ki "
+              "copy ka distinctness verify karta hai")
+    ok.append("- Daily consistency: see cadence check above (measured ✅)")
+    ok.append("- Reply to comments (community signal): ⚠️ manual — verify khud karo, "
+              "system is ka PASS claim nahi karta")
+    ok.append("- CTA 'follow/subscribe' inside video: ⚙️ ScriptGuard har script mein "
+              "CTA check karta hai — last upload ka verdict gate_report.md mein")
     if ml.data.get("health", {}).get("instagram", {}).get("failures", 0) >= 3:
         ok.append("- Instagram linked + permissioned: ❌ BLOCKED — fix Meta linking "
                   "(this kills 1/3 of growth)")

@@ -26,10 +26,14 @@ logger = logging.getLogger("monetization")
 
 PROGRESS_PATH = DATA_DIR / "monetization_progress.json"
 
+# V3.4 HONESTY: pehle hardcoded "subs=7, followers=523" defaults thay — wo
+# bina kisi measurement ke asli data ban kar progress % calculate karte thay.
+# Ab default 0 hai aur real values sirf fetch_metrics.py se aati hain. Jab
+# tak fetch nahi hota, tracker saaf kehta hai ke data missing hai.
 DEFAULTS = {
-    "youtube": {"subs": 7, "watch_hours": 0, "shorts_views_90d": 0},
-    "facebook": {"followers": 523, "minutes_60d": 0, "uploads_30d": 0},
-    "instagram": {"followers": 1, "plays_60d": 0, "days_active": 0},
+    "youtube": {"subs": 0, "watch_hours": 0, "shorts_views_90d": 0},
+    "facebook": {"followers": 0, "minutes_60d": 0, "uploads_30d": 0},
+    "instagram": {"followers": 0, "plays_60d": 0, "days_active": 0},
 }
 
 

@@ -38,6 +38,9 @@ ignore = [
 # Resolution text (1080×1920) uses the multiplication sign on purpose.
 "src/visuals.py" = ["RUF001", "RUF002"]
 "src/auto_repair.py" = ["RUF001"]
+# Gate reports mein ℹ️/🛂 jaise icons intentionally use hote hain.
+"src/guards/*.py" = ["RUF001"]
+"scripts/run_gate.py" = ["RUF001"]
 # Long single-line rules inside the LLM SYSTEM_PROMPT are intentional prose
 # (split lines would change what the model receives).
 "src/script_generator.py" = ["E501"]
@@ -49,4 +52,4 @@ ignore = [
 known-first-party = ["config", "compat", "ml_engine", "seo", "scheduler",
                      "tts_engine", "video_builder", "visuals", "auto_repair",
                      "script_generator", "clips_downloader", "niche_strategy",
-                     "monetization_tracker", "platforms"]
+                     "monetization_tracker", "platforms", "guards"]

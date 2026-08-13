@@ -147,6 +147,30 @@ def _gemini(prompt: str) -> str:
     raise last_exc
 
 
+def _replace_hook_everywhere(script: dict, old_hook: str) -> None:
+    """V3.5: hook override ke saath scene-1 aur title bhi update karo.
+
+    Pehle sirf script["hook"] badla jata tha — scene 1 mein PURANA hook
+    reh jata tha. Independent ScriptGuard ne isay pakra: overlay kuch aur
+    kehta hai, narration kuch aur = clickbait gap = retention killer.
+    """
+    new_hook = script.get("hook", "")
+    if not new_hook or not script.get("scenes"):
+        return
+    old_low = (old_hook or "").strip().lower()
+    s0 = script["scenes"][0]
+    cap = s0.get("caption", "")
+    idx = cap.lower().find(old_low) if old_low else -1
+    if idx >= 0:
+        new_cap = (cap[:idx] + new_hook + cap[idx + len(old_hook):]).strip()
+        s0["caption"] = new_cap
+        s0["caption_roman"] = new_cap
+    title = script.get("title", "")
+    if old_low and old_low in title.lower():
+        script["title"] = re.sub(re.escape(old_hook), new_hook, title,
+                                 flags=re.I)
+
+
 def _parse_script(text: str) -> dict:
     text = text.strip()
     if text.startswith("```"):
@@ -220,6 +244,16 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
         "Clinical analysis demonstrates that manipulators always rush the timeline because logic and sleep are their greatest enemies.",
     ]
 
+    # V3.5: second concrete detail — template scripts 86-94 words ki thin
+    # (ScriptGuard 90+ chahta hai) aur ek hi proof thin. Ye scene script ko
+    # ~105+ words tak le jata hai + retention ke liye ek aur forensic detail.
+    second_details = [
+        "In the declassified case file, the victim described the same loop: trust first, then isolation, then urgency.",
+        "Investigators found the same script in fourteen separate cases, word for word.",
+        "The transcript shows the suspect never once raised their voice. Control is quiet.",
+        "Court records confirm the manipulation started three weeks before any money moved.",
+    ]
+
     tactical_shields = [
         "The universal defense is simple: the second you feel pressured to act instantly, force a 24-hour pause. Real opportunities survive sleep; scams don't.",
         "Your tactical shield is to name the tactic aloud: 'Why is this urgent?' The moment urgency is questioned, the manipulator loses leverage.",
@@ -241,6 +275,7 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
 
     setup = random.choice(narrative_setups.get(pillar.get("key"), narrative_setups["con_artists"]))
     proof = random.choice(forensic_proofs)
+    detail = random.choice(second_details)
     shield = random.choice(tactical_shields)
 
     visuals = [
@@ -275,21 +310,35 @@ def _template_script(pillar: dict, hook_style: str) -> dict:
             "emotion": "dark",
         },
         {
+            "caption": detail,
+            "caption_roman": detail,
+            "visual": visuals[3],
+            "emotion": "chilling",
+        },
+        {
             "caption": shield,
             "caption_roman": shield,
-            "visual": visuals[3],
+            "visual": visuals[4],
             "emotion": "revelatory",
         },
         {
             "caption": cta,
             "caption_roman": cta,
-            "visual": visuals[4],
+            "visual": visuals[5],
             "emotion": "revelatory",
         },
     ]
 
+    # V3.5: title ke pehle 3 words mein keyword/power hona chahiye (CTRGuard
+    # rule). Agar hook khud keyword se shuru nahi hota to keyword prefix karo.
+    title = f"{hook} | Forensic Psychology"
+    kw = (pillar.get("search_terms") or ["psychology"])[0]
+    first3 = " ".join(title.split()[:3]).lower()
+    if kw.lower() not in first3 and "psychology" not in first3:
+        title = f"{kw.title()}: {hook}"[:100]
+
     return {
-        "title": f"{hook} | Forensic Psychology",
+        "title": title,
         "hook": hook,
         "scenes": scenes,
         "tags": pillar["tags"][:10],
@@ -386,7 +435,10 @@ Write it now — valid JSON only."""
                               for sc in script.get("scenes", [])).split())
         _est = _words / 2.2
         too_short = _est < 38 and source in ("groq", "gemini")
-        if hook_score >= 0.85 and not too_short:
+        # V3.4: gate ab 0.60 hai (honest scale) — 0.85 purane inflated scale
+        # ka tha jahan base hi 0.55 tha. Ab weak hook genuinely regenerate
+        # hota hai, sirf praise nahi milti.
+        if hook_score >= 0.60 and not too_short:
             break
         if too_short and _attempt < 3:
             prompt += ("\n\nIMPORTANT: The previous script was too short "
@@ -400,26 +452,34 @@ Write it now — valid JSON only."""
         else:
             logger.warning("Hook weak (score %.2f) — regenerating script (attempt %d/4)",
                            hook_score, _attempt + 2)
-    # V3.1: hook fallback — 3 attempts ke baad bhi weak ho to documented strong
-    # hook se override (LLM "case_file #3456" jaisa terse deta hai — 2-second
-    # overlay ke liye kamzor). Overlay text alag ho sakta hai narration se —
-    # faceless channels aise hi karte hain.
-    if hook_score < 0.85:
-        strong = None
+    # V3.1 + V3.4: hook fallback — regen ke baad bhi weak ho to documented
+    # strong hook se override. V3.4: (1) threshold 0.60 honest scale,
+    # (2) CURATED pillar hooks ko priority (pehle fragment-generator pehle
+    # chalta tha — "Stop letting them" jaise aadhe hooks overlay par chale
+    # jaate thay), (3) replacement tabhi jab wo GENUINELY behtar score kare.
+    if hook_score < 0.60:
+        candidates = ([h for h in pillar.get("hooks", []) if h]
+                      if pillar.get("hooks") else [])
         try:
-            from human_layer import random_boosted_hook as _rbh
-            strong = _rbh()
+            from viral_intel import random_boosted_hook as _rbh
+            candidates += [_rbh(), _rbh()]
         except Exception:
-            strong = None
-        if not strong and pillar.get("hooks"):
-            strong = random.choice(pillar["hooks"])
-        if strong:
-            script["hook"] = strong[:85]
+            pass
+        best, best_score = None, hook_score
+        for cand in candidates:
+            cand = cand[:85]
             try:
                 from viral_intel import score_hook as _sh
-                hook_score = _sh(script["hook"])["score"]
+                cs = _sh(cand)["score"]
             except Exception:
-                hook_score = 1.0
+                cs = 0.0
+            if cs > best_score:
+                best, best_score = cand, cs
+        if best:
+            _old_hook = script.get("hook", "")
+            script["hook"] = best
+            _replace_hook_everywhere(script, _old_hook)   # V3.5: scene1+title sync
+            hook_score = best_score
             logger.info("Hook overridden with strong documented hook (score %.2f)",
                         hook_score)
     # V3.3: CTA repair — compulsion CTA (psychology like-bait) append agar
@@ -450,7 +510,9 @@ Write it now — valid JSON only."""
             pillar_hooks = ([h for h in pillar["hooks"] if h]
                             if pillar.get("hooks") else [])
             if pillar_hooks:
+                _old_hook = script.get("hook", "")
                 script["hook"] = random.choice(pillar_hooks)[:85]
+                _replace_hook_everywhere(script, _old_hook)   # V3.5 sync
                 logger.info("SCRIPT quality gate: weak score %.2f → hook replaced "
                             "with proven pillar hook", _quality["score"])
                 try:
@@ -483,24 +545,25 @@ Write it now — valid JSON only."""
     script.setdefault("tags", pillar["tags"][:10])
 
     # ── V3.1: CTR-OPTIMIZED TITLE — generate high-CTR title variants ──
-    # YouTube Shorts ke liye CTR-optimized title select karte hain
+    # V3.4: threshold 0.55 (honest scale) + sirf tab replace karo jab naya
+    # title GENUINELY behtar score kare (pehle blind replace hota tha).
     try:
         from ctr_optimizer import describe_ctr_grade, pick_best_title, score_title_ctr, suggest_ctr_improved_title
         _title_score = score_title_ctr(script.get("title", ""), "youtube")
-        if _title_score.score < 0.70:
+        if _title_score.score < 0.55:
             _variants = suggest_ctr_improved_title(
                 script.get("hook", script.get("title", "")),
                 "youtube",
                 pillar_keywords=[p["key"] for p in PILLARS]
             )
             if _variants:
-                script["title"] = pick_best_title(
-                    script.get("hook", ""), _variants, "youtube"
-                )
-                logger.info("CTR title boost: %s → %s (%s)",
-                            _title_score.title[:40], script["title"][:40],
-                            describe_ctr_grade(
-                                score_title_ctr(script["title"], "youtube").score))
+                _best = pick_best_title(script.get("hook", ""), _variants, "youtube")
+                if score_title_ctr(_best, "youtube").score > _title_score.score:
+                    script["title"] = _best
+                    logger.info("CTR title boost: %s → %s (%s)",
+                                _title_score.title[:40], script["title"][:40],
+                                describe_ctr_grade(
+                                    score_title_ctr(script["title"], "youtube").score))
     except Exception as exc:
         logger.warning("CTR title optimization skipped: %s", exc)
 

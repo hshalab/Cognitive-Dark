@@ -81,9 +81,13 @@ TITLE_FORMULAS = {
 
 HOOK_QUALITY = {
     "max_words": 9,
-    "power_words": {"stop", "never", "secret", "why", "how", "you", "your",
-                    "they", "this", "warning", "truth", "everyone", "nobody",
-                    "danger", "lies", "trick", "trap", "instantly"},
+    # V3.4: sirf STRONG power words — pehle "you/your/they/this" jaise generic
+    # words bhi power maane jaate the, jo HAR hook mein hote hain → weak hook
+    # ko bhi fake bonus mil jata tha. Ab generic words score nahi dete.
+    "power_words": {"stop", "never", "secret", "why", "how", "warning",
+                    "truth", "danger", "lies", "trick", "trap", "instantly",
+                    "hidden", "exposed", "nobody", "signs", "before",
+                    "if", "when", "what", "watch"},
     "low_energy": {"maybe", "sometimes", "perhaps", "kinda", "sorta", "some"},
 }
 
@@ -130,7 +134,10 @@ def score_title(title: str) -> dict:
         if f["pattern"].search(title):
             hits.append({"formula": name, "score": f["base"], "why": f["why"]})
     if not hits:
-        return {"score": 0.4, "formulas": [], "note": "no viral formula matched"}
+        # V3.4: 0.2, not 0.4 — koi viral formula match nahi hona ek WEAK
+        # signal hai, neutral nahi. 0.4 ka floor weak titles ko "passable"
+        # bana deta tha.
+        return {"score": 0.2, "formulas": [], "note": "no viral formula matched"}
     # cap: 3+ formulas quickly saturate; combine log-ish
     base = max(h["score"] for h in hits)
     bonus = 0.05 * (len(hits) - 1)
@@ -140,15 +147,24 @@ def score_title(title: str) -> dict:
 
 
 def score_hook(hook: str) -> dict:
-    """Score a 2-second hook: length, power words, energy, curiosity."""
+    """Score a 2-second hook: length, power words, energy, curiosity.
+
+    V3.4 HONEST SCALE: base 0.30 (pehle 0.55 tha). Ek hook jis mein na power
+    word hai, na pattern-interrupt, wo ab FAIL karta hai (<0.5) — pehle 0.55
+    base ki wajah se har hook "passable" lagta tha. Weak hook ko weak kehna
+    hi system ki pehli zimmedari hai — warna pipeline weak hooks ko viral
+    bata kar upload karti rahti hai.
+    """
     if not hook:
-        return {"score": 0.0, "issues": ["empty hook"]}
+        return {"score": 0.0, "issues": ["empty hook"], "weak": True}
     words = re.findall(r"[A-Za-z']+", hook.lower())
     n_words = len(words)
     issues, bonus = [], 0.0
     if n_words > HOOK_QUALITY["max_words"]:
         issues.append(f"{n_words} words — target ≤ {HOOK_QUALITY['max_words']} "
                       "(first 2 seconds matter)")
+    if n_words < 3:
+        issues.append(f"only {n_words} word(s) — hook is a fragment, no payoff")
     power = sum(1 for w in words if w in HOOK_QUALITY["power_words"])
     low = sum(1 for w in words if w in HOOK_QUALITY["low_energy"])
     bonus += min(0.5, 0.12 * power)
@@ -159,8 +175,22 @@ def score_hook(hook: str) -> dict:
     # question or imperative = pattern interrupt
     if re.search(r"\b(why|how|stop|never|don'?t|watch|look)\b", hook, re.I):
         bonus += 0.2
-    score = round(min(1.6, 0.55 + bonus - 0.08 * len(issues)), 3)
-    return {"score": score, "issues": issues, "power_words": power}
+    # concrete anchor ($400k, 3 words, 1974) = specificity = curiosity punch
+    anchors = len(re.findall(r"\$\s?\d+|\b\d+\b", hook))
+    if anchors:
+        bonus += min(0.24, 0.18 + 0.06 * (anchors - 1))
+    # FRAGMENT CHECK (V3.4): "Stop letting them", "Why smart people",
+    # "Nobody tells you" jaise 3-lafzi aadhe hooks payoff ke baghair hain —
+    # overlay par weak lagte hain. 3 words ya kam + dangling ending = fragment.
+    dangling = {"them", "they", "it", "this", "that", "you", "to", "at", "in",
+                "of", "with", "when", "if", "and", "or", "up", "out", "on",
+                "for", "from", "into", "your", "their", "about", "people"}
+    if n_words <= 3 and words and words[-1] in dangling:
+        issues.append("incomplete hook (fragment) — add the payoff")
+        bonus -= 0.15
+    score = round(max(0.0, min(1.0, 0.30 + bonus - 0.08 * len(issues))), 3)
+    return {"score": score, "issues": issues, "power_words": power,
+            "weak": score < 0.5}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -189,12 +219,20 @@ def virality_index(ml_data: dict = None) -> dict:
     # own best-video fingerprint (from ML reward history + videos)
     own = _own_fingerprint(ml_data)
 
-    total_score = round(0.55 * pattern.get("avg_score", 0.0) +
-                        0.30 * own.get("avg_score", 0.0) +
-                        0.15 * min(1.0, pattern.get("n", 0) / 60), 3)
+    # V3.4 HONEST INDEX: own REAL performance is now the dominant term (0.50),
+    # niche title patterns are context (0.30), data coverage (0.20). Pehle
+    # pattern-shapes ka 0.55 weight tha — seed titles ki wajah se index hamesha
+    # "A+ viral-ready" ban jata tha, chahe channel par views hi kyun na 0 hon.
+    # Ab jab tak REAL metrics nahi aate, index kabhi "viral-ready" nahi bolta.
+    total_score = round(0.30 * pattern.get("avg_score", 0.0) +
+                        0.50 * own.get("avg_score", 0.0) +
+                        0.20 * min(1.0, own.get("n_with_real_data", 0) / 15), 3)
     return {
         "index": total_score,
         "grade": _grade(total_score),
+        "honest": own.get("n_with_real_data", 0) == 0,
+        "honest_note": (own.get("note", "") if own.get("n_with_real_data", 0) == 0
+                        else "index is driven by real performance data"),
         "patterns_learned": pattern.get("n", 0),
         "top_title_formulas": pattern.get("top_formulas", []),
         "own_fingerprint": own,
@@ -203,31 +241,52 @@ def virality_index(ml_data: dict = None) -> dict:
 
 
 def _own_fingerprint(ml_data: dict | None) -> dict:
+    """Fingerprint from REAL performance, not from our own title-scorer.
+
+    V3.4: pehle ye function apni hi videos ke titles ko title-scorer se score
+    karta tha — matlab system apni khud ki tareef khud kar raha tha aur index
+    "A+ viral-ready" dikhata tha jabke views 0 thay. Ab:
+      • real = videos jin ke arms par REAL outcome data hai (n_real > 0)
+      • har video ka performance score = arm ka posterior mean (0..5) → 0..1
+      • jis video ka koi real data nahi, wo count HOTA hai lekin score 0
+        ke saath — kyunki "koi data nahi" matlab "koi performance nahi"
+    """
     if not ml_data:
-        return {"n": 0, "avg_score": 0.0, "best_formula": None}
+        return {"n": 0, "avg_score": 0.0, "best_formula": None,
+                "n_with_real_data": 0, "note": "no ML store"}
     videos = ml_data.get("videos", [])
     if not videos:
-        return {"n": 0, "avg_score": 0.0, "best_formula": None}
+        return {"n": 0, "avg_score": 0.0, "best_formula": None,
+                "n_with_real_data": 0, "note": "no videos yet"}
+    arms = ml_data.get("arms", {})
     scored = []
+    n_real = 0
     for v in videos[-40:]:
+        arm = arms.get(v.get("arm_key"), {})
+        n = int(arm.get("n", 0) or 0)
+        rewards = float(arm.get("rewards", 0.0) or 0.0)
+        if n > 0:
+            n_real += 1
+            mean = rewards / n           # REAL outcomes only — no prior credit
+            perf = max(0.0, min(1.0, mean / 2.5))
+        else:
+            perf = 0.0                   # priors are belief, not performance
         title = v.get("title") or v.get("hook") or ""
-        s = score_title(title)
-        # crude performance proxy: hooks from high-n arms are 'proven'
-        arm_key = v.get("arm_key")
-        arm = ml_data.get("arms", {}).get(arm_key, {})
-        if arm.get("n", 0) > 2:
-            mean = arm["rewards"] / max(1, arm["n"])
-            s = dict(s, score=s["score"] * (0.7 + 0.3 * min(2.0, mean)))
-        scored.append(s)
-    avg = round(sum(s["score"] for s in scored) / len(scored), 3)
-    formulas = [f for s in scored for f in s.get("formulas", [])]
+        ts = score_title(title)
+        scored.append({"perf": perf, "formulas": ts.get("formulas", []),
+                       "title_score": ts.get("score", 0.0)})
+    avg = round(sum(s["perf"] for s in scored) / len(scored), 3)
+    formulas = [f for s in scored for f in s["formulas"]]
     top = None
     if formulas:
         counts = defaultdict(int)
         for f in formulas:
             counts[f] += 1
         top = max(counts.items(), key=lambda kv: kv[1])[0]
-    return {"n": len(scored), "avg_score": avg, "best_formula": top}
+    return {"n": len(scored), "n_with_real_data": n_real, "avg_score": avg,
+            "best_formula": top,
+            "note": ("real-performance based" if n_real
+                     else "NO real performance data yet — avg is 0 by design")}
 
 
 def _grade(score: float) -> str:
@@ -285,13 +344,20 @@ def pick_title_variant(hook: str, candidates: list[str]) -> str:
 
 
 def random_boosted_hook() -> str:
-    """Occasionally suggest a hook style tuned to the top pattern (randomized)."""
-    starters = [
-        "Stop letting them", "Why smart people", "Nobody tells you",
-        "The trick they", "How they get you", "Never say this",
-        "The warning they ignored", "Watch what they say",
+    """A COMPLETE, high-pattern-interrupt hook (V3.4: pehle sirf fragments
+    thay jaise "Stop letting them" — aadha hook overlay par weak lagta hai.
+    Ab har option ek mukammal payoff wala hook hai)."""
+    full_hooks = [
+        "Stop letting them control your money",
+        "Why smart people fall for cults",
+        "Nobody tells you the first sign of control",
+        "The trick they use to make you trust them",
+        "How they get you to say yes before you think",
+        "Never say this to a manipulator",
+        "The warning sign everyone ignored",
+        "Watch what they say when you say no",
     ]
-    return random.choice(starters)
+    return random.choice(full_hooks)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -303,9 +369,14 @@ PSYCH_CONCEPTS = ["milgram", "stanford", "cialdini", "cognitive dissonance",
                   "scarcity", "mirroring", "love bombing", "conditioning",
                   "deprogram", "psycholog", "behavioral stud", "research shows",
                   "studies show", "landmark study", "persuasion", "social proof"]
-ANCHOR_HINTS = ["$", "3-word", "text", "phone", "call", "date", "case", "file",
-                "meeting", "letter", "memo", "minute", "second", "day", "week",
-                "study", "experiment", "court", "trial", "wire", "email"]
+# V3.4: sirf REAL concrete anchors — pehle "day/week/minute/second/call/text/
+# phone/email/meeting/date" bhi anchor maane jaate thay, jo har script mein
+# hote hain → har script ko free "anchor ✅" milta tha. Ab specific evidence
+# chahiye: raqam, case file, study, trial, transcript...
+ANCHOR_HINTS = ["$", "3-word", "case", "file", "memo", "study", "experiment",
+                "court", "trial", "wire", "transfer", "transcript",
+                "declassified", "million", "thousand", "billion"]
+ANCHOR_NUM_RE = re.compile(r"\d+\s?(k|%|percent|people|days|hours|years|times|words)", re.I)
 
 
 def score_script(script: dict | None) -> dict:
@@ -324,11 +395,12 @@ def score_script(script: dict | None) -> dict:
     issues = []
     comp = {}
 
-    # hook
+    # hook — V3.4 honest threshold (0.5 on the new honest scale; 0.85 was
+    # tuned to the old inflated scale where weak hooks still scored 0.55+)
     try:
         h = score_hook(script.get("hook", ""))
         comp["hook"] = h["score"]
-        if h["score"] < 0.85:
+        if h["score"] < 0.5:
             issues.append(f"hook weak ({h['score']:.2f})")
     except Exception:
         comp["hook"] = 0.0
@@ -341,11 +413,11 @@ def score_script(script: dict | None) -> dict:
     if not eng:
         issues.append("no like/comment/follow ask")
 
-    # concrete anchor
-    anchor = any(a.lower() in full for a in ANCHOR_HINTS)
+    # concrete anchor — specific evidence only (raqam/case/study/trial)
+    anchor = any(a in full for a in ANCHOR_HINTS) or bool(ANCHOR_NUM_RE.search(full))
     comp["anchor"] = 1.0 if anchor else 0.0
     if not anchor:
-        issues.append("no concrete anchor (numbers/$/case)")
+        issues.append("no concrete anchor (numbers/$/case/study)")
 
     # psychology concept
     psych = any(p in full for p in PSYCH_CONCEPTS)

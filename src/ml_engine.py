@@ -95,14 +95,17 @@ class LearningSystem:
         # memory must never be allowed to double-post.
         self.store_ok = True
         self._rebuilt = False
+        self._migrated = False
+        self._purged = False
         self.data = self._load()
         self._ensure_schema()
-        # If we rebuilt from the event log, persist the healed store NOW so
-        # the next process loads the real file (no repeated replay).
-        if self._rebuilt and self.store_ok:
+        # V3.4: honesty migration/self-praise purge ke baad healed store ko
+        # FORAN persist karo — agla process seedha saaf state par chale.
+        # (Pehle sirf event-log rebuild par save hota tha.)
+        if (self._rebuilt or self._migrated or self._purged) and self.store_ok:
             try:
                 self.save()
-                logger.warning("Healed ML store written to %s", self.store_path)
+                logger.warning("Healed/honest ML store written to %s", self.store_path)
             except Exception as exc:
                 logger.warning("Could not persist healed store: %s", exc)
 
@@ -225,7 +228,7 @@ class LearningSystem:
         data = {
             "arms": {}, "videos": [], "attribution": {}, "post_log": {},
             "publish_claims": {}, "penalty_log": [], "reward_log": [],
-            "health": {}, "model_version": 3,
+            "health": {}, "model_version": 4,
             "created_at": events[0].get("ts", _now_iso()),
             "rebuilt_from_events": True,
             "rebuilt_ts": _now_iso(),
@@ -236,6 +239,12 @@ class LearningSystem:
             ts = ev.get("ts", _now_iso())
             try:
                 if t == "reward":
+                    # V3.6: legacy self-praise ("<platform>_published") rewards
+                    # replay mein bhi skip hote hain — diary se rebuild hone par
+                    # fake rewards wapas nahi aa sakte.
+                    reason = ev.get("reason", "")
+                    if reason.endswith("_published") and not reason.startswith("metrics:"):
+                        continue
                     arm = self._arm_in(data, ev["arm"])
                     w = float(ev["w"])
                     arm["rewards"] += w
@@ -244,7 +253,8 @@ class LearningSystem:
                     arm["updated"] = ts
                     data["reward_log"].append({"ts": ts, "arm": ev["arm"],
                                                "reward": round(w, 4),
-                                               "platform": ev.get("platform")})
+                                               "platform": ev.get("platform"),
+                                               "reason": reason})
                 elif t == "penalty":
                     arm = self._arm_in(data, ev["arm"])
                     w = -abs(float(ev["w"]))
@@ -292,14 +302,14 @@ class LearningSystem:
                     data["health"][ev["platform"]] = {"failures": 0, "healthy": True,
                                                       "last_check": ts}
                 elif t == "seed":
+                    # V3.4: priors replay into prior_n/prior_mean ONLY — never
+                    # as fake observations in n/rewards (double-count bug).
                     for key, (mean, n) in (ev.get("priors") or {}).items():
                         arm = self._arm_in(data, key)
-                        if arm.get("n", 0) == 0:
+                        if arm.get("n", 0) == 0 and arm.get("prior_n", 0) == 0:
                             arm.update({
-                                "rewards": round(float(mean) * int(n), 4),
-                                "sum_sq": round((float(mean) ** 2) * int(n), 4),
-                                "n": int(n), "prior_n": int(n),
                                 "prior_mean": round(float(mean), 4),
+                                "prior_n": int(n),
                                 "seeded": True, "updated": ts})
             except (KeyError, TypeError, ValueError) as exc:
                 logger.warning("Skipping unparseable event %s: %s", t, exc)
@@ -322,6 +332,73 @@ class LearningSystem:
         d.setdefault("health", {})          # platform -> {failures, healthy, last_check}
         d.setdefault("model_version", 3)
         d.setdefault("created_at", _now_iso())
+
+        # ── V3.4 HONESTY MIGRATION: un-merge seeded priors ─────────────
+        # Legacy stores wrote seed priors INTO n/rewards/sum_sq as fake
+        # "observations" AND stored prior_n/prior_mean on top → the prior was
+        # counted TWICE, real outcomes only moved the posterior at half
+        # strength, and seeded arms (n≥7) never looked "cold" so the
+        # exploration branch could never fire. The bandit was blind and
+        # overconfident at the same time — a textbook recipe for repeating
+        # weak formulas for weeks.
+        # From V3.4, arms store REAL observations only; priors live solely in
+        # prior_n/prior_mean. Here we recover the real observations for old
+        # stores by subtracting the prior contribution back out.
+        # V3.6: ONE-TIME ONLY — `prior_dedup_migrated` marker ke baad dobara
+        # kabhi nahi chalta (naya schema mein legit arm ka n >= prior_n ho
+        # sakta hai; baar-baar subtract karne se REAL data destroy hota tha).
+        migrated = 0
+        if not d.get("prior_dedup_migrated"):
+            for arm in d.get("arms", {}).values():
+                pn = int(arm.get("prior_n", 0) or 0)
+                if not pn or not arm.get("seeded"):
+                    continue
+                n = int(arm.get("n", 0) or 0)
+                if n < pn:
+                    continue  # already in the new schema (real-only stats)
+                pm = float(arm.get("prior_mean", 0.0) or 0.0)
+                rewards = float(arm.get("rewards", 0.0) or 0.0)
+                sum_sq = float(arm.get("sum_sq", 0.0) or 0.0)
+                arm["n"] = max(0, n - pn)
+                arm["rewards"] = round(max(0.0, rewards - pm * pn), 4)
+                arm["sum_sq"] = round(max(0.0, sum_sq - pm * pm * pn), 4)
+                migrated += 1
+        if migrated:
+            d["prior_dedup_migrated"] = migrated
+            d["model_version"] = 4
+            self._migrated = True
+            logger.warning(
+                "🧮 Honesty migration: %d seeded arms restored to REAL "
+                "observations (priors were double-counted in the legacy store)", migrated)
+
+        # ── V3.4 SELF-PRAISE PURGE (one-time) ───────────────────────────
+        # Legacy behavior ne HAR successful upload ko "<platform>_published"
+        # reward diya tha (+1.0 + self-scored quality bonus). Wo observations
+        # performance NAHI thay — sirf khud ki tareef. Inhein arm stats se
+        # exact subtract kar dete hain (event diary history intact rehti hai)
+        # taake bandit ab sirf REAL metrics par decisions le.
+        if not d.get("self_praise_purged") and d.get("reward_log"):
+            purged = 0
+            kept = []
+            for entry in d["reward_log"]:
+                reason = str(entry.get("reason", ""))
+                if reason.endswith("_published") and not reason.startswith("metrics:"):
+                    arm = d.get("arms", {}).get(entry.get("arm", ""))
+                    if arm:
+                        w = float(entry.get("reward", 0.0) or 0.0)
+                        arm["rewards"] = round(float(arm.get("rewards", 0.0)) - w, 4)
+                        arm["sum_sq"] = round(max(0.0, float(arm.get("sum_sq", 0.0)) - w * w), 4)
+                        arm["n"] = max(0, int(arm.get("n", 0)) - 1)
+                    purged += 1
+                else:
+                    kept.append(entry)
+            if purged:
+                d["reward_log"] = kept
+                d["self_praise_purged"] = purged
+                self._purged = True
+                logger.warning(
+                    "🧹 Self-praise purge: %d fake 'published' rewards removed "
+                    "from arm stats — sirf REAL metrics ab bandit chalayenge", purged)
 
     # ── arm management ──
     @staticmethod
@@ -364,19 +441,18 @@ class LearningSystem:
             for day_part in ("morning", "afternoon", "evening"):
                 key = self.arm_key(pillar, hook, day_part)
                 arm = self._arm(key)
-                # Seed only if not already seeded and no real evidence exists.
-                # prior_n>0 means a prior is already written; n>prior_n means
-                # real outcomes were added on top of the prior. Either way skip.
-                if arm.get("n", 0) > 0:
+                # V3.4: priors live ONLY in prior_n/prior_mean. They are NOT
+                # written into n/rewards/sum_sq as fake observations — that
+                # double-counted the prior (posterior_from_arm added it again),
+                # halved the weight of every real outcome, and made seeded
+                # arms look "experienced" so exploration could never fire.
+                if arm.get("n", 0) > 0 or arm.get("prior_n", 0) > 0:
                     continue
-                arm["rewards"] = round(float(mean) * int(n), 4)
-                arm["sum_sq"] = round((float(mean) ** 2) * int(n), 4)
-                arm["n"] = int(n)
-                arm["prior_n"] = int(n)
                 arm["prior_mean"] = round(float(mean), 4)
+                arm["prior_n"] = int(n)
+                arm["seeded"] = True
                 arm["plays"] = arm.get("plays", 0)
                 arm["updated"] = _now_iso()
-                arm["seeded"] = True
                 seeded += 1
         self.data.setdefault("prior_log", []).append({
             "ts": _now_iso(), "source": source, "arms_seeded": seeded})
@@ -424,34 +500,41 @@ class LearningSystem:
                 # baseline score (0.0 placeholder; real score added below)
                 candidates.append((0.0, key, arm, pillar["key"], style, day_part))
 
-        candidates = score_arms(candidates, policy=policy,
-                                total_plays=total_plays, c=c)
+        scored = [list(c) for c in score_arms(candidates, policy=policy,
+                                              total_plays=total_plays, c=c)]
+
+        # V3.4 FIX: recency/variety penalty + Strategy-Director pillar weights
+        # + per-platform blend were applied AFTER argmax in earlier versions —
+        # a silent no-op. The bandit printed a damped score but still picked
+        # the same arm, so "variety guard" did nothing in production and the
+        # same pillar/hook repeated back-to-back. Apply ALL adjustments to
+        # every candidate BEFORE the max() so they actually steer the choice.
+        pillar_weights = self.data.get("pillar_weights", {})
+        for c in scored:
+            _score, key, _arm, pillar, _style, _dp = c
+            if key in recent_keys:
+                c[0] *= 0.5           # don't instantly repeat the same formula
+            c[0] *= float(pillar_weights.get(pillar, 1.0))
+            if platform and self.cfg.get("per_platform", True):
+                plat = self._platform_arm(platform, key)
+                if plat.get("n", 0) >= 3:
+                    p_post = posterior_from_arm(plat)
+                    c[0] = 0.6 * c[0] + 0.4 * p_post.mean
 
         # Cold-start guarantee: with some probability, force a genuinely
-        # under-observed arm (UCB's "infinite bonus" generalized).
-        force = [c for c in candidates if should_force_exploration(c[2])]
+        # under-observed arm (UCB's "infinite bonus" generalized). With the
+        # V3.4 schema, "under-observed" = no REAL outcomes — seeded priors no
+        # longer masquerade as experience.
+        force = [c for c in scored if should_force_exploration(c[2])]
         if force and random.random() < 0.25:
             chosen = random.choice(force)
         # Residual epsilon-random over all candidates
         elif random.random() < epsilon:
-            chosen = random.choice(candidates)
+            chosen = random.choice(scored)
         else:
-            chosen = max(candidates, key=lambda c: c[0])
+            chosen = max(scored, key=lambda c: c[0])
 
-        # Recency / variety penalty (don't instantly repeat same formula),
-        # plus pillar-weight adjustment from the Strategy Director.
         score, key, arm, pillar, style, dp = chosen
-        if key in recent_keys:
-            score *= 0.5
-        weight = float(self.data.get("pillar_weights", {}).get(pillar, 1.0))
-        score *= weight
-
-        # Per-platform blend (optional)
-        if platform and self.cfg.get("per_platform", True):
-            plat = self._platform_arm(platform, key)
-            if plat.get("n", 0) >= 3:
-                p_post = posterior_from_arm(plat)
-                score = 0.6 * score + 0.4 * p_post.mean
 
         arm["plays"] += 1
         arm["updated"] = _now_iso()
@@ -459,6 +542,7 @@ class LearningSystem:
 
         post = posterior_from_arm(arm)
         ci_lo, ci_hi = post.confidence_interval()
+        _eff_n = post.effective_n
         return {
             "arm_key": key, "pillar": pillar, "hook_style": style,
             "day_part": dp, "policy": policy,
@@ -466,7 +550,7 @@ class LearningSystem:
             "posterior_mean": round(post.mean, 3),
             "posterior_std": round(post.std, 3),
             "ci_95": [round(ci_lo, 3), round(ci_hi, 3)],
-            "arm_evidence": arm["n"],
+            "arm_evidence": int(_eff_n),
         }
 
     def _platform_arm(self, platform: str, base_key: str) -> dict:
@@ -557,6 +641,13 @@ class LearningSystem:
         # bandit learns to favor formulas that consistently produce strong content.
         quality_bonus = w * 0.15 if content_quality >= 0.7 else 0.0
         total = abs(w) + quality_bonus
+        if total <= 0:
+            # V3.4: a zero-weight "reward" is not an observation — recording it
+            # would inflate n and drag the posterior mean toward 0 for no
+            # reason (this is how the publish==reward loop was severed).
+            logger.info("No reward recorded (%s → %s, weight=0) — real "
+                        "performance metrics decide", reason, arm_key)
+            return 0.0
         self._update_arm(arm_key, total)
         self._record_platform(arm_key, platform, total)
         self.data["reward_log"].append({
@@ -637,6 +728,16 @@ class LearningSystem:
         a["breakdown"] = breakdown
         a["credited_at"] = _now_iso()
         self._append_event("credit", video_id=vid, reward=round(reward, 4))
+        # V3.6: agar data COMPLETE nahi hai (retention missing ya estimated),
+        # to arm par na reward na penalty — "pata nahi" se seekha nahi jata.
+        # Pehle missing-data video par -1.0 penalty lag jati thi (low_metrics)
+        # — ye bhi ek jhoot tha: data ki kami formula ki ghalti nahi.
+        if not breakdown.get("data_complete", False):
+            logger.info("⏸️  %s:%s credited (reward %.2f) par data incomplete — "
+                        "arm par koi reward/penalty nahi. Sirf REAL, complete "
+                        "metrics bandit seekhate hain.", platform, vid[:12], reward)
+            self.save()
+            return reward
         if reward > 0.5:
             self.apply_reward(a["arm_key"], f"metrics:{vid[:12]}", reward, platform=platform)
         else:
@@ -864,18 +965,49 @@ class LearningSystem:
         self.save()
 
     # ── insight feed for script prompt (closes the learning loop) ──
+    @staticmethod
+    def _eff_stats(arm: dict) -> tuple[float, int, int]:
+        """Honest arm stats: (posterior mean incl. prior, effective n, REAL n).
+
+        V3.4: prior pseudo-counts are included exactly once here (they are
+        NOT baked into n/rewards). n_real tells every consumer how much of
+        the "experience" is actual outcome data vs seed belief.
+        """
+        pn = int(arm.get("prior_n", 0) or 0)
+        pm = float(arm.get("prior_mean", 0.0) or 0.0)
+        n_real = int(arm.get("n", 0) or 0)
+        rewards = float(arm.get("rewards", 0.0) or 0.0)
+        n_eff = pn + n_real
+        mean = (pm * pn + rewards) / n_eff if n_eff else 0.0
+        return mean, n_eff, n_real
+
     def best_formulas(self, top: int = 3) -> list:
-        """Return the top-performing arm formulas (pillar/style pairs)."""
+        """Return the top-performing arm formulas (pillar/style pairs).
+
+        Mean includes the prior once; n = effective evidence, n_real =
+        actual outcome observations — so a "top formula" backed only by seed
+        priors is visibly distinguishable from one proven by real metrics.
+        """
         scored = []
         for key, arm in self.data["arms"].items():
-            if arm["n"] == 0:
+            mean, n_eff, n_real = self._eff_stats(arm)
+            if n_eff <= 0:
                 continue
-            scored.append((arm["rewards"] / arm["n"], key, arm["n"]))
+            scored.append((mean, key, n_eff, n_real))
         scored.sort(reverse=True)
         out = []
-        for mean, key, n in scored[:top]:
+        seen_pairs = set()
+        for mean, key, n_eff, n_real in scored:
             pillar, style, _day_part = key.split("::")
-            out.append({"pillar": pillar, "hook_style": style, "mean": round(mean, 3), "n": n})
+            # same (pillar, style) pair 3 day-parts mein repeat hota hai —
+            # sirf best wala dikhao, duplicate entries nahi
+            if (pillar, style) in seen_pairs:
+                continue
+            seen_pairs.add((pillar, style))
+            out.append({"pillar": pillar, "hook_style": style,
+                        "mean": round(mean, 3), "n": n_eff, "n_real": n_real})
+            if len(out) >= top:
+                break
         return out
 
     def summary(self) -> dict:

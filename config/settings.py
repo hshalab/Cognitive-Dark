@@ -373,6 +373,25 @@ LEARNING = {
     "penalty_failure": -2.0,  # upload/API failure
     "penalty_low_retention": -1.0,
     "bonus_viral": 3.0,       # reward for strong output
-    "bonus_consistent": 1.0,
+    # V3.4 HONESTY: 0.0 — publish karna performance NAHI hai. Pehle har
+    # successful upload +1.0 reward deta tha, jis se bandit ko lagta tha ke
+    # har formula kaam kar raha hai (chahe views 0 hon) aur weak content
+    # repeat hota rehta tha. Ab reward SIRF real metrics se aata hai
+    # (scripts/fetch_metrics.py → credit_video).
+    "bonus_consistent": 0.0,
     "per_platform": True,     # track arm performance per platform
+}
+
+# ─────────────────────────────────────────────────────────────
+# Independent Release Gate (V3.5) — reality-check layer
+# Har department ka apna independent guard; supervisor aakhri judge.
+# Video tabhi upload hoti hai jab SAB guards pass karein.
+#   strict (default) = koi fail/unknown → HELD (upload nahi)
+#   warn             = report banti hai, block nahi (emergency)
+#   off              = gate skip
+# ─────────────────────────────────────────────────────────────
+GATE = {
+    "mode": os.environ.get("GATE_MODE", "strict"),
+    "max_repairs": int(os.environ.get("GATE_MAX_REPAIRS", "2")),
+    "report_dir": DATA_DIR,
 }

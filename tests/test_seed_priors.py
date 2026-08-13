@@ -21,20 +21,39 @@ def test_seed_creates_expected_arms(ml: LearningSystem):
 
 
 def test_seed_sets_mean_consistent(ml: LearningSystem):
+    # V3.4: priors ab sirf prior_n/prior_mean mein rehte hain — n/rewards
+    # sirf REAL outcomes rakhte hain (pehle prior n mein merge ho kar DOUBLE
+    # count hota tha aur real data ka weight aadha reh jata tha).
     ml.apply_seed_priors()
     arm = ml.data["arms"]["coercive_control::warning::morning"]
     mean, n = SEED_PRIORS[("coercive_control", "warning")]
-    assert arm["n"] == n
-    assert arm["rewards"] == pytest.approx(mean * n)
+    assert arm["prior_n"] == n
+    assert arm["prior_mean"] == pytest.approx(mean)
+    assert arm["n"] == 0           # koi real outcome abhi nahi
+    assert arm["rewards"] == 0.0
     assert arm["seeded"] is True
 
 
 def test_seed_is_idempotent(ml: LearningSystem):
     r1 = ml.apply_seed_priors()
     assert r1["arms_seeded"] > 0
-    # Second run: every arm's n already equals its prior_n, so nothing new seeded.
+    # Second run: har arm par prior_n pehle se set hai → kuch naya seed nahi.
     r2 = ml.apply_seed_priors()
     assert r2["arms_seeded"] == 0
+
+
+def test_posterior_counts_prior_once(ml: LearningSystem):
+    """V3.4 ka core fix: prior ek hi baar count hota hai. 1 real outcome ke
+    baad posterior mean = (prior_n*mean + 1*reward)/(prior_n + 1) — prior ko
+    double weight NAHI milna chahiye."""
+    from bandit import posterior_from_arm
+    ml.apply_seed_priors()
+    key = "coercive_control::warning::morning"
+    mean, n = SEED_PRIORS[("coercive_control", "warning")]
+    ml.record_outcome(key, 5.0)  # ek REAL outcome
+    post = posterior_from_arm(ml.data["arms"][key])
+    assert post.effective_n == n + 1
+    assert post.mean == pytest.approx((mean * n + 5.0) / (n + 1))
 
 
 def test_seed_never_overwrites_real_evidence(ml: LearningSystem):

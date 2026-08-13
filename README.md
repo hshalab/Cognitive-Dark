@@ -4,6 +4,44 @@
 the bandit to production-grade Bayesian online learning that also learns from real
 top-channel competitor patterns (not just your own videos).
 
+## 🆕 V3.5 — Independent Release Gate (2026-08-13) — "har cheez ka apna guard + supervisor"
+
+Full architecture: [`GATE_ARCHITECTURE.md`](GATE_ARCHITECTURE.md). Summary:
+
+- **IndependentObserver** — system ke scores par rely nahi karta; RAW artifacts
+  measure karta hai (ffprobe, WAV analysis, real ML outcomes)
+- **8 independent guards** (`src/guards/`) — script, hook, voice, caption,
+  video, seo (YT/FB/IG 2026 rules), ctr, views (real performance)
+- **Producer self-scores guards tak pahunch hi nahi sakte** — gate unhein
+  strip kar deta hai; guards sirf asal cheez dekhte hain
+- **USASupervisor** — aakhri judge: independence audit + USA-audience
+  calibration (English, no Urdu tokens, no British spelling, $, ET publish
+  window) + cross-platform distinctness. Fail-CLOSED — "pata nahi" kabhi
+  pass nahi hota
+- **Video tabhi upload hoti hai jab SAB guards pass karein** — warna repair
+  loop naya script banata hai (GATE_MAX_REPAIRS=2), phir HELD
+- `GATE_MODE`: strict (default) | warn | off
+- Har run ke baad `data/gate_report.md` + `.json` (CI commit = audit trail);
+  standalone re-judge: `python scripts/run_gate.py`
+- Gate ne 3 real bugs bhi pakre: Urdu CTA templates (English kar diye),
+  hook-override ke baad scene-1 purana hook (clickbait gap — sync fix),
+  currency regex false-positive
+- 173 tests (27 naye guard tests), Ruff clean
+
+## 🆕 V3.4 — Honest Scoring (2026-08-13) — "system ab jhoot nahi bolta"
+## 🆕 V3.4 — Honest Scoring (2026-08-13) — "system ab jhoot nahi bolta"
+
+Full details: [`HONEST_SCORING_FIX.md`](HONEST_SCORING_FIX.md). Summary:
+
+- **Scorers ab weak content ko weak keh sakte hain** — hook/CTR/title/script scorers ke inflated bases (0.5-0.55) hata diye; weak hook ab FAIL hota hai, weak title ab "D — rewrite" grade pa sakta hai
+- **ML sirf REAL metrics se seekhta hai** — publish hone par self-reward (`bonus_consistent`) band; `fetch_metrics.py` ke real views/retention hi arm ka fate decide karte hain. Legacy store ke fake "published" rewards one-time purge ho jate hain
+- **Seed priors ab double-count nahi hote** — pehle prior 2x weight ke saath arm mein merge tha (real data aadha asar karta tha) aur seeded arms kabhi "cold" nahi dikhte thay (exploration kabhi fire nahi hoti thi)
+- **Recency penalty + pillar weights ab ASAL selection par asar karti hain** (pehle argmax ke BAAD lagti thin — silent no-op)
+- **Reward gate ab honest hai** — missing retention = "unknown" (pehle "passed" bolta tha); missing voice data = neutral 0.5 (pehle free perfect 1.0)
+- **Virality index bina real performance ke kabhi "viral-ready" nahi kehta**
+- **Video fixes** — CTA end-card ka text ab actually dikhta hai (pehle canvas ke bahar draw hota tha = khali dark box); thumbnails ab cover-crop hote hain (pehle landscape frames 9:16 mein squish ho jate thay); titles ab "Hook | Keyword" stuffing aur toote grammar ke baghair
+- 143 tests (naya `tests/test_honesty.py` in sab ko lock karta hai), Ruff clean
+
 ## 🆕 V3 — Mature ML (2026-08-08)
 
 - **Bayesian Thompson sampling** (`src/bandit.py`) — posterior per arm, explore/exploit

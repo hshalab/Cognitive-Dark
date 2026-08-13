@@ -32,36 +32,35 @@ def arm_posteriors(ml: LearningSystem) -> dict[str, ArmPosterior]:
 
 def maturity(ml: LearningSystem) -> dict:
     posts = arm_posteriors(ml)
-    # "Real" = arms whose n EXCEEDS their seeded prior pseudo-observations.
-    # Seeded priors count as soft starting evidence, not as learning.
+    # V3.4 schema: arm.n = REAL observations only; prior_n = seed belief.
+    # (Legacy stores jo priors ko n mein merge karke rakhte thay, unhein
+    # ml_engine._ensure_schema migrate kar deta hai.)
     real = 0
     n_obs = 0
     n_seed = 0
     for a in ml.data["arms"].values():
-        pn = int(a.get("prior_n", 0))
-        n = int(a.get("n", 0))
+        pn = int(a.get("prior_n", 0) or 0)
+        n = int(a.get("n", 0) or 0)
         n_obs += n
         n_seed += pn
-        if n > pn:
+        if n > 0:
             real += 1
     total = len(posts) or 1
-    # Real observations = outcomes actually collected (beyond priors)
-    real_obs = max(0, n_obs - n_seed)
+    real_obs = n_obs  # ab n hi real hai — koi subtraction nahi
 
     # Posterior uncertainty only over arms with real data
     obs_posts = [p for k, p in posts.items()
-                 if int(ml.data["arms"][k].get("n", 0)) >
-                 int(ml.data["arms"][k].get("prior_n", 0))]
+                 if int(ml.data["arms"][k].get("n", 0) or 0) > 0]
     avg_std = sum(p.std for p in obs_posts) / len(obs_posts) if obs_posts else 1.0
     confidence = round(max(0.0, min(1.0, 1.0 - avg_std / 1.5)), 3)
 
     cold = sum(1 for a in ml.data["arms"].values()
-               if int(a.get("n", 0)) <= int(a.get("prior_n", 0)))
+               if int(a.get("n", 0) or 0) == 0)
     return {
         "total_arms": total,
         "arms_with_real_data": real,
         "arms_coverage_pct": round(100 * real / total, 1),
-        "total_observations": n_obs,
+        "total_observations": real_obs,
         "real_observations": real_obs,
         "seeded_observations": n_seed,
         "avg_posterior_std": round(avg_std, 3),

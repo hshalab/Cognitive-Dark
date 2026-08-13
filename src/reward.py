@@ -40,7 +40,21 @@ class VideoMetrics:
     avg_view_seconds: float | None = None
     completion: float | None = None
     ctr: float | None = None
-    voice_rating: float = 1.0  # 0..1, TTS quality / no static / correct speed
+    # V3.6: retention_estimated=True matlab retention GUESS hai (like-ratio
+    # se banaya hua), measurement nahi. Estimated retention ko reward mein
+    # half weight milta hai, viral bonus NAHI milta, aur quality gate usay
+    # "unknown" batata hai — fabricated data bandit ko dhoka nahi de sakta.
+    retention_estimated: bool = False
+    # V3.4: None = "koi evidence nahi" (neutral 0.5). Pehle default 1.0 tha —
+    # matlab har video ko FREE mein perfect TTS score milta tha, bina kisi
+    # measurement ke. Ye 7% weight hamesha 100% score karta tha = jhoot.
+    voice_rating: float | None = None
+
+    def effective_voice_rating(self) -> float:
+        """0..1 — None (koi data nahi) neutral 0.5 deta hai, 1.0 nahi."""
+        if self.voice_rating is None:
+            return 0.5
+        return max(0.0, min(1.0, self.voice_rating))
 
     def effective_retention(self) -> float:
         """Return 0..1 retention estimate from whichever data we have."""
@@ -80,10 +94,15 @@ def compute_reward(m: VideoMetrics) -> tuple[float, dict]:
 
     # CTR score (Target 8-12% CTR for viral tier)
     ctr_score = _clamp01((m.ctr or 0.0) / 0.10)
-    quality_score = _clamp01(m.voice_rating)
+    quality_score = _clamp01(m.effective_voice_rating())
 
-    # Retention score: 60-70%+ is the gold standard benchmark
+    # Retention score: 60-70%+ is the gold standard benchmark.
+    # V3.6: agar retention GUESS hai (retention_estimated), to contribution
+    # aadhi karo aur 0.5 par cap karo — estimate kabhi "gold retention" ka
+    # credit nahi le sakta. Measured retention ka pura weight rehta hai.
     retention_score = _clamp01(retention / 0.60)
+    if m.retention_estimated:
+        retention_score = min(0.5, retention_score * 0.5)
 
     raw = (WEIGHTS["retention"] * retention_score +
            WEIGHTS["completion"] * completion +
@@ -94,23 +113,42 @@ def compute_reward(m: VideoMetrics) -> tuple[float, dict]:
 
     reward = raw * 3.0
 
-    # Viral bonus for breakout retention
-    if retention >= 0.55 and m.views >= 1000:
-        reward += 1.0
-    if retention >= 0.70:
-        reward += 0.5  # Extra bonus for hitting elite 70%+ retention
+    # Viral bonus for breakout retention — sirf MEASURED retention ke liye.
+    # V3.6: estimate ke liye viral bonus band (guess "viral" nahi bana sakta).
+    if not m.retention_estimated:
+        if retention >= 0.55 and m.views >= 1000:
+            reward += 1.0
+        if retention >= 0.70:
+            reward += 0.5  # Extra bonus for hitting elite 70%+ retention
 
     reward = round(max(0.0, min(5.0, reward)), 3)
 
+    # V3.4 HONEST GATE: pehle `retention >= 0.70 or retention == 0.0` tha —
+    # matlab jab koi retention DATA hi nahi tha (0.0) to gate "PASS" keh deta
+    # tha. No-data video ko "quality passed" batana system ka khud ko dhoka
+    # dena tha. Ab data na ho to gate pass NAHI hota — explicitly UNKNOWN.
+    # V3.6: ESTIMATED retention bhi "measured" nahi maani jaati —
+    # quality gate usay bhi UNKNOWN kehta hai.
+    has_retention_data = (m.retention is not None
+                          or (m.avg_view_seconds or 0) > 0
+                          or (m.watch_time_seconds or 0) > 0)
+    retention_measured = has_retention_data and not m.retention_estimated
+    has_views = m.views > 0
+    data_complete = has_views and retention_measured
     breakdown = {
         "retention": round(retention, 3),
+        "retention_measured": bool(retention_measured),
+        "retention_estimated": bool(m.retention_estimated),
         "completion": round(completion, 3),
         "engagement_rate": round(eng_rate, 4),
         "view_score": round(view_score, 3),
         "ctr": round(m.ctr or 0.0, 4),
-        "voice_rating": round(m.voice_rating, 2),
+        "voice_rating": round(m.effective_voice_rating(), 2),
         "reward": reward,
-        "quality_gate_passed": retention >= 0.70 or retention == 0.0,
+        "quality_gate_passed": bool(retention_measured and retention >= 0.70),
+        "quality_gate_status": ("passed" if (retention_measured and retention >= 0.70)
+                                else ("unknown" if not data_complete else "failed")),
+        "data_complete": bool(data_complete),
     }
     return reward, breakdown
 

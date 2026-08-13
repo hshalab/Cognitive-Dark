@@ -59,7 +59,8 @@ from config.settings import PILLARS
 
 STATS = {
     "youtube": {"scanned": 0, "fixed_public": 0, "seo_boosted": 0, "playlist_add": 0,
-                "thumbnail_updated": 0, "total_views_before": 0, "total_views_after": 0},
+                "thumbnail_updated": 0, "not_shorts_ready": 0,
+                "total_views_before": 0, "total_views_after": 0},
     "facebook": {"scanned": 0, "fixed_public": 0, "caption_updated": 0, "hashtag_fixed": 0,
                  "total_views_before": 0, "total_views_after": 0},
     "instagram": {"scanned": 0, "account_fixed": 0, "caption_updated": 0, "hashtag_fixed": 0},
@@ -396,7 +397,12 @@ def yt_audit_and_repair(yt, apply=False, fix_public_only=False):
         tags = sn.get("tags", [])
 
         issues = yt_is_shorts_ready(v)
-        is_shorts_ready = len([i for i in issues if "privacy" not in i and "madeForKids" not in i]) == 0
+        # shorts-readiness issues (non-privacy/madeForKids) → counter mein
+        # jama karo taake summary bata sake kitne videos Shorts-feed ke liye
+        # ready NAHI hain (pehle ye variable calculate ho kar phenk diya
+        # jata tha — dead code).
+        if any("privacy" not in i and "madeForKids" not in i for i in issues):
+            STATS["youtube"]["not_shorts_ready"] += 1
         actions = []
 
         # ── 1. Fix privacy (private/scheduled→public) ──
@@ -490,9 +496,10 @@ def yt_audit_and_repair(yt, apply=False, fix_public_only=False):
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"YOUTUBE SUMMARY:")
+    print("YOUTUBE SUMMARY:")
     print(f"  Total videos    : {STATS['youtube']['scanned']}")
     print(f"  Total views     : {total_views_before}")
+    print(f"  Not Shorts-ready: {STATS['youtube']['not_shorts_ready']}")
     print(f"  Fixed → public  : {STATS['youtube']['fixed_public']}")
     print(f"  SEO boosted     : {STATS['youtube']['seo_boosted']}")
     print(f"  Playlist added  : {STATS['youtube']['playlist_add']}")
@@ -556,10 +563,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 params["access_token"] = tok
                 next_url = next_url  # keep the full URL but add token
                 # Actually just use the next_url with token appended
-                if "access_token" not in next_url:
-                    next_url = f"{next_url}&access_token={tok}"
-                else:
-                    next_url = next_url
+                next_url = f"{next_url}&access_token={tok}" if "access_token" not in next_url else next_url
                 # Simpler: just use next_url as-is with token in it
                 next_url = next_url
             else:
@@ -621,7 +625,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             privacy = data.get("privacy", {})
             privacy_val = privacy.get("value", "unknown") if isinstance(privacy, dict) else str(privacy)
             caption = data.get("caption", "") or data.get("description", "") or ""
-            desc = data.get("description", "") or ""
+            data.get("description", "") or ""
             views = data.get("insights", {}).get("data", [])
             view_count = 0
             for insight in views:
@@ -699,7 +703,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             logger.debug("FB video %s error: %s", vid, exc)
 
     print(f"\n{'='*60}")
-    print(f"FACEBOOK SUMMARY:")
+    print("FACEBOOK SUMMARY:")
     print(f"  Scanned         : {STATS['facebook']['scanned']}")
     print(f"  Total views     : {STATS['facebook']['total_views_before']}")
     print(f"  Captions fixed  : {STATS['facebook']['caption_updated']}")
@@ -763,7 +767,7 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
 
     print(f"\n{'='*78}\n📸 INSTAGRAM: Account {ig_id} scan kar raha hoon\n{'='*78}")
 
-    ok, account_data = ig_check_account(tok, ig_id)
+    ok, _account_data = ig_check_account(tok, ig_id)
     if not ok:
         print("⚠️ IG account properly configure nahi hai — fix karein phir try karein.")
         return
@@ -773,12 +777,6 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
     # Get recent media (Reels)
     media_ids = []
     next_url = f"https://graph.facebook.com/v25.0/{ig_id}/media"
-    params = {"access_token": tok,
-              "fields": "id,caption,media_type,permalink,thumbnail_url,"
-                        "timestamp,like_count,comments_count,plays,shares,"
-                        "saved_count,insights",
-              "limit": 50,
-              "filter": "reels"}
 
     while next_url:
         try:
@@ -888,7 +886,7 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
             logger.debug("IG reel %s error: %s", mid, exc)
 
     print(f"\n{'='*60}")
-    print(f"INSTAGRAM SUMMARY:")
+    print("INSTAGRAM SUMMARY:")
     print(f"  Scanned         : {STATS['instagram']['scanned']}")
     print(f"  Captions fixed  : {STATS['instagram']['caption_updated']}")
     print(f"{'='*60}\n")
@@ -923,7 +921,7 @@ def main():
         mode = "AUDIT-ONLY"
 
     print(f"\n{'#'*78}")
-    print(f"# Coercion Files — 2026 Algorithm Video Repair")
+    print("# Coercion Files — 2026 Algorithm Video Repair")
     print(f"# Mode: {mode} | Time: {datetime.now(timezone.utc).isoformat()}")
     print(f"{'#'*78}\n")
 
@@ -950,6 +948,7 @@ def main():
     print(f"""
 📺 YOUTUBE:
    Videos scanned  : {STATS['youtube']['scanned']}
+   Not Shorts-ready: {STATS['youtube']['not_shorts_ready']}
    → Public kiye   : {STATS['youtube']['fixed_public']}
    SEO boosted     : {STATS['youtube']['seo_boosted']}
    Playlist add    : {STATS['youtube']['playlist_add']}

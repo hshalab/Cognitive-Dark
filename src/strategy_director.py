@@ -110,14 +110,21 @@ class StrategyDirector:
 
     # ── pillar performance → weights ──
     def _pillar_scores(self) -> dict:
+        """V3.4: sirf REAL outcomes se pillar score banta hai (n_real ≥ 2).
+        Pehle seeded priors ko hi "experience" maan kar pillars ko weight
+        de diye jaate thay — director bhi jhooti tareef par decisions leta
+        tha. Ab effective mean = (prior*prior_n + real_sum) / (prior_n + n)
+        aur tabhi count hota hai jab kam az kam 2 REAL outcomes hon."""
         if not self.ml:
             return {}
         scores = {}
         for key, arm in self.ml.data.get("arms", {}).items():
-            if arm.get("n", 0) < 3:
+            n_real = int(arm.get("n", 0) or 0)
+            if n_real < 2:
                 continue
+            mean, _n_eff, _n = self.ml._eff_stats(arm)
             pillar = key.split("::", 1)[0]
-            scores.setdefault(pillar, []).append(arm["rewards"] / max(1, arm["n"]))
+            scores.setdefault(pillar, []).append(mean)
         out = {}
         for pillar, means in scores.items():
             out[pillar] = round(sum(means) / len(means), 3)

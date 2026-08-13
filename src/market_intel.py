@@ -316,6 +316,7 @@ def analyze(videos: list[dict] | None = None) -> dict:
         if not videos:
             return {
                 "source": "curated_patterns",
+                "curated": True,          # V3.6: ye BELIEF hai, evidence nahi
                 "video_count": 0,
                 "pair_means": [
                     {"pillar": p, "hook": h, "mean": m, "n": 4}
@@ -331,6 +332,7 @@ def analyze(videos: list[dict] | None = None) -> dict:
         # Caller passed an explicit empty list — use curated fallback.
         return {
             "source": "curated_patterns",
+            "curated": True,          # V3.6: ye BELIEF hai, evidence nahi
             "video_count": 0,
             "pair_means": [
                 {"pillar": p, "hook": h, "mean": m, "n": 4}

@@ -19,10 +19,11 @@ from config.settings import PILLARS
 
 logger = logging.getLogger("seo")
 
+# V3.4: all-caps spam fragments ("BUG", "TRAP", "FLAG") hata diye — ye titles
+# ko bot-like bana dete hain aur CTR girate hain. Sirf natural power words.
 POWER_WORDS = ["Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
-               "Deadly", "Silently", "Brutal", "Finally", "Nobody Tells You",
-               "They Don't Want You to Know", "Revealed", "Stop", "Master",
-               "BUG", "TRAP", "FLAG", "EXPOSED", "PROOF", "WARNING"]
+               "Deadly", "Brutal", "Finally", "Revealed", "Stop", "Warning",
+               "Truth", "Nobody Tells You", "They Don't Want You to Know"]
 
 PLATFORM_HASHTAGS = {
     "youtube": ["#psychology", "#truecrime", "#mindcontrol"],
@@ -76,14 +77,16 @@ def _title_case_word(w: str, first: bool, stop: set) -> str:
 
 
 def _power_title(hook: str, max_len: int = 70) -> str:
-    """USA-style title: hook-first, Title Case, keyword density, ≤ max_len."""
+    """USA-style title: hook-first, Title Case, keyword density, ≤ max_len.
+
+    V3.4: random power-word append ("...: Truth") hata diya — wo double-colon
+    titles banata tha ("Hook: Truth: Keyword") jo bot-pattern lagte hain aur
+    CTR gira dete hain. Titles ab saaf rehte hain; weak titles ko honest CTR
+    scorer pehchaan kar grammatical variants se fix karta hai.
+    """
     t = hook.strip()
     # strip trailing punctuation for cleaner titles
     t = t.rstrip("?!.").strip()
-    if len(t.split()) <= 4 and random.random() < 0.5:
-        t = f"{t}: {random.choice(POWER_WORDS)}"
-    # V2.1 FIX: rebuild words AFTER the power-word append (V2 used the stale
-    # pre-append list, so the power word silently never appeared).
     words = t.split()
     stop = {"a", "an", "the", "and", "or", "but", "of", "to", "in", "on", "for",
             "with", "at", "by", "is", "are", "you", "your", "it", "its"}
@@ -97,7 +100,6 @@ def _title(script: dict, platform: str) -> str:
     if platform == "youtube":
         # V2.1.5: SEARCH-INTENT titles. On dormant/legacy channels the feed
         # test-batch is weak, but SEARCH views don't depend on channel history.
-        # Always pair the hook with the pillar's top searched query.
         kw = "psychology facts"
         for p in PILLARS:
             if p["key"] == script.get("pillar"):
@@ -105,11 +107,16 @@ def _title(script: dict, platform: str) -> str:
                 break
         t = _power_title(hook, 58)
         candidates.append(t[:100])
-        if kw.lower() not in t.lower():
-            candidates.append(f"{t} | {kw.title()}"[:100])
+        # V3.4: keyword NATURAL tareeqe se merge hota hai — "Hook: Keyword"
+        # (colon, ek hi jagah, natural). Pehle "| Psychology Facts" pipe-append
+        # hota tha jo YouTube 2026 mein keyword-stuffing / bot-pattern lagta
+        # hai aur CTR ko nuqsan deta hai.
+        kw_in_hook = kw.lower() in hook.lower()
+        if not kw_in_hook and len(t) + len(kw) + 2 <= 95:
+            candidates.append(f"{t}: {kw.title()}"[:100])
         # 2-3 variants for the viral scorer to choose between
-        candidates.append(_power_title(f"{hook}: {kw}", 58)[:100])
-        candidates.append(f"{t}: {random.choice(POWER_WORDS)}"[:100])
+        if not kw_in_hook:
+            candidates.append(_power_title(f"{hook}: {kw}", 58)[:100])
     elif platform == "facebook":
         return hook[:58]  # FB feed shows ~58 chars fully
     elif platform == "instagram":
@@ -120,13 +127,6 @@ def _title(script: dict, platform: str) -> str:
         chosen = pick_title_variant(hook, [c for c in candidates if c])
     except Exception:
         chosen = (candidates[0] if candidates else _power_title(hook, 70))[:100]
-    # V3.3: SEARCH-KEYWORD GUARANTEE — YouTube title mein keyword hamesha hona
-    # chahiye (search views feed test-batch se independent hain). Variant picker
-    # kabhi-kabhi keyword wala variant chhod deta hai — append karke fix.
-    if platform == "youtube":
-        kw_lower = kw.lower()
-        if kw_lower not in chosen.lower():
-            chosen = f"{chosen[:80]} | {kw.title()}"[:100]
     return chosen
 
 
@@ -254,30 +254,27 @@ def build_platform_package(script: dict, platform: str,
     if platform == "youtube":
         # YouTube: SEO keyword title (longer, search-intent) + CTR optimization
         title = _title(script, platform)
-        # Apply CTR boost but ensure keyword + length strategy is preserved
+        # V3.4: CTR boost sirf tab jab score GENUINELY weak ho (<0.55 honest
+        # scale — pehle 0.70 ka threshold tha jo har normal title ko trigger
+        # karta tha aur random rewrites titles ko kharaab kar dete thay).
         try:
             from ctr_optimizer import describe_ctr_grade, pick_best_title, score_title_ctr, suggest_ctr_improved_title
             _ctr_score = score_title_ctr(title, "youtube")
-            if _ctr_score.score < 0.70:
+            if _ctr_score.score < 0.55:
                 _variants = suggest_ctr_improved_title(
                     script.get("hook", script.get("title", "")),
                     "youtube",
                     pillar_keywords=[p["key"] for p in PILLARS]
                 )
                 if _variants:
-                    # Pick best CTR variant, then ensure keyword is appended
+                    # sab variants + original score karo — sirf tab replace
+                    # karo jab koi variant sach mein behtar ho
                     ctr_title = pick_best_title(script.get("hook", ""), _variants, "youtube")
-                    # YouTube strategy: keyword MUST be in title for search + suggested
-                    kw = "psychology facts"
-                    for p in PILLARS:
-                        if p["key"] == script.get("pillar"):
-                            kw = p["search_terms"][0]
-                            break
-                    if kw.lower() not in ctr_title.lower():
-                        ctr_title = f"{ctr_title[:70]} | {kw.title()}"[:100]
-                    title = ctr_title
-                    logger.info("CTR boost: %s (%s)",
-                                title[:55], describe_ctr_grade(score_title_ctr(title, "youtube").score))
+                    if score_title_ctr(ctr_title, "youtube").score > _ctr_score.score:
+                        title = ctr_title
+                        logger.info("CTR boost: %s (%s)",
+                                    title[:55], describe_ctr_grade(
+                                        score_title_ctr(title, "youtube").score))
         except Exception:
             pass
     else:

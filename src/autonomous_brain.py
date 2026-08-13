@@ -34,8 +34,11 @@ class AutonomousBrain:
         2. Pick a topic from the winning pillar's bank (novelty-checked).
         """
         strategy = self.ls.choose_strategy()
-        logger.info("🧠 Brain Strategy: %s (UCB: %s)",
-                    strategy["arm_key"], strategy["ucb_score"])
+        # V3.4: choose_strategy() kabhi "ucb_score" return nahi karta tha
+        # (V1 ka purana key) → WAR_MODE par ye line KeyError se crash ho
+        # jati thi. Ab "score" use hota hai jo wapis aata hai.
+        logger.info("🧠 Brain Strategy: %s (score: %s)",
+                    strategy["arm_key"], strategy.get("score", "?"))
 
         winning_pillar = strategy["pillar"]
         topic = self._get_smart_topic(winning_pillar, exclude_titles)

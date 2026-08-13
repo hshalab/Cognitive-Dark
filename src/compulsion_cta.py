@@ -29,60 +29,61 @@ import random
 
 logger = logging.getLogger("cta")
 
-# ── CTA templates per principle ─────────────────────────────
+# ── CTA templates per principle (V3.5: ENGLISH — USA audience ke liye.
+# Pehle Roman Urdu mein thay — English TTS Urdu bolta tha aur supervisor
+# inhein USA-calibration fail karta tha. Psychology principles same hain.)
 CTA_BANK = {
     "reciprocity": [
-        "Is case file ko decode karne mein 9 ghante lage. Agar isne aapko "
-        "kuch sikhaya, ek like toh banta hai.",
-        "Is pattern ko research karne mein hafte lage. Like karo — yeh meri "
-        "mehnat ko worth-it banata hai, aur main aise aur cases laata hoon.",
-        "Agar is video ne aapka kuch bacha ya sikhlaya — ek like. Baqi "
-        "meri taraf se.",
+        "This case file took nine hours to decode. If it taught you "
+        "something, one like is earned.",
+        "This pattern took weeks to research. A like makes the work worth "
+        "it — and I keep bringing real cases like this.",
+        "If this video saved or taught you anything — one like. The rest "
+        "is on me.",
     ],
     "algorithm": [
-        "Hit like — warna algorithm isay kisi aur ko nahi dikhayega jo "
-        "isay bachne ke liye zaroorat rakhta hai.",
-        "Like karo. Har like is video ko us insaan tak pahunchata hai jo "
-        "is pattern se abhi kabhi nikla hi nahi.",
-        "Ek like = ek insaan protected. Ye algorithm ko batata hai ke ye "
-        "matter karta hai.",
+        "Hit like — otherwise the algorithm won't show this to someone "
+        "who needs to see it before it's too late.",
+        "Like this. Every like pushes this video to someone who still "
+        "hasn't escaped this pattern.",
+        "One like equals one person protected. It tells the algorithm "
+        "this matters.",
     ],
     "identity": [
-        "Agar aap woh insaan hain jo apni aankhein kholta hai — like karo. "
-        "Hum pehchan lete hain ek doosre ko.",
-        "Like karo agar aap manipulator ko pehchanne wale logon mein se hain. "
-        "Ye woh group hai jo bachta hai.",
-        "Agar aap 'kabhi mat jhuko' wale hain — like. Yeh aapke log hain.",
+        "If you're the kind of person who keeps their eyes open — hit "
+        "like. We recognize each other.",
+        "Like if you're one of the people who spots manipulators early. "
+        "This is the group that stays safe.",
+        "If you're the 'never fold' type — like. These are your people.",
     ],
     "cliffhanger": [
-        "Is trick ka part 2 agle hafte — agar ye video 10,000 likes cross "
-        "kare. Like karo isay wahan pahunchane ke liye.",
-        "Aage ka case — jo isse bhi zyada dark hai — tab aayega jab ye "
-        "5,000 likes tak pahunche. Like karo.",
+        "Part 2 of this trick drops next week — if this video crosses "
+        "10,000 likes. Like it to get it there.",
+        "The next case — even darker than this one — comes when this "
+        "hits 5,000 likes. You know what to do.",
     ],
     "challenge": [
-        "Comment karo: agar aap is position mein hote to kya karte? Main "
-        "har comment padhta hoon.",
-        "Ab batao — in 3 signs mein se kaunsa aapne khud dekha hai? "
-        "Comment karo, hum count karte hain.",
-        "Comment 'SAFE' agar aap yeh kisi ko bhej rahe ho. Like bhi karo "
-        "taake ye reach kare.",
+        "Comment: what would you do in this position? I read every "
+        "single comment.",
+        "Now tell me — which of these 3 signs have you seen yourself? "
+        "Comment below, we're counting.",
+        "Comment 'SAFE' if you're sending this to someone. And like so "
+        "it actually reaches them.",
     ],
     "validation": [
-        "Like karo agar aapko pehle se pata tha ke ye pattern chalta hai. "
-        "Experts hi isay pehchante hain.",
-        "Agar aapne yeh pehle feel kiya tha — like. Aapki instincts theek "
-        "thin.",
+        "Like if you already knew this pattern was real. Experts spot it "
+        "early.",
+        "If you've felt this before — like. Your instincts were right.",
     ],
     "save_value": [
-        "Isay save karo — ye checklist agle saal kaam aayegi jab kabhi "
-        "koi isay try kare.",
-        "Save karo. Jab tak aap isay dobara dekho, ye pattern aapke "
-        "khilaf kaam kar raha hai. Abhi protect karo.",
+        "Save this — the checklist will protect you next year when "
+        "someone tries this on you.",
+        "Save it. By the time you watch this again, the pattern may "
+        "already be working against you. Protect yourself now.",
     ],
     "loop_end": [
-        "Aur yeh pattern abhi bhi chalta hai... isi waqt. (Loop-able end — "
-        "rewatch = signal)",
+        "And this pattern is still running... right now. (Loop-able "
+        "ending — rewatch is the signal)",
     ],
 }
 

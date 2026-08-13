@@ -228,29 +228,36 @@ def _hook_overlay_usa(hook: str) -> Image.Image:
 
     # ── CTA END CARD (retention driver) ────────────────────────────
 def _add_cta_end_card(layers: list, duration: float, emotion: str = "dark") -> None:
-    """Add a subscribe/follow CTA end-card on the last 1.5s of the final scene.
+    """Add a follow CTA end-card on the last 1.5s of the final scene.
 
     Drives the follow/subscribe action before the loop starts — critical for
     Shorts/Reels algorithm (follows = distribution signal).
+
+    V3.4 FIX: text y-coordinate 1780 par draw ho raha tha jabke overlay
+    canvas sirf 180px lamba hai → text canvas ke BAHAR tha aur har video ke
+    end par sirf ek khali dark box dikhta tha. Ab text overlay ke andar
+    (local coordinates) draw hota hai, aur "Follow" wording hai kyunki
+    YouTube Shorts + FB Reels + IG Reels sab par follow/subscribe dono
+    kaam karte hain — sirf "Subscribe" FB/IG par ghalat lagta tha.
     """
     from moviepy.editor import ImageClip
 
-    cta_text = "Subscribe for daily psychology shorts"
+    cta_text = "Follow for daily psychology shorts"
     font_size = 56
     font = _load_font(font_size)
 
     panel_h = 100
-    panel_y = HEIGHT - panel_h - 40
     overlay = Image.new("RGBA", (WIDTH, panel_h + 80), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
+    # local coordinates inside the overlay canvas (0..panel_h+80)
     draw.rounded_rectangle(
-        [40, 40, WIDTH - 40, panel_h + 80],
+        [40, 40, WIDTH - 40, panel_h + 40],
         radius=16,
         fill=(0, 0, 0, 180),
     )
     tw = draw.textlength(cta_text, font=font)
     draw.text(
-        ((WIDTH - tw) / 2, panel_y),
+        ((WIDTH - tw) / 2, 62),
         cta_text,
         font=font,
         fill=(255, 210, 60, 255),
@@ -260,7 +267,7 @@ def _add_cta_end_card(layers: list, duration: float, emotion: str = "dark") -> N
 
     arrow = "→"
     draw.text(
-        ((WIDTH + tw) / 2 + 10, panel_y),
+        ((WIDTH + tw) / 2 + 10, 62),
         arrow,
         font=font,
         fill=(255, 255, 255, 200),
@@ -563,15 +570,27 @@ def build_short(scene_visuals: list, audio_segments: list, scenes: list,
     return out_path
 
 
+def _cover_resize(img: Image.Image, width: int, height: int) -> Image.Image:
+    """Cover-crop to width x height (V3.4: pehle .resize() direct 1080x1920
+    karta tha — landscape frame 9:16 mein SQUISH ho kar bheenga thumbnail
+    ban jata tha, jo CTR gira deta hai. Ab center cover-crop)."""
+    sw, sh = img.size
+    scale = max(width / sw, height / sh)
+    nw, nh = int(sw * scale + 0.5), int(sh * scale + 0.5)
+    img = img.resize((nw, nh), Image.LANCZOS)
+    left, top = (nw - width) // 2, (nh - height) // 2
+    return img.crop((left, top, left + width, top + height))
+
+
 def generate_thumbnail(first_visual: str, hook: str = "") -> str:
     if first_visual.lower().endswith((".mp4", ".mov", ".avi")):
         from moviepy.editor import VideoFileClip
         clip = VideoFileClip(first_visual)
         frame = clip.get_frame(0)
-        img = Image.fromarray(frame).convert("RGB").resize((WIDTH, HEIGHT))
+        img = _cover_resize(Image.fromarray(frame).convert("RGB"), WIDTH, HEIGHT)
         clip.close()
     else:
-        img = Image.open(first_visual).convert("RGB").resize((WIDTH, HEIGHT))
+        img = _cover_resize(Image.open(first_visual).convert("RGB"), WIDTH, HEIGHT)
 
     arr = np.asarray(img).astype(np.float32)
     arr *= 0.7

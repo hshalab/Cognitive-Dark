@@ -86,7 +86,14 @@ PLAYBOOK = {
 
 
 def audit_package(pkg: dict, platform: str) -> dict:
-    """Check a platform package against the playbook; return scorecard."""
+    """Check a platform package against the playbook; return scorecard.
+
+    V3.6: MANUAL items (reply/pin top comment) ab PASS nahi hote — wo
+    "manual" status lete hain aur score mein count NAHI hote. Pehle wo
+    hamesha True rehte thay → playbook score hamesha inflated rehta tha
+    chahe koi comment reply kiya ho ya nahi. Ab score sirf VERIFIABLE
+    checks se banta hai.
+    """
     spec = PLAYBOOK.get(platform)
     if not spec:
         return {"score": 0.0, "checks": [], "passed": 0, "total": 0}
@@ -98,9 +105,14 @@ def audit_package(pkg: dict, platform: str) -> dict:
     tags = pkg.get("tags") or []
     duration = pkg.get("duration_s")
 
-    def check(name, ok, note=""):
+    def check(name, ok, note="", manual: bool = False):
         nonlocal passed
-        checks.append({"signal": name, "ok": bool(ok), "note": note})
+        if manual:
+            checks.append({"signal": name, "ok": None, "status": "manual",
+                           "note": note})
+            return
+        checks.append({"signal": name, "ok": bool(ok), "status":
+                       "pass" if ok else "fail", "note": note})
         if ok:
             passed += 1
 
@@ -116,14 +128,18 @@ def audit_package(pkg: dict, platform: str) -> dict:
               any(k in desc[:300].lower() for k in ("psychology", "coercion", "cult",
                                                     "con", "mind", "brainwash", "scam")),
               "first 2 lines keyword-dense?")
-        check("reply_top_comment", True, "manual — pin top comment daily")
+        # manual: hum verify nahi kar sakte ke reply hua ya nahi —
+        # is liye PASS claim karna jhoot tha
+        check("reply_top_comment", None, "manual — pin top comment daily",
+              manual=True)
     if platform == "facebook":
         check("format_9x16_90s", duration is None or duration <= spec["duration_max_s"],
               f"{duration or '?'}s")
         check("cta_comments", any(c in desc.lower() for c in ("comment", "what would you",
                                                               "agree", "share")),
               "comment/share CTA present")
-        check("comments_first_hour", True, "manual — reply within 1h")
+        check("comments_first_hour", None, "manual — reply within 1h",
+              manual=True)
     if platform == "instagram":
         check("format_9x16_90s", duration is None or duration <= spec["duration_max_s"],
               f"{duration or '?'}s")
@@ -133,8 +149,10 @@ def audit_package(pkg: dict, platform: str) -> dict:
         check("cta_shares", any(c in desc.lower() for c in ("share", "send this", "tag")),
               "share/send CTA")
 
-    score = round(passed / max(1, total), 3)
-    return {"score": score, "checks": checks, "passed": passed, "total": total,
+    verifiable = sum(1 for c in checks if c.get("status") != "manual")
+    score = round(passed / max(1, verifiable), 3) if verifiable else 0.0
+    return {"score": score, "checks": checks, "passed": passed,
+            "total": total, "verifiable": verifiable,
             "platform": platform, "name": spec["name"]}
 
 
