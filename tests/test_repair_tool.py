@@ -17,6 +17,18 @@ from repair_all_videos import (
 )
 
 
+def test_cleanup_only_change_marks_changed():
+    """V3.6-repair-7 ka bug: jab sirf cleanup title badle (keyword pehle se
+    satisfied) to changed=False reh kar update SKIP ho jati thi — 2 live
+    videos is liye kabhi fix nahi hue. Ab cleanup ka change bhi count hota."""
+    from repair_all_videos import yt_boost_title
+    new, changed = yt_boost_title(
+        "Stop: Mkultra: the Cia's Mind-Control Program: Nobody Tells You",
+        "mkultra psychology")
+    assert changed is True
+    assert new == "Mkultra: the Cia's Mind-Control Program"
+
+
 def test_clean_legacy_title_removes_old_artifacts():
     # purane repair code ke "Why — " prefix + pipe keyword
     assert _clean_legacy_title(

@@ -317,7 +317,11 @@ def yt_boost_title(title, keyword):
     if not t:
         return t, False
 
-    changed = False
+    # V3.6-repair-7: cleanup ka apna change bhi count hota hai — pehle
+    # changed=False + sirf keyword-merge isay True karta tha, is liye jin
+    # titles ka cleanup hua par keyword satisfied tha unki update SKIP ho
+    # jati thi (title_changed False rehta tha).
+    changed = t != title
     new = t
 
     # 1) Keyword NATURAL merge — sirf jab keyword sach mein missing ho.
