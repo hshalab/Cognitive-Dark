@@ -442,14 +442,19 @@ def facebook_credit_videos(ml: LearningSystem) -> int:
                     retention_note = f"{retention * 100:.0f}%"
                 elif views > 0:
                     metrics["retention_estimated"] = True    # koi guess nahi
-                # V3.7: REAL CTR — views ÷ impressions
-                ctr = ctr_from(views, impressions)
-                if ctr is not None:
-                    metrics["ctr"] = ctr
-                    metrics["impressions"] = impressions
-                    logger.info("FB credit: %s → views=%d impressions=%s "
-                                "CTR=%.1f%% (REAL)", vid[:16], views, impressions,
-                                ctr * 100)
+                # V3.7: REAL CTR — sirf jab views METRIC available tha
+                # (post_video_views na ho to views=0 "unknown" hai, 0% nahi)
+                if "post_video_views" in ins:
+                    ctr = ctr_from(views, impressions)
+                    if ctr is not None:
+                        metrics["ctr"] = ctr
+                        metrics["impressions"] = impressions
+                        logger.info("FB credit: %s → views=%d impressions=%s "
+                                    "CTR=%.1f%% (REAL)", vid[:16], views, impressions,
+                                    ctr * 100)
+                else:
+                    logger.info("FB credit: %s → views metric unavailable "
+                                "(watch-time %ds real)", vid[:16], watch_time_secs)
                 ml.credit_video(vid, metrics)
                 credited += 1
                 logger.info("FB credit: %s → views=%d watch=%ds retention=%s",
@@ -582,15 +587,21 @@ def instagram_credit_videos(ml: LearningSystem) -> int:
                     "retention_estimated": True,   # koi retention data nahi
                     "platform": "instagram",
                 }
-                # V3.7: REAL CTR — plays ÷ impressions (reach fallback).
-                # IG Reels CTR ka standard yehi hai.
-                ctr = ctr_from(plays, impressions)
-                if ctr is not None:
-                    metrics["ctr"] = ctr
-                    metrics["impressions"] = impressions
-                    logger.info("IG credit: %s → plays=%d impressions=%s "
-                                "CTR=%.1f%% (REAL)", media_id[:16],
-                                plays, impressions, ctr * 100)
+                # V3.7: REAL CTR — sirf jab views metric (plays/video_views)
+                # ASAL mein available tha. Warna plays=0 "unknown" hai —
+                # 0% CTR likhna jhoot hota (media product type restriction)
+                if "plays" in ins or "video_views" in ins:
+                    ctr = ctr_from(plays, impressions)
+                    if ctr is not None:
+                        metrics["ctr"] = ctr
+                        metrics["impressions"] = impressions
+                        logger.info("IG credit: %s → plays=%d impressions=%s "
+                                    "CTR=%.1f%% (REAL)", media_id[:16],
+                                    plays, impressions, ctr * 100)
+                else:
+                    logger.info("IG credit: %s → plays metric unavailable "
+                                "(reach=%s saved=%s real)", media_id[:16],
+                                impressions, saved)
                 ml.credit_video(media_id, metrics)
                 credited += 1
                 logger.info("IG credit: %s → plays=%d likes=%d saved=%d "
