@@ -1,21 +1,25 @@
 # 📊 Coercion Files — Metrics Report
 
-*Updated: 2026-08-10T08:15:36.149800+00:00*
+*Updated: 2026-08-13T18:32:31.878543+00:00*
 
-**ML:** 192 arms · 4 videos · 5 attributed · 5 rewards · 4 penalties
+**ML:** 192 arms · 4 videos · 5 attributed · 0 rewards · 4 penalties
 
-**Best formulas:** con_artists/warning (1.5), con_artists/warning (1.5), con_artists/warning (1.5), con_artists/case_file (1.35), con_artists/case_file (1.35)
+**Videos credited this run:** YT=0 · FB=0 · IG=0
 
-**Videos credited this run:** 0
+## 🎯 REAL CTR (impressions-based, no guesses)
+
+_(abhi koi video impressions ke saath credit nahi hui — CTR agle run mein aayega)_
+
+**Best formulas:** con_artists/warning (1.5), con_artists/case_file (1.35), mass_psychology/chilling_fact (1.25), interrogation/warning (1.25), cults/warning (1.25)
 
 ```json
 {
   "youtube": {
-    "subs": 3,
+    "subs": 4,
     "watch_hours": 0,
     "shorts_views_90d": 0,
     "pct": {
-      "subs": 0.3,
+      "subs": 0.4,
       "watch_hours": 0.0,
       "shorts_views": 0.0
     },
@@ -23,12 +27,12 @@
       "subs": 33,
       "shorts_views": 333333
     },
-    "views": 2118,
-    "videos": 16,
-    "last_growth": 0
+    "views": 3007,
+    "videos": 31,
+    "last_growth": 1
   },
   "facebook": {
-    "followers": 513,
+    "followers": 514,
     "minutes_60d": 0,
     "uploads_30d": 0,
     "pct": {
@@ -39,7 +43,7 @@
       "followers": 149,
       "minutes": 2000
     },
-    "last_growth": 0
+    "last_growth": 1
   },
   "instagram": {
     "followers": 1,
@@ -53,16 +57,16 @@
     },
     "last_growth": 0
   },
-  "last_updated": "2026-08-10T08:15:36.145767+00:00",
+  "last_updated": "2026-08-13T18:32:30.212289+00:00",
   "milestones": {
     "youtube": {
       "milestone": "YT Tier-1 (fan funding)",
-      "pct": 0.6,
+      "pct": 0.8,
       "needs": {
         "subs": 500
       },
       "have": {
-        "subs": 3
+        "subs": 4
       }
     },
     "facebook": {
@@ -74,7 +78,7 @@
         "uploads_30d": 5
       },
       "have": {
-        "followers": 513,
+        "followers": 514,
         "minutes_60d": 0,
         "uploads_30d": 0
       }
