@@ -230,7 +230,13 @@ def yt_keyword_for_title(title):
 
 
 def yt_boost_title(title, keyword):
-    """Generate CTR-optimized title for 2026 YouTube Shorts."""
+    """Generate CTR-optimized title for 2026 YouTube Shorts.
+
+    V3.6: pipe-stuffing ("| Keyword") hata diya — bot-pattern hai, CTR
+    girata hai. Natural "Hook: Keyword" merge, aur power-prefix sirf tab
+    jab title sach mein generic ho. Idempotent: dobara chalane par title
+    kharab nahi hota.
+    """
     t = (title or "").strip()
     if not t:
         return t, False
@@ -238,47 +244,52 @@ def yt_boost_title(title, keyword):
     changed = False
     new = t
 
-    # 1) Ensure keyword is in title (for search + suggested)
-    if keyword and keyword.lower() not in new.lower():
-        new = f"{new[:70]} | {keyword.title()}"[:100]
+    # 1) Ensure keyword is in title (for search + suggested) — NATURAL merge
+    if keyword and keyword.lower() not in new.lower() \
+            and len(new) + len(keyword) + 2 <= 100:
+        new = f"{new[:80]}: {keyword.title()}"[:100]
         changed = True
 
-    # 2) Ensure power-word/question/stop start
+    # 2) Power-word/question start — sirf agar title completely generic ho
+    # (no strong start, no number, no case reference)
     starts_well = bool(re.match(
-        r"^(stop|never|why|how|what|warning|secret|they|this|the|case)\b",
-        new, re.I))
-    if not starts_well:
-        # Pick appropriate prefix based on content
+        r"^(stop|never|why|how|what|warning|secret|they|this|the|case|"
+        r"\d+|don'?t|watch|if)\b", new, re.I))
+    if not starts_well and len(new) <= 85:
         if re.search(r"\b(they|you|people|everyone)\b", new, re.I):
-            new = f"Stop — {new}"[:100]
+            new = f"Stop: {new}"[:100]
         elif re.search(r"\b(is|are|was|were|be)\b", new, re.I):
-            new = f"Why — {new}"[:100]
+            new = f"Why: {new}"[:100]
         else:
-            new = f"Warning — {new}"[:100]
+            new = f"The Truth: {new}"[:100]
         changed = True
-
-    # 3) Ensure proper title case
-    if changed and not re.search(r"[A-Z]{2,}", new):
-        # Only title-case if no acronyms
-        new = new[0].upper() + new[1:] if new else new
 
     return new[:100], changed
 
 
 def yt_boost_description(old_desc, keyword):
-    """Build 2026-optimized description."""
+    """Build 2026-optimized description.
+
+    V3.6: IDEMPOTENT — dobara chalane par duplicate chapters/keyword-line
+    nahi bante (pehle har repair run description ko aur lamba kar deta tha).
+    """
     existing = (old_desc or "").strip()
+    existing_low = existing.lower()
     kw_line = ""
-    if keyword:
+    if keyword and keyword.lower() not in existing_low[:300]:
         kw_line = (
             f"{keyword.title()} psychology: how manipulation works, why it works "
             f"on you, and exactly how to protect yourself.\n\n"
         )
 
-    chapters = "⏱ CHAPTERS:\n00:00 The Hook\n00:03 What's Really Happening\n00:15 The Pattern\n00:25 How To Protect Yourself\n00:35 The Takeaway\n\n"
+    chapters = ("⏱ CHAPTERS:\n00:00 The Hook\n00:03 What's Really Happening\n"
+                "00:15 The Pattern\n00:25 How To Protect Yourself\n"
+                "00:35 The Takeaway\n\n")
+    if "chapters" in existing_low:
+        chapters = ""   # pehle se hain — duplicate mat banao
 
-    has_disclaimer = "educational" in existing.lower() if existing else False
-    has_cta = any(w in existing.lower() for w in ("subscribe", "follow", "like")) if existing else False
+    has_disclaimer = "educational" in existing_low
+    has_cta = any(w in existing_low for w in ("subscribe", "follow", "like"))
 
     parts = [kw_line, chapters]
     if existing:
@@ -291,7 +302,9 @@ def yt_boost_description(old_desc, keyword):
     if not has_cta and not existing:
         parts.append(f"\n{CTA}")
 
-    return "\n\n".join(p for p in parts if p).strip()[:4900], bool(kw_line or not has_disclaimer or not has_cta)
+    changed = bool(kw_line or chapters or not has_disclaimer
+                   or (not has_cta and not existing))
+    return "\n\n".join(p for p in parts if p).strip()[:4900], changed
 
 
 def yt_boost_tags(old_tags, keyword):
@@ -527,6 +540,28 @@ def fb_get_service():
     return tok, page
 
 
+def fb_update_post_text(tok: str, vid: str, text: str) -> tuple[bool, str]:
+    """FB video/post ka text update — ladder: caption → description → message.
+
+    Page videos kabhi video-node hote hain (description editable), kabhi
+    page-post hote hain (message editable). Teeno try karte hain — pehli
+    kaamyabi wapas. Koi guess nahi: har field ASAL mein try hota hai.
+    """
+    import requests
+    for field in ("caption", "description", "message"):
+        try:
+            r = requests.post(
+                f"https://graph.facebook.com/v25.0/{vid}",
+                params={"access_token": tok},
+                data={field: text[:6300]},
+                timeout=30)
+            if r.status_code == 200:
+                return True, field
+        except Exception:
+            continue
+    return False, ""
+
+
 def fb_scan_and_repair(apply=False, fix_public_only=False):
     """Scan FB page videos and optimize per 2026 Reels algorithm."""
     tok, page = fb_get_service()
@@ -537,7 +572,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
 
     import requests
 
-    # Get all videos from page
+    # Get all videos from page (pagination: har page par access_token zaroori)
     video_ids = []
     next_url = f"https://graph.facebook.com/v25.0/{page}/videos"
     params = {"access_token": tok, "fields": "id,name,created_time,status,privacy,"
@@ -546,7 +581,9 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
 
     while next_url:
         try:
-            r = requests.get(next_url, params=params if "access_token" not in next_url else None, timeout=30)
+            r = requests.get(next_url,
+                             params=params if "access_token" not in next_url else None,
+                             timeout=30)
             if r.status_code >= 400:
                 print(f"⚠️ FB API error: {r.text[:200]}")
                 break
@@ -554,20 +591,11 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             for item in data.get("data", []):
                 if item.get("status") == "published":
                     video_ids.append(item.get("id"))
-            next_url = data.get("paging", {}).get("next")
-            if next_url:
-                # Extract params from next_url
-                from urllib.parse import urlparse, parse_qs
-                parsed = urlparse(next_url)
-                params = parse_qs(parsed.query)
-                params["access_token"] = tok
-                next_url = next_url  # keep the full URL but add token
-                # Actually just use the next_url with token appended
-                next_url = f"{next_url}&access_token={tok}" if "access_token" not in next_url else next_url
-                # Simpler: just use next_url as-is with token in it
-                next_url = next_url
-            else:
-                next_url = None
+            nxt = data.get("paging", {}).get("next")
+            # V3.6: token har page par (Graph next-URL se token remove ho
+            # jata hai kabhi-kabhi) — safe re-append
+            next_url = (nxt if "access_token" in nxt else f"{nxt}&access_token={tok}") \
+                if nxt else None
         except Exception as exc:
             print(f"⚠️ FB scan error: {exc}")
             break
@@ -625,7 +653,6 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             privacy = data.get("privacy", {})
             privacy_val = privacy.get("value", "unknown") if isinstance(privacy, dict) else str(privacy)
             caption = data.get("caption", "") or data.get("description", "") or ""
-            data.get("description", "") or ""
             views = data.get("insights", {}).get("data", [])
             view_count = 0
             for insight in views:
@@ -649,7 +676,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                     actions.append("would:needs-manual")
                 is_ok = False
 
-            # ── Caption/Description boost ──
+            # ── Caption/Description boost (REAL fix, V3.6) ──
             if not caption or len(caption) < 20:
                 # Weak or missing caption — add optimized caption
                 title = data.get("name", "") or ""
@@ -670,30 +697,35 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 new_caption += " ".join(FB_HASHTAGS_BANK[:FB_HASHES_RECOMMENDED])
 
                 if apply and not fix_public_only:
-                    try:
-                        # Update the post caption
-                        r2 = requests.post(
-                            f"https://graph.facebook.com/v25.0/{vid}",
-                            params={"access_token": tok},
-                            data={"caption": new_caption},
-                            timeout=30)
-                        if r2.status_code == 200:
-                            actions.append("caption+")
-                            STATS["facebook"]["caption_updated"] += 1
-                            caption = new_caption  # Update for reporting
-                        else:
-                            actions.append(f"cap-ERR:{r2.text[:50]}")
-                    except Exception as exc:
-                        actions.append(f"cap-ERR:{exc}")
+                    ok_upd, via = fb_update_post_text(tok, vid, new_caption)
+                    if ok_upd:
+                        actions.append(f"caption+ (via {via})")
+                        STATS["facebook"]["caption_updated"] += 1
+                        caption = new_caption  # Update for reporting
+                    else:
+                        actions.append("cap-ERR: all fields failed")
                 else:
                     actions.append("would:caption+")
-
-            # ── Hashtag check ──
-            hashtag_count = len(re.findall(r"#\w+", caption or ""))
-            if hashtag_count < FB_HASHES_RECOMMENDED and apply and not fix_public_only:
-                # Add missing hashtags (this is harder via API — usually needs post edit)
-                actions.append(f"hashtags:{hashtag_count}/{FB_HASHES_RECOMMENDED}")
-                STATS["facebook"]["hashtag_fixed"] += 1
+            else:
+                # Caption theek hai par hashtags kam → REAL hashtag fix:
+                # existing caption ke saath missing hashtags append karke
+                # asal mein update karte hain (V3.6: pehle fake counter tha)
+                hashtag_count = len(re.findall(r"#\w+", caption))
+                if hashtag_count < 4:
+                    missing = [h for h in FB_HASHTAGS_BANK
+                               if h.lower() not in caption.lower()]
+                    add = missing[: (FB_HASHES_RECOMMENDED - hashtag_count)]
+                    if add and apply and not fix_public_only:
+                        new_text = caption.rstrip() + "\n\n" + " ".join(add)
+                        ok_upd, via = fb_update_post_text(tok, vid, new_text)
+                        if ok_upd:
+                            actions.append(f"hashtags+ ({hashtag_count}→{hashtag_count + len(add)}, via {via})")
+                            STATS["facebook"]["hashtag_fixed"] += 1
+                            caption = new_text
+                        else:
+                            actions.append(f"hash-ERR (had {hashtag_count})")
+                    elif add:
+                        actions.append(f"would:hashtags+ ({hashtag_count}→{hashtag_count + len(add)})")
 
             print(f"  {vid[:16]} status={status:10} views={view_count:<6} priv={str(privacy_val)[:8]:8} | {' | '.join(actions) if actions else '✅ OK'}")
             if not is_ok:
@@ -737,14 +769,18 @@ def ig_get_service():
 
 
 def ig_check_account(tok, ig_id):
-    """Check if IG account is properly configured for publishing."""
+    """Check if IG account is properly configured for publishing.
+
+    V3.6: invalid field "nutrients" hata diya — Graph API error 100 deta
+    tha aur account check fail ho kar IG repair kabhi start nahi hota tha.
+    """
     import requests
     try:
         r = requests.get(
             f"https://graph.facebook.com/v25.0/{ig_id}",
             params={"access_token": tok,
-                    "fields": "followers_count,media_count,username,bio,"
-                              "media,nutrients,business_discovery"},
+                    "fields": "followers_count,media_count,username,biography",
+                    "timeout": 30},
             timeout=30)
         if r.status_code >= 400:
             print(f"  ⚠️ IG account error: {r.text[:300]}")
@@ -774,25 +810,29 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
 
     import requests
 
-    # Get recent media (Reels)
+    # Get recent media (Reels) — V3.6: PEHLI request mein bhi access_token
+    # zaroori tha; pehle sirf pagination mein tha → pehli call 400 ho kar
+    # "koi reels nahi mili" bol deti thi. IG repair kabhi chala hi nahi.
     media_ids = []
     next_url = f"https://graph.facebook.com/v25.0/{ig_id}/media"
 
     while next_url:
         try:
-            r = requests.get(next_url, timeout=30)
+            r = requests.get(next_url,
+                             params={"access_token": tok, "fields":
+                                     "id,media_type", "limit": 100}
+                             if "access_token" not in next_url else None,
+                             timeout=30)
             if r.status_code >= 400:
-                logger.debug("IG media error: %s", r.text[:200])
+                print(f"⚠️ IG media error: {r.text[:200]}")
                 break
             data = r.json()
             for item in data.get("data", []):
                 if item.get("media_type") in ("REELS", "VIDEO"):
                     media_ids.append(item.get("id"))
-            next_url = data.get("paging", {}).get("next")
-            if next_url and "access_token" not in next_url:
-                next_url = f"{next_url}&access_token={tok}"
-            elif not next_url:
-                next_url = None
+            nxt = data.get("paging", {}).get("next")
+            next_url = (nxt if "access_token" in nxt else f"{nxt}&access_token={tok}") \
+                if nxt else None
         except Exception as exc:
             print(f"⚠️ IG scan error: {exc}")
             break
@@ -829,7 +869,7 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
             shares = data.get("shares", 0) or 0
             saved = data.get("saved_count", 0) or 0
 
-            STATS["instagram"]["total_views_before"] = plays
+            STATS["instagram"]["total_views_before"] += plays  # V3.6: pehle overwrite hota tha — sirf aakhri reel ka count rehta tha
 
             actions = []
 
@@ -940,6 +980,35 @@ def main():
 
     if not args.skip_ig:
         ig_scan_and_repair(apply=apply, fix_public_only=fix_public_only)
+
+    # ── V3.6: repair REPORT file — CI isay commit karta hai (audit trail) ──
+    try:
+        _rp = Path(__file__).resolve().parent.parent / "data" / "repair_report.md"
+        _rp.parent.mkdir(parents=True, exist_ok=True)
+        _rp.write_text(
+            f"# 🛠️ 2026 Algorithm Video Repair Report\n\n"
+            f"*Mode: {mode} | Time: {datetime.now(timezone.utc).isoformat()}*\n\n"
+            f"## 📺 YouTube\n"
+            f"- Scanned: {STATS['youtube']['scanned']}\n"
+            f"- Not Shorts-ready: {STATS['youtube']['not_shorts_ready']}\n"
+            f"- → Public kiye: {STATS['youtube']['fixed_public']}\n"
+            f"- SEO boosted: {STATS['youtube']['seo_boosted']}\n"
+            f"- Playlist added: {STATS['youtube']['playlist_add']}\n"
+            f"- Thumbnails updated: {STATS['youtube']['thumbnail_updated']}\n"
+            f"- Total views: {STATS['youtube']['total_views_before']}\n\n"
+            f"## 📘 Facebook\n"
+            f"- Scanned: {STATS['facebook']['scanned']}\n"
+            f"- Captions fixed: {STATS['facebook']['caption_updated']}\n"
+            f"- Hashtags fixed (REAL API updates): {STATS['facebook']['hashtag_fixed']}\n"
+            f"- Total views: {STATS['facebook']['total_views_before']}\n\n"
+            f"## 📸 Instagram\n"
+            f"- Scanned: {STATS['instagram']['scanned']}\n"
+            f"- Captions fixed: {STATS['instagram']['caption_updated']}\n"
+            f"- Total plays: {STATS['instagram']['total_views_before']}\n",
+            encoding="utf-8")
+        print(f"📄 Report: {_rp}")
+    except OSError as exc:
+        print(f"⚠️ Report write failed: {exc}")
 
     # Final totals
     print(f"\n{'#'*78}")
