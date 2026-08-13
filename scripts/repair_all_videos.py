@@ -232,47 +232,77 @@ def yt_keyword_for_title(title):
 
 
 def _clean_legacy_title(title: str) -> str:
-    """V3.6-repair: purane code ke injected artifacts saaf karo.
+    """V3.6-repair-6: legacy title chains ka pura cleanup.
 
-    Purane repair/seo versions ne titles mein ye daala tha:
-      • em-dash prefixes: "Why — ", "Stop — ", "Warning — ", "The Truth — "
-      • random power-word suffix: "Hook: Never", "Hook: Nobody Tells You"
-      • pipe keyword: "Hook | Cult Psychology"
-    Ye sab bot-pattern hai — 2026 algorithm natural titles chahta hai.
-    Cleanup ke baad natural "Hook: Keyword" merge hota hai.
+    Purane runs ne ye junk inject kiya tha (examples live channel se):
+      • "The Truth: " / "Stop: " / "Why: " colon-prefixes
+      • ": Never", ": TRAP", ": Hidden", ": Silently" power-word suffixes
+      • ": Mass Psychology" double keyword merges
+      • "| Mkultra Explained | ..." pipe chains
+
+    Rules (deterministic, safe — natural titles untouched):
+      A) leading "{power}: " strip jab remainder >=4 words ho
+      B) pipes: sirf pehla segment (>=4 words) rehta hai
+      C) >=2 colons + last segment <=4 words → last segment drop (loop)
+      D) last segment single power-word → drop
+    Keyword satisfaction token-based hota hai (boost mein) taake dobara
+    double-merge na ho.
     """
     t = (title or "").strip()
     if not t:
         return t
 
-    # 1) em-dash prefixes (old repair code)
-    for pfx in ("Why — ", "Stop — ", "Warning — ", "The Truth — "):
-        if t.lower().startswith(pfx.lower()):
-            t = t[len(pfx):].strip()
-            break
-
-    # 2) trailing ": <power-word>" (old seo random suffix)
     power_low = {w.lower() for w in (
         "Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
         "Deadly", "Silently", "Brutal", "Finally", "Nobody Tells You",
         "They Don't Want You to Know", "Revealed", "Stop", "Master",
         "BUG", "TRAP", "FLAG", "EXPOSED", "PROOF", "WARNING", "Truth")}
+    prefix_low = {p.lower() for p in (
+        "The Truth", "Stop", "Why", "Warning", "Never", "The Secret", "Truth")}
+
+    # A) colon-prefixes (em-dash bhi — purane formats)
     changed = True
     while changed:
         changed = False
-        m = re.search(r":\s*([^:|]+)$", t)
-        if m and m.group(1).strip().rstrip(".!?").lower() in power_low:
-            t = t[:m.start()].strip()
-            changed = True
+        # V3.6-repair-6: em-dash format mein "Why — Title" (spaces ke saath)
+        # hota hai — "why—" match nahi hota. Sufixes: ": " aur " — ".
+        for suffix in (": ", " — "):
+            for pfx in [*prefix_low, "Don't", "Watch"]:
+                if t.lower().startswith(pfx.lower() + suffix):
+                    rest = t[len(pfx) + len(suffix):].strip()
+                    if len(rest.split()) >= 4:
+                        t = rest
+                        changed = True
+                        break
+            if changed:
+                break
 
-    # 3) trailing "| <pillar search term>" (old pipe keyword)
+    # B) pipe chains → pehla segment (jab wo substantive ho)
     parts = [p.strip() for p in t.split("|")]
-    if len(parts) > 1:
-        last = parts[-1].lower()
-        known = any(last == term.lower() or term.lower() in last
-                    for p in PILLARS for term in p.get("search_terms", []))
-        if known:
-            t = parts[0].strip()
+    if len(parts) > 1 and len(parts[0].split()) >= 4:
+        t = parts[0]
+
+    # C) double-colon chains: last short segment drop (loop)
+    changed = True
+    while changed:
+        changed = False
+        segs = [p.strip() for p in t.split(":")]
+        if len(segs) >= 3:
+            last = segs[-1].lower().rstrip(".!?")
+            if len(segs[-1].split()) <= 4 or last in power_low:
+                t = ": ".join(segs[:-1]).strip()
+                changed = True
+
+    # D) trailing single power-word (": Never" / ": Hidden" style)
+    changed = True
+    while changed:
+        changed = False
+        m = re.search(r":\s*([^:]+)$", t)
+        if m:
+            seg = m.group(1).strip()
+            if seg.lower().rstrip(".!?") in power_low:
+                t = t[:m.start()].strip()
+                changed = True
 
     return t.strip()
 
@@ -290,24 +320,25 @@ def yt_boost_title(title, keyword):
     changed = False
     new = t
 
-    # 1) Ensure keyword is in title (for search + suggested) — NATURAL merge
-    if keyword and keyword.lower() not in new.lower() \
-            and len(new) + len(keyword) + 2 <= 100:
-        new = f"{new[:80]}: {keyword.title()}"[:100]
-        changed = True
+    # 1) Keyword NATURAL merge — sirf jab keyword sach mein missing ho.
+    # Token-based satisfaction: agar keyword ka koi token (>=4 chars,
+    # stopwords ke siwa) title mein pehle se hai, to dobara merge nahi —
+    # "the Cult Recruitment Pipeline" jaisi titles par "Cult Psychology"
+    # dobara add nahi hota (double-colon junk wapas nahi banta).
+    if keyword:
+        kw_tokens = [w for w in keyword.lower().split()
+                     if len(w) >= 4 and w not in ("your", "what", "they", "that", "this")]
+        satisfied = (keyword.lower() in new.lower()
+                     or any(w in new.lower() for w in kw_tokens))
+        if not satisfied and len(new) + len(keyword) + 2 <= 100:
+            new = f"{new[:80]}: {keyword.title()}"[:100]
+            changed = True
 
-    # 2) Power-word/question start — sirf agar title completely generic ho
-    starts_well = bool(re.match(
-        r"^(stop|never|why|how|what|warning|secret|they|this|the|case|"
-        r"\d+|don'?t|watch|if)\b", new, re.I))
-    if not starts_well and len(new) <= 85:
-        if re.search(r"\b(they|you|people|everyone)\b", new, re.I):
-            new = f"Stop: {new}"[:100]
-        elif re.search(r"\b(is|are|was|were|be)\b", new, re.I):
-            new = f"Why: {new}"[:100]
-        else:
-            new = f"The Truth: {new}"[:100]
-        changed = True
+    # V3.6-repair-6: prefix-adder HATA DIYA. Ye block hi "The Truth: " /
+    # "Stop: " / "Why: " junk banata tha — cleaner strip karta, ye wapas
+    # jod deta (circular). Repair ka kaam sirf junk REMOVE karna hai,
+    # naya inject karna nahi. Title ab waise hi chhoda jata hai jaise
+    # cleanup ke baad hai — original hooks pehle se strong hain.
 
     return new[:100], changed
 

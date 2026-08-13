@@ -43,6 +43,37 @@ def test_boost_repairs_legacy_stuffed_title():
     assert len(new) <= 100
 
 
+def test_repair_never_injects_new_prefixes():
+    """Repair sirf junk REMOVE karta hai — "The Truth:" jaise naye prefix
+    kabhi ADD nahi karta (purana bug: cleaner strip karta, boost wapas
+    jod deta tha — circular junk)."""
+    new, _ = yt_boost_title(
+        "Love Bombing: the Cult Recruitment Pipeline", "cult psychology")
+    assert not new.startswith("The Truth:")
+    assert not new.startswith("Stop:")
+    assert not new.startswith("Why:")
+    assert "cult" in new.lower()   # keyword token satisfaction — no double merge
+
+
+def test_clean_full_legacy_chains():
+    # live channel ke 8 asli junk titles — sab clean hone chahiye
+    cases = [
+        ("The Truth: Love Bombing: the Cult Recruitment Pipeline: Cult Psychology",
+         "cult psychology", "Love Bombing: the Cult Recruitment Pipeline"),
+        ("Stop: Mkultra: the Cia's Mind-Control Program: Nobody Tells You",
+         "mind control psychology", "Mkultra: the Cia's Mind-Control Program"),
+        ("How Crowds Change your Brain in Minutes: Never: Mass Psychology",
+         "mass psychology", "How Crowds Change your Brain in Minutes: Mass Psychology"),
+        ("How One Ad Manipulated a Country | Mkultra Explained | Mkultra Psychology",
+         "MKUltra explained", "How One Ad Manipulated a Country: Mkultra Explained"),
+    ]
+    for title, kw, expected in cases:
+        new, _ = yt_boost_title(title, kw)
+        assert new == expected, f"{new!r} != {expected!r}"
+        assert "|" not in new
+        assert "The Truth:" not in new
+
+
 def test_yt_title_boost_adds_keyword_naturally():
     title = "Why Innocent People Confess"
     new, changed = yt_boost_title(title, "lie detection")
