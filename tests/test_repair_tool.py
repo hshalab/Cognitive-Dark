@@ -17,6 +17,22 @@ from repair_all_videos import (
 )
 
 
+def test_valid_case_titles_are_never_looped():
+    """V3.6-repair-8: 'Case #N: Hook: Keyword' VALID hai — cleaner isay
+    chhorna chahiye (pehle keyword drop → merge wapas = har run loop)."""
+    from repair_all_videos import yt_boost_title
+    cases = [
+        ("Case #375: The Pigeon Drop: Con Artist Psychology", "con artist psychology"),
+        ("Case #317: The Reid Technique Under the Microscope: Lie Detection", "lie detection"),
+        ("Case #42: Anatomy of a Perfect Confidence Trick: Con Artist Psychology", "con artist psychology"),
+        ("The Manchurian Candidate Myth", "manchurian candidate"),
+    ]
+    for title, kw in cases:
+        new, changed = yt_boost_title(title, kw)
+        assert new == title, f"loop! {title!r} → {new!r}"
+        assert changed is False
+
+
 def test_cleanup_only_change_marks_changed():
     """V3.6-repair-7 ka bug: jab sirf cleanup title badle (keyword pehle se
     satisfied) to changed=False reh kar update SKIP ho jati thi — 2 live
@@ -71,7 +87,7 @@ def test_clean_full_legacy_chains():
     # live channel ke 8 asli junk titles — sab clean hone chahiye
     cases = [
         ("The Truth: Love Bombing: the Cult Recruitment Pipeline: Cult Psychology",
-         "cult psychology", "Love Bombing: the Cult Recruitment Pipeline"),
+         "cult psychology", "Love Bombing: the Cult Recruitment Pipeline: Cult Psychology"),
         ("Stop: Mkultra: the Cia's Mind-Control Program: Nobody Tells You",
          "mind control psychology", "Mkultra: the Cia's Mind-Control Program"),
         ("How Crowds Change your Brain in Minutes: Never: Mass Psychology",

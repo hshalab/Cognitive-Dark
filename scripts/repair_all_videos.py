@@ -217,6 +217,18 @@ def yt_is_shorts_ready(item):
     return issues
 
 
+def _is_keyword_segment(seg: str) -> bool:
+    """Kya title ka ye segment ek RECOGNIZED keyword merge hai (valid)? """
+    key = seg.strip().lower().rstrip(".!?")
+    if not key:
+        return False
+    for p in PILLARS:
+        for term in p.get("search_terms", []):
+            if key == term.lower():
+                return True
+    return key.endswith("psychology") or key.endswith("explained")
+
+
 def yt_keyword_for_title(title):
     """Find matching pillar keyword for a given title."""
     t = title.lower()
@@ -282,14 +294,26 @@ def _clean_legacy_title(title: str) -> str:
     if len(parts) > 1 and len(parts[0].split()) >= 4:
         t = parts[0]
 
-    # C) double-colon chains: last short segment drop (loop)
+    # C) double-colon chains: last short segment drop (loop).
+    # Keyword-aware (V3.6-repair-8): "Case #375: The Hook: Con Artist
+    # Psychology" jaisi VALID titles ka keyword drop nahi hota (warna
+    # merge use wapas add kar deta = har run par bekaar loop).
     changed = True
     while changed:
         changed = False
         segs = [p.strip() for p in t.split(":")]
         if len(segs) >= 3:
-            last = segs[-1].lower().rstrip(".!?")
-            if len(segs[-1].split()) <= 4 or last in power_low:
+            last_low = segs[-1].lower().rstrip(".!?")
+            second_low = segs[-2].lower().rstrip(".!?")
+            n_words = len(segs[-1].split())
+            drop = False
+            if last_low in power_low:
+                drop = True                       # junk power-word
+            elif n_words <= 4 and second_low in power_low:
+                drop = True                       # middle junk ke saath keyword redundant
+            elif n_words <= 4 and not _is_keyword_segment(segs[-1]):
+                drop = True                       # generic short suffix (old junk)
+            if drop:
                 t = ": ".join(segs[:-1]).strip()
                 changed = True
 
