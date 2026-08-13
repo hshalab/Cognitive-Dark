@@ -9,11 +9,38 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 from repair_all_videos import (
+    _clean_legacy_title,
     fb_update_post_text,
     yt_boost_description,
     yt_boost_title,
     yt_keyword_for_title,
 )
+
+
+def test_clean_legacy_title_removes_old_artifacts():
+    # purane repair code ke "Why — " prefix + pipe keyword
+    assert _clean_legacy_title(
+        "Why — Financial Abuse: Control Through Money | Coercive Control Signs") \
+        == "Financial Abuse: Control Through Money"
+    # purane seo ke random power-word suffix
+    assert _clean_legacy_title("How Crowds Change Your Brain in Minutes: Never") \
+        == "How Crowds Change Your Brain in Minutes"
+    # ": Nobody Tells You" suffix
+    assert _clean_legacy_title("The Feed That Outrages You: Nobody Tells You") \
+        == "The Feed That Outrages You"
+    # natural titles untouched
+    assert _clean_legacy_title("Why Smart People Join Cults") \
+        == "Why Smart People Join Cults"
+
+
+def test_boost_repairs_legacy_stuffed_title():
+    # legacy "| Keyword" pipe wala title → clean "Hook: Keyword" form
+    new, changed = yt_boost_title(
+        "Why Innocent People Confess | Lie Detection", "lie detection")
+    assert changed is True
+    assert "|" not in new
+    assert "Lie Detection" in new
+    assert len(new) <= 100
 
 
 def test_yt_title_boost_adds_keyword_naturally():

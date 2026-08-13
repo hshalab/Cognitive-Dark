@@ -63,7 +63,8 @@ STATS = {
                 "total_views_before": 0, "total_views_after": 0},
     "facebook": {"scanned": 0, "fixed_public": 0, "caption_updated": 0, "hashtag_fixed": 0,
                  "total_views_before": 0, "total_views_after": 0},
-    "instagram": {"scanned": 0, "account_fixed": 0, "caption_updated": 0, "hashtag_fixed": 0},
+    "instagram": {"scanned": 0, "account_fixed": 0, "caption_updated": 0,
+                  "hashtag_fixed": 0, "total_views_before": 0},
 }
 
 
@@ -229,15 +230,59 @@ def yt_keyword_for_title(title):
     return None
 
 
+def _clean_legacy_title(title: str) -> str:
+    """V3.6-repair: purane code ke injected artifacts saaf karo.
+
+    Purane repair/seo versions ne titles mein ye daala tha:
+      • em-dash prefixes: "Why — ", "Stop — ", "Warning — ", "The Truth — "
+      • random power-word suffix: "Hook: Never", "Hook: Nobody Tells You"
+      • pipe keyword: "Hook | Cult Psychology"
+    Ye sab bot-pattern hai — 2026 algorithm natural titles chahta hai.
+    Cleanup ke baad natural "Hook: Keyword" merge hota hai.
+    """
+    t = (title or "").strip()
+    if not t:
+        return t
+
+    # 1) em-dash prefixes (old repair code)
+    for pfx in ("Why — ", "Stop — ", "Warning — ", "The Truth — "):
+        if t.lower().startswith(pfx.lower()):
+            t = t[len(pfx):].strip()
+            break
+
+    # 2) trailing ": <power-word>" (old seo random suffix)
+    power_low = {w.lower() for w in (
+        "Secret", "Instantly", "Never", "Shocking", "Hidden", "Exposed",
+        "Deadly", "Silently", "Brutal", "Finally", "Nobody Tells You",
+        "They Don't Want You to Know", "Revealed", "Stop", "Master",
+        "BUG", "TRAP", "FLAG", "EXPOSED", "PROOF", "WARNING", "Truth")}
+    changed = True
+    while changed:
+        changed = False
+        m = re.search(r":\s*([^:|]+)$", t)
+        if m and m.group(1).strip().rstrip(".!?").lower() in power_low:
+            t = t[:m.start()].strip()
+            changed = True
+
+    # 3) trailing "| <pillar search term>" (old pipe keyword)
+    parts = [p.strip() for p in t.split("|")]
+    if len(parts) > 1:
+        last = parts[-1].lower()
+        known = any(last == term.lower() or term.lower() in last
+                    for p in PILLARS for term in p.get("search_terms", []))
+        if known:
+            t = parts[0].strip()
+
+    return t.strip()
+
+
 def yt_boost_title(title, keyword):
     """Generate CTR-optimized title for 2026 YouTube Shorts.
 
-    V3.6: pipe-stuffing ("| Keyword") hata diya — bot-pattern hai, CTR
-    girata hai. Natural "Hook: Keyword" merge, aur power-prefix sirf tab
-    jab title sach mein generic ho. Idempotent: dobara chalane par title
-    kharab nahi hota.
+    V3.6-repair: legacy artifacts ("Why —", ": Never", "| Keyword") clean
+    karta hai, phir natural "Hook: Keyword" merge. Idempotent.
     """
-    t = (title or "").strip()
+    t = _clean_legacy_title(title)
     if not t:
         return t, False
 
@@ -251,7 +296,6 @@ def yt_boost_title(title, keyword):
         changed = True
 
     # 2) Power-word/question start — sirf agar title completely generic ho
-    # (no strong start, no number, no case reference)
     starts_well = bool(re.match(
         r"^(stop|never|why|how|what|warning|secret|they|this|the|case|"
         r"\d+|don'?t|watch|if)\b", new, re.I))
@@ -457,31 +501,31 @@ def yt_audit_and_repair(yt, apply=False, fix_public_only=False):
 
         if (title_changed or desc_changed or tags_changed) and not fix_public_only:
             if apply:
-                try:
-                    body = {
-                        "id": vid,
-                        "snippet": {
-                            "title": new_title or title,
-                            "description": new_desc or desc or "",
-                            "tags": new_tags or tags or [],
-                            "categoryId": "27",
-                            "defaultLanguage": "en",
-                            "defaultAudioLanguage": "en-US",
+                # V3.6-repair FIX: videos.update(part="snippet") ko title
+                # field CHAHIYE hota hai — title ke baghair API "invalid or
+                # empty video title" error deta hai (23 SEO-ERR ka root
+                # cause). Title hamesha bhejo (changed ho ya na ho).
+                if not (title or "").strip():
+                    actions.append("SEO-skip: empty title")
+                else:
+                    try:
+                        body = {
+                            "id": vid,
+                            "snippet": {
+                                "title": (new_title or title)[:100],
+                                "description": (new_desc or desc or "")[:4900],
+                                "tags": (new_tags or tags or [])[:50],
+                                "categoryId": "27",
+                                "defaultLanguage": "en",
+                                "defaultAudioLanguage": "en-US",
+                            }
                         }
-                    }
-                    # Only update fields that changed
-                    if not title_changed:
-                        del body["snippet"]["title"]
-                    if not desc_changed:
-                        del body["snippet"]["description"]
-                    if not tags_changed:
-                        del body["snippet"]["tags"]
-                    yt.videos().update(part="snippet", body=body).execute()
-                    actions.append("SEO+")
-                    STATS["youtube"]["seo_boosted"] += 1
-                except Exception as exc:
-                    actions.append(f"SEO-ERR:{exc}")
-                    logger.warning("SEO update %s failed: %s", vid, exc)
+                        yt.videos().update(part="snippet", body=body).execute()
+                        actions.append("SEO+")
+                        STATS["youtube"]["seo_boosted"] += 1
+                    except Exception as exc:
+                        actions.append(f"SEO-ERR:{exc}")
+                        logger.warning("SEO update %s failed: %s", vid, exc)
             else:
                 actions.append("would:SEO")
 
@@ -575,7 +619,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
     # Get all videos from page (pagination: har page par access_token zaroori)
     video_ids = []
     next_url = f"https://graph.facebook.com/v25.0/{page}/videos"
-    params = {"access_token": tok, "fields": "id,name,created_time,status,privacy,"
+    params = {"access_token": tok, "fields": "id,title,created_time,status,privacy,"
                                                "description,caption,length,full_picture",
               "limit": 100}
 
@@ -638,7 +682,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 f"https://graph.facebook.com/v25.0/{vid}",
                 params={
                     "access_token": tok,
-                    "fields": ("id,name,status,privacy,description,caption,"
+                    "fields": ("id,title,status,privacy,description,caption,"
                                "created_time,length,permalink_url,share_count,"
                                "like_count,comment_count,insights"),
                     "timeout": 30
@@ -679,7 +723,7 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             # ── Caption/Description boost (REAL fix, V3.6) ──
             if not caption or len(caption) < 20:
                 # Weak or missing caption — add optimized caption
-                title = data.get("name", "") or ""
+                title = data.get("title", "") or ""
                 keyword = None
                 for p in PILLARS:
                     for term in p.get("search_terms", []):
@@ -847,27 +891,50 @@ def ig_scan_and_repair(apply=False, fix_public_only=False):
 
     for mid in media_ids:
         try:
+            # V3.6-repair FIX: pehle sirf CORE fields (always available) —
+            # insights/saved_count jaise risky fields ki wajah se poora GET
+            # 400 ho kar 73 reels ke baad bhi 0 fixes hoti thin. Insights ab
+            # alag se try hote hain — fail ho to bhi caption repair chalti hai.
             r = requests.get(
                 f"https://graph.facebook.com/v25.0/{mid}",
                 params={
                     "access_token": tok,
                     "fields": ("id,caption,media_type,permalink,thumbnail_url,"
-                               "timestamp,like_count,comments_count,plays,"
-                               "shares,saved_count,insights"),
+                               "timestamp,like_count,comments_count"),
                     "timeout": 30
                 },
                 timeout=30)
             if r.status_code >= 400:
-                logger.debug("IG reel %s: %s", mid, r.text[:200])
+                print(f"  ⚠️ reel {mid[:16]}: GET fail {r.status_code} — {r.text[:120]}")
                 continue
 
             data = r.json()
             caption = data.get("caption", "") or ""
-            plays = data.get("plays", 0) or 0
-            likes = data.get("like_count", 0) or 0
-            comments = data.get("comments_count", 0) or 0
-            shares = data.get("shares", 0) or 0
-            saved = data.get("saved_count", 0) or 0
+            likes = int(data.get("like_count", 0) or 0)
+            comments = int(data.get("comments_count", 0) or 0)
+            plays = shares = saved = 0
+            # insights alag se (optional) — metric: plays, reach, saved, shares
+            try:
+                ri = requests.get(
+                    f"https://graph.facebook.com/v25.0/{mid}/insights",
+                    params={"access_token": tok,
+                            "metric": "plays,reach,saved,shares",
+                            "timeout": 30},
+                    timeout=30)
+                if ri.status_code == 200:
+                    for entry in ri.json().get("data", []):
+                        vals = entry.get("values", [])
+                        if not vals:
+                            continue
+                        total = sum(int(v.get("value", 0) or 0) for v in vals)
+                        if entry.get("name") == "plays":
+                            plays = total
+                        elif entry.get("name") == "saved":
+                            saved = total
+                        elif entry.get("name") == "shares":
+                            shares = total
+            except Exception:
+                pass  # insights optional — repair is ke baghair bhi chalti hai
 
             STATS["instagram"]["total_views_before"] += plays  # V3.6: pehle overwrite hota tha — sirf aakhri reel ka count rehta tha
 
