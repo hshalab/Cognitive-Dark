@@ -511,3 +511,16 @@ def test_gate_warn_mode_never_blocks(tmp_path: Path):
     rep = gate.evaluate(payload)
     assert rep.released is True     # report banti hai, block nahi
     assert rep.verdicts             # guards phir bhi chale
+
+
+def test_ctr_guard_stem_overlap_not_blocked():
+    """V3.6.1: 'cult'/'cults' jaisa plural title↔hook pair legit hai —
+    stem overlap se match hona chahiye, block nahi."""
+    from guards.ctr_guard import CTRGuard
+    v = CTRGuard().check({
+        "platform": "youtube",
+        "package": {"title": "3 Signs You're in a Cult: Warning Psychology"},
+        "script": {"hook": "Why smart people join cults"},
+    })
+    assert v.status in ("PASS", "WARN"), v.reason
+    assert v.evidence["hook_link"] > 0

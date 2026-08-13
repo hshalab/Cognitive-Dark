@@ -41,8 +41,19 @@ def _tokens(text: str) -> set:
             if w not in STOPWORDS}
 
 
+def _stem(w: str) -> str:
+    """Word stem (first 4 chars) — 'cult'/'cults', 'scam'/'scams',
+    'sign'/'signs' ek hi maane jate hain (V3.6.1). 4-char prefix is liye:
+    5-char stem par 'cult'(4) vs 'cults'(5) phir bhi mismatch tha."""
+    return w[:4]
+
+
 def _overlap(a: str, b: str) -> float:
-    ta, tb = _tokens(a), _tokens(b)
+    """Title↔hook connection — STEM-based. Pehle exact-token match tha,
+    is liye '3 Signs You're in a Cult' vs 'Why smart people join cults'
+    jaisa legit pair 0.0 overlap deta tha aur strong title FAIL hota tha."""
+    ta = {_stem(w) for w in _tokens(a)}
+    tb = {_stem(w) for w in _tokens(b)}
     if not ta or not tb:
         return 0.0
     return len(ta & tb) / max(1.0, len(ta))
@@ -74,12 +85,17 @@ class CTRGuard(BaseGuard):
         emoji_count = len(re.findall(r"[\U0001F300-\U0001FAFF\u2600-\u27BF]", title))
         pipe_count = title.count("|")
         link = _overlap(title, hook)
+        # shared stems count (1 meaningful shared keyword kaafi hai —
+        # bait-and-switch tab hota hai jab ZERO connection ho)
+        shared_stems = len({_stem(w) for w in _tokens(title)} &
+                           {_stem(w) for w in _tokens(hook)})
 
         comp.update({"power_first3": has_power_first3, "keyword": has_kw,
                      "number": has_number, "question": is_question,
                      "command": is_command, "hook_link": round(link, 3),
                      "caps_spam": caps_spam, "double_punct": double_punct,
                      "emoji": emoji_count, "pipes": pipe_count,
+                     "shared_stems": shared_stems,
                      "title_len": len(title)})
 
         if has_power_first3:
@@ -106,8 +122,8 @@ class CTRGuard(BaseGuard):
             issues.append(f"{emoji_count} emojis — spammy")
         if pipe_count > 1:
             issues.append(f"{pipe_count}x '|' stuffing")
-        if link < 0.25:
-            issues.append(f"title↔hook disconnected (overlap {link:.2f}) — bait-and-switch")
+        if shared_stems == 0:
+            issues.append("title↔hook disconnected (0 shared keywords) — bait-and-switch")
 
         score = round(min(1.0, max(0.0, score)), 3)
         threshold = THRESHOLD.get(platform, 0.45)
