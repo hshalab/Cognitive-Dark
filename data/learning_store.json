@@ -1999,7 +1999,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-10T06:17:37.201335+00:00",
-      "refresh_count": 5
+      "refresh_count": 6
     },
     "1624303202734288": {
       "arm_key": "brainwashing_myths::confession::afternoon",
@@ -2012,14 +2012,14 @@
         "likes": 0,
         "comments": 0,
         "shares": 0,
-        "watch_time_seconds": 0,
+        "watch_time_seconds": 56,
         "duration_seconds": 28.4,
         "platform": "facebook"
       },
       "reward": 0.105,
       "breakdown": {
         "retention": 0.0,
-        "retention_measured": false,
+        "retention_measured": true,
         "retention_estimated": false,
         "completion": 0.0,
         "engagement_rate": 0.0,
@@ -2032,7 +2032,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-13T18:38:23.605366+00:00",
-      "refresh_count": 3
+      "refresh_count": 4
     },
     "-PGpiXpQyug": {
       "arm_key": "cults::red_flag::morning",
@@ -2064,7 +2064,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-10T06:17:37.204584+00:00",
-      "refresh_count": 5
+      "refresh_count": 6
     },
     "1497157482100697": {
       "arm_key": "cults::red_flag::morning",
@@ -2077,14 +2077,14 @@
         "likes": 0,
         "comments": 0,
         "shares": 0,
-        "watch_time_seconds": 0,
+        "watch_time_seconds": 45,
         "duration_seconds": 35.6,
         "platform": "facebook"
       },
       "reward": 0.105,
       "breakdown": {
         "retention": 0.0,
-        "retention_measured": false,
+        "retention_measured": true,
         "retention_estimated": false,
         "completion": 0.0,
         "engagement_rate": 0.0,
@@ -2097,7 +2097,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-13T18:38:25.029506+00:00",
-      "refresh_count": 3
+      "refresh_count": 4
     },
     "18099030104211760": {
       "arm_key": "coercive_control::warning::morning",
@@ -2110,27 +2110,29 @@
         "likes": 0,
         "comments": 0,
         "shares": 0,
-        "saves": 0,
+        "saves": 1,
         "retention_estimated": true,
-        "platform": "instagram"
+        "platform": "instagram",
+        "ctr": 0.0,
+        "impressions": 17
       },
-      "reward": 0.105,
+      "reward": 0.705,
       "breakdown": {
         "retention": 0.0,
         "retention_measured": false,
         "retention_estimated": true,
         "completion": 0.0,
-        "engagement_rate": 0.0,
+        "engagement_rate": 2.0,
         "view_score": 0.0,
         "ctr": 0.0,
         "voice_rating": 0.5,
-        "reward": 0.105,
+        "reward": 0.705,
         "quality_gate_passed": false,
         "quality_gate_status": "unknown",
         "data_complete": false
       },
       "credited_at": "2026-08-13T18:38:25.624152+00:00",
-      "refresh_count": 3
+      "refresh_count": 4
     },
     "TNVE_xhmWt4": {
       "arm_key": "brainwashing_myths::plot_twist::afternoon",
@@ -2162,7 +2164,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-13T18:41:39.305407+00:00",
-      "refresh_count": 2
+      "refresh_count": 3
     },
     "1119309037107827": {
       "arm_key": "brainwashing_myths::plot_twist::afternoon",
@@ -2175,14 +2177,14 @@
         "likes": 1,
         "comments": 0,
         "shares": 0,
-        "watch_time_seconds": 0,
+        "watch_time_seconds": 569,
         "duration_seconds": 49.4,
         "platform": "facebook"
       },
       "reward": 0.705,
       "breakdown": {
         "retention": 0.0,
-        "retention_measured": false,
+        "retention_measured": true,
         "retention_estimated": false,
         "completion": 0.0,
         "engagement_rate": 1.0,
@@ -2195,7 +2197,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-13T18:41:40.812847+00:00",
-      "refresh_count": 2
+      "refresh_count": 3
     },
     "17877728847527433": {
       "arm_key": "brainwashing_myths::plot_twist::afternoon",
@@ -2210,7 +2212,9 @@
         "shares": 0,
         "saves": 0,
         "retention_estimated": true,
-        "platform": "instagram"
+        "platform": "instagram",
+        "ctr": 0.0,
+        "impressions": 1
       },
       "reward": 0.105,
       "breakdown": {
@@ -2228,7 +2232,7 @@
         "data_complete": false
       },
       "credited_at": "2026-08-13T18:41:44.907896+00:00",
-      "refresh_count": 2
+      "refresh_count": 3
     }
   },
   "post_log": {
