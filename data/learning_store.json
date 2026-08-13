@@ -1999,14 +1999,39 @@
         "data_complete": false
       },
       "credited_at": "2026-08-10T06:17:37.201335+00:00",
-      "refresh_count": 1
+      "refresh_count": 2
     },
     "1624303202734288": {
       "arm_key": "brainwashing_myths::confession::afternoon",
       "platform": "facebook",
       "title": "Your Phone Isn't Brainwashing You. Worse. | Coercion Files",
       "ts": "2026-08-09T16:33:34.250134+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "watch_time_seconds": 0,
+        "duration_seconds": 28.4,
+        "platform": "facebook"
+      },
+      "reward": 0.105,
+      "breakdown": {
+        "retention": 0.0,
+        "retention_measured": false,
+        "retention_estimated": false,
+        "completion": 0.0,
+        "engagement_rate": 0.0,
+        "view_score": 0.0,
+        "ctr": 0.0,
+        "voice_rating": 0.5,
+        "reward": 0.105,
+        "quality_gate_passed": false,
+        "quality_gate_status": "unknown",
+        "data_complete": false
+      },
+      "credited_at": "2026-08-13T18:38:23.605366+00:00"
     },
     "-PGpiXpQyug": {
       "arm_key": "cults::red_flag::morning",
@@ -2038,21 +2063,71 @@
         "data_complete": false
       },
       "credited_at": "2026-08-10T06:17:37.204584+00:00",
-      "refresh_count": 1
+      "refresh_count": 2
     },
     "1497157482100697": {
       "arm_key": "cults::red_flag::morning",
       "platform": "facebook",
       "title": "How Members Finally Escaped | Forensic Psychology",
       "ts": "2026-08-10T06:17:33.423451+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "watch_time_seconds": 0,
+        "duration_seconds": 35.6,
+        "platform": "facebook"
+      },
+      "reward": 0.105,
+      "breakdown": {
+        "retention": 0.0,
+        "retention_measured": false,
+        "retention_estimated": false,
+        "completion": 0.0,
+        "engagement_rate": 0.0,
+        "view_score": 0.0,
+        "ctr": 0.0,
+        "voice_rating": 0.5,
+        "reward": 0.105,
+        "quality_gate_passed": false,
+        "quality_gate_status": "unknown",
+        "data_complete": false
+      },
+      "credited_at": "2026-08-13T18:38:25.029506+00:00"
     },
     "18099030104211760": {
       "arm_key": "coercive_control::warning::morning",
       "platform": "instagram",
       "title": "Document Everything: Protect Yourself | Forensic Psychology",
       "ts": "2026-08-10T06:27:27.113988+00:00",
-      "credited": false
+      "credited": true,
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "saves": 0,
+        "retention_estimated": true,
+        "platform": "instagram"
+      },
+      "reward": 0.105,
+      "breakdown": {
+        "retention": 0.0,
+        "retention_measured": false,
+        "retention_estimated": true,
+        "completion": 0.0,
+        "engagement_rate": 0.0,
+        "view_score": 0.0,
+        "ctr": 0.0,
+        "voice_rating": 0.5,
+        "reward": 0.105,
+        "quality_gate_passed": false,
+        "quality_gate_status": "unknown",
+        "data_complete": false
+      },
+      "credited_at": "2026-08-13T18:38:25.624152+00:00"
     }
   },
   "post_log": {
