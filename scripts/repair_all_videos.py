@@ -650,7 +650,10 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
             print(f"⚠️ FB scan error: {exc}")
             break
 
-    # Fallback: video library edge (bina status filter — diagnostics ke saath)
+    # Fallback (PRIMARY in practice): video library edge — 35 published
+    # videos mile. V3.6-repair-4: status ab DICT hai (video_status +
+    # publishing_phase.publish_status), string nahi — dict==str comparison
+    # hamesha False tha is liye kuch select nahi hota tha.
     if not video_ids:
         try:
             r = requests.get(
@@ -663,10 +666,13 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
                 print(f"⚠️ FB videos edge error: {r.text[:200]}")
             else:
                 vids = r.json().get("data", [])
-                print(f"📘 FB video library: {len(vids)} videos "
-                      f"(statuses: {sorted({str(v.get('status')) for v in vids})})")
+                print(f"📘 FB video library: {len(vids)} videos")
                 for item in vids:
-                    if item.get("status") == "published":
+                    st = item.get("status")
+                    published = ((st.get("publishing_phase", {}).get("publish_status") == "published"
+                                  or st.get("video_status") == "ready")
+                                 if isinstance(st, dict) else st == "published")
+                    if published:
                         video_ids.append(item.get("id"))
         except Exception as exc:
             print(f"⚠️ FB videos edge scan error: {exc}")
@@ -683,31 +689,36 @@ def fb_scan_and_repair(apply=False, fix_public_only=False):
 
     for vid in video_ids:
         try:
-            # V3.6-repair: posts-scan ke ids POST ids hain (pageid_videoid).
-            # Post-safe fields use karo — video-node fields (title/caption/
-            # description) maangne par API 400 deta hai aur sab silently
-            # skip ho jata tha.
+            # V3.6-repair-4: do node types — post ids (pageid_videoid,
+            # underscore wale) par message fields, video-library ids (plain
+            # numeric) par title/description fields. Galat fields maangne
+            # par API 400 deta hai — ab sahi fields type ke mutabiq.
+            is_post = "_" in str(vid)
+            fields = (("id,message,status,created_time,permalink_url,"
+                       "reactions.summary(total_count),"
+                       "comments.summary(total_count)") if is_post
+                      else ("id,title,description,status,length,created_time,"
+                            "permalink_url"))
             r = requests.get(
                 f"https://graph.facebook.com/v25.0/{vid}",
-                params={
-                    "access_token": tok,
-                    "fields": ("id,message,status,created_time,permalink_url,"
-                               "reactions.summary(total_count),"
-                               "comments.summary(total_count)"),
-                    "timeout": 30
-                },
+                params={"access_token": tok, "fields": fields,
+                        "timeout": 30},
                 timeout=30)
             if r.status_code >= 400:
-                print(f"  ⚠️ FB post {vid[:20]}: GET fail — {r.text[:150]}")
+                print(f"  ⚠️ FB {vid[:20]}: GET fail — {r.text[:150]}")
                 continue
 
             data = r.json()
             status = data.get("status", "unknown")
-            caption = data.get("message", "") or ""
-            reactions = (data.get("reactions", {}) or {}).get("summary", {})
-            comments_n = (data.get("comments", {}) or {}).get("summary", {})
-            like_count = int(reactions.get("total_count", 0) or 0)
-            comment_count = int(comments_n.get("total_count", 0) or 0)
+            if is_post:
+                caption = data.get("message", "") or ""
+                reactions = (data.get("reactions", {}) or {}).get("summary", {})
+                comments_n = (data.get("comments", {}) or {}).get("summary", {})
+                like_count = int(reactions.get("total_count", 0) or 0)
+                comment_count = int(comments_n.get("total_count", 0) or 0)
+            else:
+                caption = data.get("description", "") or data.get("title", "") or ""
+                like_count = comment_count = 0
 
             actions = []
             is_ok = True
