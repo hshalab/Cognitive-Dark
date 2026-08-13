@@ -113,10 +113,11 @@ def _edge_tts(text: str, out_path: str) -> float:
     mp3 = out_path + ".mp3"
 
     async def _gen():
-        # V3.6.3: rate +8% — USA punchy pace. +12% par chhote CTA segments
-        # kabhi 3.2+ wps ho kar VoiceGuard fail karte thay (marginal).
-        # +8% → ~1.9-2.8 wps (zone 1.6-3.2 ke andar hamesha).
-        c = edge_tts.Communicate(text, "en-US-GuyNeural", rate="+8%", pitch="-3Hz")
+        # V3.6.5: rate +4% — USA punchy pace, stable wps zone.
+        # +8% par chhote words wale segments 3.26-3.57 wps ho kar
+        # VoiceGuard (max 3.2) fail karte thay. +4% → ~2.3-2.8 wps
+        # (zone 1.6-3.2 ke andar hamesha).
+        c = edge_tts.Communicate(text, "en-US-GuyNeural", rate="+4%", pitch="-3Hz")
         await c.save(mp3)
 
     asyncio.run(_gen())

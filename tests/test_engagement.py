@@ -128,3 +128,67 @@ def test_yt_package_always_has_keyword():
                   if p["key"] == "mind_control_history")
         assert kw.lower() in pkg["title"].lower(), pkg["title"]
         assert pkg["title"].count("|") <= 0  # pipe-stuffing wapas nahi
+
+
+def test_structure_repair_splits_long_scenes_and_pads_short():
+    """V3.6.5: LLM ki choti script (3 scenes / 68 words) repair ho kar
+    guards ke minimum (4 scenes, 100+ words) par aa jani chahiye. Lambi
+    scene (50 words) split honi chahiye."""
+    from script_generator import _repair_script_structure
+    script = {
+        "hook": "Why smart people join cults",
+        "title": "The Truth About Watch What They Say When You Say No And Never Trust Them Again",
+        "scenes": [
+            {"caption": "Why smart people join cults and never see it coming."},
+            {"caption": "A documented case file shows the same loop: trust first, "
+                        "then isolation, then manufactured urgency, then total "
+                        "surrender before the victim even realizes what happened "
+                        "to their life savings and their family relationships "
+                        "over the following weeks and months."},
+            {"caption": "The scammer triggered fear before doubt could form."},
+        ],
+    }
+    out = _repair_script_structure(script)
+    words = len(" ".join(s.get("caption", "") for s in out["scenes"]).split())
+    assert len(out["scenes"]) >= 4
+    assert words >= 100
+    assert all(len(s.get("caption", "").split()) <= 38
+               for s in out["scenes"])
+    # CTA aakhri scene mein
+    full = " ".join(s.get("caption", "") for s in out["scenes"]).lower()
+    assert any(w in full for w in ("like", "comment", "save", "hit"))
+    # title 20-70 chars
+    assert 20 <= len(out["title"]) <= 70, out["title"]
+
+
+def test_structure_repair_clamps_and_normalizes_title():
+    from script_generator import _repair_script_structure
+    script = {
+        "hook": "Can a 5-second pause stop a fraudster",
+        "title": "Can a 5\u2011second pause stop a fraudster \u2014 What Nobody Tells You About It All",
+        "scenes": [
+            {"caption": "Can a five second pause stop a fraudster in real life."},
+            {"caption": "The case file shows the scammer demanded instant action every time."},
+            {"caption": "Cialdini's scarcity explains why the rush worked on every victim."},
+            {"caption": "Comment the sign you recognized first, and hit like."},
+        ],
+    }
+    out = _repair_script_structure(script)
+    assert len(out["title"]) <= 70
+    assert "\u2011" not in out["title"] and "\u2014" not in out["title"]
+
+
+def test_hook_sync_replaces_first_sentence_when_mismatch():
+    """V3.6.5: LLM script mein purana hook scene 0 mein nahi hota →
+    pehla sentence hi naye hook se replace (clickbait gap khatam)."""
+    from script_generator import _replace_hook_everywhere
+    script = {
+        "hook": "Why smart people join cults",
+        "title": "Something else entirely",
+        "scenes": [{"caption": "The recruiter smiled and said trust me. "
+                              "Here is the breakdown."}],
+    }
+    _replace_hook_everywhere(script, "Old hook that LLM wrote")
+    s0 = script["scenes"][0]["caption"]
+    assert s0.startswith("Why smart people join cults."), s0
+    assert "Why smart people join cults" in script["title"]
